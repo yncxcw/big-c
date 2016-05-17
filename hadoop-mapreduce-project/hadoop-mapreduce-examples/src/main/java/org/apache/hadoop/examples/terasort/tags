@@ -1,0 +1,164 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+FINAL_SYNC_ATTRIBUTE	TeraOutputFormat.java	/^  static final String FINAL_SYNC_ATTRIBUTE = "terasort.final.sync";$/;"	f	class:TeraOutputFormat
+InnerTrieNode	TeraSort.java	/^      InnerTrieNode(int level) {$/;"	m	class:TeraSort.TotalOrderPartitioner.InnerTrieNode
+InnerTrieNode	TeraSort.java	/^    static class InnerTrieNode extends TrieNode {$/;"	c	class:TeraSort.TotalOrderPartitioner
+KEY_LENGTH	TeraInputFormat.java	/^    private static int KEY_LENGTH = 10;$/;"	f	class:TeraInputFormat.TeraRecordReader	file:
+LOG	TeraSort.java	/^  private static final Log LOG = LogFactory.getLog(TeraSort.class);$/;"	f	class:TeraSort	file:
+LeafTrieNode	TeraSort.java	/^      LeafTrieNode(int level, Text[] splitPoints, int lower, int upper) {$/;"	m	class:TeraSort.TotalOrderPartitioner.LeafTrieNode
+LeafTrieNode	TeraSort.java	/^    static class LeafTrieNode extends TrieNode {$/;"	c	class:TeraSort.TotalOrderPartitioner
+PARTITION_FILENAME	TeraInputFormat.java	/^  static final String PARTITION_FILENAME = "_partition.lst";$/;"	f	class:TeraInputFormat
+RandomGenerator	TeraGen.java	/^    RandomGenerator() {$/;"	m	class:TeraGen.RandomGenerator
+RandomGenerator	TeraGen.java	/^    RandomGenerator(long initalIteration) {$/;"	m	class:TeraGen.RandomGenerator
+RandomGenerator	TeraGen.java	/^  static class RandomGenerator {$/;"	c	class:TeraGen
+RangeInputFormat	TeraGen.java	/^  static class RangeInputFormat $/;"	c	class:TeraGen
+RangeInputSplit	TeraGen.java	/^      public RangeInputSplit() { }$/;"	m	class:TeraGen.RangeInputFormat.RangeInputSplit
+RangeInputSplit	TeraGen.java	/^      public RangeInputSplit(long offset, long length) {$/;"	m	class:TeraGen.RangeInputFormat.RangeInputSplit
+RangeInputSplit	TeraGen.java	/^    static class RangeInputSplit implements InputSplit {$/;"	c	class:TeraGen.RangeInputFormat
+RangeRecordReader	TeraGen.java	/^      public RangeRecordReader(RangeInputSplit split) {$/;"	m	class:TeraGen.RangeInputFormat.RangeRecordReader
+RangeRecordReader	TeraGen.java	/^    static class RangeRecordReader $/;"	c	class:TeraGen.RangeInputFormat
+SAMPLE_SIZE	TeraInputFormat.java	/^  static final String SAMPLE_SIZE = "terasort.partitions.sample";$/;"	f	class:TeraInputFormat
+SortGenMapper	TeraGen.java	/^  public static class SortGenMapper extends MapReduceBase $/;"	c	class:TeraGen
+TeraGen	TeraGen.java	/^public class TeraGen extends Configured implements Tool {$/;"	c
+TeraInputFormat	TeraInputFormat.java	/^public class TeraInputFormat extends FileInputFormat<Text,Text> {$/;"	c
+TeraOutputFormat	TeraOutputFormat.java	/^public class TeraOutputFormat extends TextOutputFormat<Text,Text> {$/;"	c
+TeraRecordReader	TeraInputFormat.java	/^    public TeraRecordReader(Configuration job, $/;"	m	class:TeraInputFormat.TeraRecordReader
+TeraRecordReader	TeraInputFormat.java	/^  static class TeraRecordReader implements RecordReader<Text,Text> {$/;"	c	class:TeraInputFormat
+TeraRecordWriter	TeraOutputFormat.java	/^    public TeraRecordWriter(DataOutputStream out,$/;"	m	class:TeraOutputFormat.TeraRecordWriter
+TeraRecordWriter	TeraOutputFormat.java	/^  static class TeraRecordWriter extends LineRecordWriter<Text,Text> {$/;"	c	class:TeraOutputFormat
+TeraSort	TeraSort.java	/^public class TeraSort extends Configured implements Tool {$/;"	c
+TeraValidate	TeraValidate.java	/^public class TeraValidate extends Configured implements Tool {$/;"	c
+TextSampler	TeraInputFormat.java	/^  static class TextSampler implements IndexedSortable {$/;"	c	class:TeraInputFormat
+TotalOrderPartitioner	TeraSort.java	/^    public TotalOrderPartitioner() {$/;"	m	class:TeraSort.TotalOrderPartitioner
+TotalOrderPartitioner	TeraSort.java	/^  static class TotalOrderPartitioner implements Partitioner<Text,Text>{$/;"	c	class:TeraSort
+TrieNode	TeraSort.java	/^      TrieNode(int level) {$/;"	m	class:TeraSort.TotalOrderPartitioner.TrieNode
+TrieNode	TeraSort.java	/^    static abstract class TrieNode {$/;"	c	class:TeraSort.TotalOrderPartitioner
+ValidateMapper	TeraValidate.java	/^  static class ValidateMapper extends MapReduceBase $/;"	c	class:TeraValidate
+ValidateReducer	TeraValidate.java	/^  static class ValidateReducer extends MapReduceBase $/;"	c	class:TeraValidate
+addFiller	TeraGen.java	/^    private void addFiller(long rowId) {$/;"	m	class:TeraGen.SortGenMapper	file:
+addKey	TeraGen.java	/^    private void addKey() {$/;"	m	class:TeraGen.SortGenMapper	file:
+addKey	TeraInputFormat.java	/^    public void addKey(Text key) {$/;"	m	class:TeraInputFormat.TextSampler
+addRowId	TeraGen.java	/^    private void addRowId(long rowId) {$/;"	m	class:TeraGen.SortGenMapper	file:
+attrs	job_history_summary.py	/^  attrs = parse(words[1])$/;"	v
+buildTrie	TeraSort.java	/^    private static TrieNode buildTrie(Text[] splits, int lower, int upper, $/;"	m	class:TeraSort.TotalOrderPartitioner	file:
+child	TeraSort.java	/^      private TrieNode[] child = new TrieNode[256];$/;"	f	class:TeraSort.TotalOrderPartitioner.InnerTrieNode	file:
+close	TeraGen.java	/^      public void close() throws IOException {$/;"	m	class:TeraGen.RangeInputFormat.RangeRecordReader
+close	TeraInputFormat.java	/^    public void close() throws IOException {$/;"	m	class:TeraInputFormat.TeraRecordReader
+close	TeraOutputFormat.java	/^    public void close() throws IOException {$/;"	m	class:TeraOutputFormat.TeraRecordWriter
+close	TeraValidate.java	/^    public void close() throws IOException {$/;"	m	class:TeraValidate.ValidateMapper
+compare	TeraInputFormat.java	/^    public int compare(int i, int j) {$/;"	m	class:TeraInputFormat.TextSampler
+configure	TeraSort.java	/^    public void configure(JobConf job) {$/;"	m	class:TeraSort.TotalOrderPartitioner
+counterPat	job_history_summary.py	/^counterPat = re.compile('(?P<name>[^:]+):(?P<value>[^,]*),?')$/;"	v
+createKey	TeraGen.java	/^      public LongWritable createKey() {$/;"	m	class:TeraGen.RangeInputFormat.RangeRecordReader
+createKey	TeraInputFormat.java	/^    public Text createKey() {$/;"	m	class:TeraInputFormat.TeraRecordReader
+createPartitions	TeraInputFormat.java	/^    Text[] createPartitions(int numPartitions) {$/;"	m	class:TeraInputFormat.TextSampler
+createValue	TeraGen.java	/^      public NullWritable createValue() {$/;"	m	class:TeraGen.RangeInputFormat.RangeRecordReader
+createValue	TeraInputFormat.java	/^    public Text createValue() {$/;"	m	class:TeraInputFormat.TeraRecordReader
+endTime	job_history_summary.py	/^endTime = max(reduce(max, mapEndTime.values()),$/;"	v
+error	TeraValidate.java	/^  private static final Text error = new Text("error");$/;"	f	class:TeraValidate	file:
+event	job_history_summary.py	/^  event = words[0]$/;"	v
+filename	TeraValidate.java	/^    private String filename;$/;"	f	class:TeraValidate.ValidateMapper	file:
+filler	TeraGen.java	/^    private byte[][] filler = new byte[26][];$/;"	f	class:TeraGen.SortGenMapper	file:
+finalSync	TeraOutputFormat.java	/^    private boolean finalSync = false;$/;"	f	class:TeraOutputFormat.TeraRecordWriter	file:
+findPartition	TeraSort.java	/^      abstract int findPartition(Text key);$/;"	m	class:TeraSort.TotalOrderPartitioner.TrieNode
+findPartition	TeraSort.java	/^      int findPartition(Text key) {$/;"	m	class:TeraSort.TotalOrderPartitioner.InnerTrieNode
+findPartition	TeraSort.java	/^      int findPartition(Text key) {$/;"	m	class:TeraSort.TotalOrderPartitioner.LeafTrieNode
+finishedRows	TeraGen.java	/^      long finishedRows;$/;"	f	class:TeraGen.RangeInputFormat.RangeRecordReader
+firstKey	TeraValidate.java	/^    private boolean firstKey = true;$/;"	f	class:TeraValidate.ValidateReducer	file:
+firstRow	TeraGen.java	/^      long firstRow;$/;"	f	class:TeraGen.RangeInputFormat.RangeInputSplit
+getFilename	TeraValidate.java	/^    private String getFilename(FileSplit split) {$/;"	m	class:TeraValidate.ValidateMapper	file:
+getFinalSync	TeraOutputFormat.java	/^  public static boolean getFinalSync(JobConf conf) {$/;"	m	class:TeraOutputFormat
+getLength	TeraGen.java	/^      public long getLength() throws IOException {$/;"	m	class:TeraGen.RangeInputFormat.RangeInputSplit
+getLevel	TeraSort.java	/^      int getLevel() {$/;"	m	class:TeraSort.TotalOrderPartitioner.TrieNode
+getLocations	TeraGen.java	/^      public String[] getLocations() throws IOException {$/;"	m	class:TeraGen.RangeInputFormat.RangeInputSplit
+getNumberOfRows	TeraGen.java	/^  static long getNumberOfRows(JobConf job) {$/;"	m	class:TeraGen
+getPartition	TeraSort.java	/^    public int getPartition(Text key, Text value, int numPartitions) {$/;"	m	class:TeraSort.TotalOrderPartitioner
+getPos	TeraGen.java	/^      public long getPos() throws IOException {$/;"	m	class:TeraGen.RangeInputFormat.RangeRecordReader
+getPos	TeraInputFormat.java	/^    public long getPos() throws IOException {$/;"	m	class:TeraInputFormat.TeraRecordReader
+getProgress	TeraGen.java	/^      public float getProgress() throws IOException {$/;"	m	class:TeraGen.RangeInputFormat.RangeRecordReader
+getProgress	TeraInputFormat.java	/^    public float getProgress() throws IOException {$/;"	m	class:TeraInputFormat.TeraRecordReader
+getRecordReader	TeraGen.java	/^      getRecordReader(InputSplit split, JobConf job,$/;"	m	class:TeraGen.RangeInputFormat
+getRecordReader	TeraInputFormat.java	/^      getRecordReader(InputSplit split,$/;"	m	class:TeraInputFormat
+getRecordWriter	TeraOutputFormat.java	/^  public RecordWriter<Text,Text> getRecordWriter(FileSystem ignored,$/;"	m	class:TeraOutputFormat
+getSplits	TeraGen.java	/^    public InputSplit[] getSplits(JobConf job, $/;"	m	class:TeraGen.RangeInputFormat
+getSplits	TeraInputFormat.java	/^  public InputSplit[] getSplits(JobConf conf, int splits) throws IOException {$/;"	m	class:TeraInputFormat
+in	TeraInputFormat.java	/^    private LineRecordReader in;$/;"	f	class:TeraInputFormat.TeraRecordReader	file:
+junk	TeraInputFormat.java	/^    private LongWritable junk = new LongWritable();$/;"	f	class:TeraInputFormat.TeraRecordReader	file:
+key	TeraGen.java	/^    private Text key = new Text();$/;"	f	class:TeraGen.SortGenMapper	file:
+keyBytes	TeraGen.java	/^    private byte[] keyBytes = new byte[12];$/;"	f	class:TeraGen.SortGenMapper	file:
+lastConf	TeraInputFormat.java	/^  private static JobConf lastConf = null;$/;"	f	class:TeraInputFormat	file:
+lastKey	TeraValidate.java	/^    private Text lastKey = new Text();$/;"	f	class:TeraValidate.ValidateReducer	file:
+lastKey	TeraValidate.java	/^    private Text lastKey;$/;"	f	class:TeraValidate.ValidateMapper	file:
+lastResult	TeraInputFormat.java	/^  private static InputSplit[] lastResult = null;$/;"	f	class:TeraInputFormat	file:
+lastValue	TeraValidate.java	/^    private Text lastValue = new Text();$/;"	f	class:TeraValidate.ValidateReducer	file:
+level	TeraSort.java	/^      private int level;$/;"	f	class:TeraSort.TotalOrderPartitioner.TrieNode	file:
+line	TeraInputFormat.java	/^    private Text line = new Text();$/;"	f	class:TeraInputFormat.TeraRecordReader	file:
+lower	TeraSort.java	/^      int lower;$/;"	f	class:TeraSort.TotalOrderPartitioner.LeafTrieNode
+main	TeraGen.java	/^  public static void main(String[] args) throws Exception {$/;"	m	class:TeraGen
+main	TeraSort.java	/^  public static void main(String[] args) throws Exception {$/;"	m	class:TeraSort
+main	TeraValidate.java	/^  public static void main(String[] args) throws Exception {$/;"	m	class:TeraValidate
+map	TeraGen.java	/^    public void map(LongWritable row, NullWritable ignored,$/;"	m	class:TeraGen.SortGenMapper
+map	TeraValidate.java	/^    public void map(Text key, Text value, OutputCollector<Text,Text> output,$/;"	m	class:TeraValidate.ValidateMapper
+mapEndTime	job_history_summary.py	/^mapEndTime = {}$/;"	v
+mapStartTime	job_history_summary.py	/^mapStartTime = {}$/;"	v
+mask32	TeraGen.java	/^    private static final long mask32 = (1l<<32) - 1;$/;"	f	class:TeraGen.RandomGenerator	file:
+newLine	TeraOutputFormat.java	/^    private static final byte[] newLine = "\\r\\n".getBytes();$/;"	f	class:TeraOutputFormat.TeraRecordWriter	file:
+next	TeraGen.java	/^      public boolean next(LongWritable key, $/;"	m	class:TeraGen.RangeInputFormat.RangeRecordReader
+next	TeraGen.java	/^    long next() {$/;"	m	class:TeraGen.RandomGenerator
+next	TeraInputFormat.java	/^    public boolean next(Text key, Text value) throws IOException {$/;"	m	class:TeraInputFormat.TeraRecordReader
+org.apache.hadoop.examples.terasort	TeraGen.java	/^package org.apache.hadoop.examples.terasort;$/;"	p
+org.apache.hadoop.examples.terasort	TeraInputFormat.java	/^package org.apache.hadoop.examples.terasort;$/;"	p
+org.apache.hadoop.examples.terasort	TeraOutputFormat.java	/^package org.apache.hadoop.examples.terasort;$/;"	p
+org.apache.hadoop.examples.terasort	TeraSort.java	/^package org.apache.hadoop.examples.terasort;$/;"	p
+org.apache.hadoop.examples.terasort	TeraValidate.java	/^package org.apache.hadoop.examples.terasort;$/;"	p
+output	TeraValidate.java	/^    private OutputCollector<Text,Text> output;$/;"	f	class:TeraValidate.ValidateMapper	file:
+parse	job_history_summary.py	/^def parse(tail):$/;"	f
+pat	job_history_summary.py	/^pat = re.compile('(?P<name>[^=]+)="(?P<value>[^"]*)" *')$/;"	v
+print	TeraSort.java	/^      abstract void print(PrintStream strm) throws IOException;$/;"	m	class:TeraSort.TotalOrderPartitioner.TrieNode
+print	TeraSort.java	/^      void print(PrintStream strm) throws IOException {$/;"	m	class:TeraSort.TotalOrderPartitioner.InnerTrieNode
+print	TeraSort.java	/^      void print(PrintStream strm) throws IOException {$/;"	m	class:TeraSort.TotalOrderPartitioner.LeafTrieNode
+rand	TeraGen.java	/^    private RandomGenerator rand;$/;"	f	class:TeraGen.SortGenMapper	file:
+re	job_history_summary.py	/^import re$/;"	i
+readFields	TeraGen.java	/^      public void readFields(DataInput in) throws IOException {$/;"	m	class:TeraGen.RangeInputFormat.RangeInputSplit
+readPartitions	TeraSort.java	/^    private static Text[] readPartitions(FileSystem fs, Path p, $/;"	m	class:TeraSort.TotalOrderPartitioner	file:
+records	TeraInputFormat.java	/^    private ArrayList<Text> records = new ArrayList<Text>();$/;"	f	class:TeraInputFormat.TextSampler	file:
+reduce	TeraValidate.java	/^    public void reduce(Text key, Iterator<Text> values,$/;"	m	class:TeraValidate.ValidateReducer
+reduceBytes	job_history_summary.py	/^reduceBytes = {}$/;"	v
+reduceEndTime	job_history_summary.py	/^reduceEndTime = {}$/;"	v
+reduceShuffleTime	job_history_summary.py	/^reduceShuffleTime = {}$/;"	v
+reduceSortTime	job_history_summary.py	/^reduceSortTime = {}$/;"	v
+reduceStartTime	job_history_summary.py	/^reduceStartTime = {}$/;"	v
+reduces	job_history_summary.py	/^reduces = reduceBytes.keys()$/;"	v
+rowCount	TeraGen.java	/^      long rowCount;$/;"	f	class:TeraGen.RangeInputFormat.RangeInputSplit
+run	TeraGen.java	/^  public int run(String[] args) throws IOException {$/;"	m	class:TeraGen
+run	TeraSort.java	/^  public int run(String[] args) throws Exception {$/;"	m	class:TeraSort
+run	TeraValidate.java	/^  public int run(String[] args) throws Exception {$/;"	m	class:TeraValidate
+runningMaps	job_history_summary.py	/^runningMaps = {}$/;"	v
+runningReduces	job_history_summary.py	/^runningReduces = {}$/;"	v
+seed	TeraGen.java	/^    private long seed = 0;$/;"	f	class:TeraGen.RandomGenerator	file:
+seedSkip	TeraGen.java	/^    private static final int seedSkip = 128 * 1024 * 1024;$/;"	f	class:TeraGen.RandomGenerator	file:
+seeds	TeraGen.java	/^    private static final long[] seeds = new long[]{0L,$/;"	f	class:TeraGen.RandomGenerator	file:
+setChild	TeraSort.java	/^      void setChild(int idx, TrieNode child) {$/;"	m	class:TeraSort.TotalOrderPartitioner.InnerTrieNode
+setFinalSync	TeraOutputFormat.java	/^  public static void setFinalSync(JobConf conf, boolean newValue) {$/;"	m	class:TeraOutputFormat
+setNumberOfRows	TeraGen.java	/^  static void setNumberOfRows(JobConf job, long numRows) {$/;"	m	class:TeraGen
+shufflingReduces	job_history_summary.py	/^shufflingReduces = {}$/;"	v
+sortingReduces	job_history_summary.py	/^sortingReduces = {}$/;"	v
+spaces	TeraGen.java	/^    private byte[] spaces = "          ".getBytes();$/;"	f	class:TeraGen.SortGenMapper	file:
+splitPoints	TeraSort.java	/^      Text[] splitPoints;$/;"	f	class:TeraSort.TotalOrderPartitioner.LeafTrieNode
+splitPoints	TeraSort.java	/^    private Text[] splitPoints;$/;"	f	class:TeraSort.TotalOrderPartitioner	file:
+startRow	TeraGen.java	/^      long startRow;$/;"	f	class:TeraGen.RangeInputFormat.RangeRecordReader
+startTime	job_history_summary.py	/^startTime = min(reduce(min, mapStartTime.values()),$/;"	v
+swap	TeraInputFormat.java	/^    public void swap(int i, int j) {$/;"	m	class:TeraInputFormat.TextSampler
+sys	job_history_summary.py	/^import sys$/;"	i
+totalRows	TeraGen.java	/^      long totalRows;$/;"	f	class:TeraGen.RangeInputFormat.RangeRecordReader
+trie	TeraSort.java	/^    private TrieNode trie;$/;"	f	class:TeraSort.TotalOrderPartitioner	file:
+upper	TeraSort.java	/^      int upper;$/;"	f	class:TeraSort.TotalOrderPartitioner.LeafTrieNode
+value	TeraGen.java	/^    private Text value = new Text();$/;"	f	class:TeraGen.SortGenMapper	file:
+words	job_history_summary.py	/^  words = line.split(" ",1)$/;"	v
+write	TeraGen.java	/^      public void write(DataOutput out) throws IOException {$/;"	m	class:TeraGen.RangeInputFormat.RangeInputSplit
+write	TeraOutputFormat.java	/^    public synchronized void write(Text key, $/;"	m	class:TeraOutputFormat.TeraRecordWriter
+writePartitionFile	TeraInputFormat.java	/^  public static void writePartitionFile(JobConf conf, $/;"	m	class:TeraInputFormat

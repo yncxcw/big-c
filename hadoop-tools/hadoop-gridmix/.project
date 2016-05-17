@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+  <name>hadoop-gridmix</name>
+  <comment>Apache Hadoop Gridmix. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <projects>
+    <project>hadoop-annotations</project>
+    <project>hadoop-mapreduce-client-hs</project>
+    <project>hadoop-hdfs</project>
+    <project>hadoop-mapreduce-client-common</project>
+    <project>hadoop-yarn-common</project>
+    <project>hadoop-yarn-api</project>
+    <project>hadoop-yarn-client</project>
+    <project>hadoop-mapreduce-client-core</project>
+    <project>hadoop-yarn-server-common</project>
+    <project>hadoop-mapreduce-client-app</project>
+    <project>hadoop-yarn-server-web-proxy</project>
+    <project>hadoop-mapreduce-client-shuffle</project>
+    <project>hadoop-yarn-server-nodemanager</project>
+    <project>hadoop-mapreduce-client-jobclient</project>
+    <project>hadoop-common</project>
+    <project>hadoop-auth</project>
+    <project>hadoop-rumen</project>
+    <project>hadoop-yarn-server-tests</project>
+    <project>hadoop-yarn-server-resourcemanager</project>
+    <project>hadoop-yarn-server-applicationhistoryservice</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>

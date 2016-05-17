@@ -1,0 +1,60 @@
+<!---
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+Apache Hadoop ${project.version}
+================================
+
+Apache Hadoop ${project.version} is a minor release in the 2.x.y release
+line, building upon the previous release 2.7.0. This is the next stable release
+after Apache Hadoop 2.6.x.
+
+Here is a short overview of the major features and improvements since 2.6.x.
+
+* IMPORTANT notes
+
+    *   This release drops support for JDK6 runtime and works with JDK 7+ only.
+
+*   Common
+
+    *   Support Windows Azure Storage - Blob as a file system in Hadoop.
+
+*   HDFS
+
+    *   Support for file truncate
+
+    *   Support for quotas per storage type
+
+    *   Support for files with variable-length blocks
+
+*   YARN
+
+    *   Make YARN authorization pluggable
+
+    *   Automatic shared, global caching of YARN localized resources (beta)
+
+*   MAPREDUCE
+
+    *   Ability to limit running Map/Reduce tasks of a job
+
+    *   Speed up FileOutputCommitter for very large jobs with many output files.
+
+Getting Started
+===============
+
+The Hadoop documentation includes the information you need to get started using
+Hadoop. Begin with the
+[Single Node Setup](./hadoop-project-dist/hadoop-common/SingleCluster.html) which
+shows you how to set up a single-node Hadoop installation. Then move on to the
+[Cluster Setup](./hadoop-project-dist/hadoop-common/ClusterSetup.html) to learn how
+to set up a multi-node Hadoop installation.

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+  <name>hadoop-openstack</name>
+  <comment>This module contains code to support integration with OpenStack.
+    Currently this consists of a filesystem client to read data from
+    and write data to an OpenStack Swift object store. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <projects>
+    <project>hadoop-common</project>
+    <project>hadoop-annotations</project>
+    <project>hadoop-auth</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>

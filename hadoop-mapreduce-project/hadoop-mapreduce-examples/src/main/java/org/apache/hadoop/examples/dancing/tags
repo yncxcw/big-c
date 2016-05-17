@@ -1,0 +1,154 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+CENTER	Pentomino.java	/^  public enum SolutionCategory {UPPER_LEFT, MID_X, MID_Y, CENTER}$/;"	e	enum:Pentomino.SolutionCategory	file:
+CellConstraint	Sudoku.java	/^    CellConstraint(int x, int y) {$/;"	m	class:Sudoku.CellConstraint
+CellConstraint	Sudoku.java	/^  static private class CellConstraint implements ColumnName {$/;"	c	class:Sudoku
+ColumnConstraint	Sudoku.java	/^    ColumnConstraint(int num, int column) {$/;"	m	class:Sudoku.ColumnConstraint
+ColumnConstraint	Sudoku.java	/^  static private class ColumnConstraint implements ColumnName {$/;"	c	class:Sudoku
+ColumnHeader	DancingLinks.java	/^    ColumnHeader() {$/;"	m	class:DancingLinks.ColumnHeader
+ColumnHeader	DancingLinks.java	/^    ColumnHeader(ColumnName n, int s) {$/;"	m	class:DancingLinks.ColumnHeader
+ColumnHeader	DancingLinks.java	/^  private static class ColumnHeader<ColumnName> extends Node<ColumnName> {$/;"	c	class:DancingLinks
+ColumnName	Pentomino.java	/^  protected static interface ColumnName {$/;"	i	class:Pentomino
+ColumnName	Sudoku.java	/^  protected static interface ColumnName {$/;"	i	class:Sudoku
+DancingLinks	DancingLinks.java	/^  public DancingLinks() {$/;"	m	class:DancingLinks
+DancingLinks	DancingLinks.java	/^public class DancingLinks<ColumnName> {$/;"	c
+DistributedPentomino	DistributedPentomino.java	/^public class DistributedPentomino extends Configured implements Tool {$/;"	c
+LOG	DancingLinks.java	/^  private static final Log LOG = $/;"	f	class:DancingLinks	file:
+MID_X	Pentomino.java	/^  public enum SolutionCategory {UPPER_LEFT, MID_X, MID_Y, CENTER}$/;"	e	enum:Pentomino.SolutionCategory	file:
+MID_Y	Pentomino.java	/^  public enum SolutionCategory {UPPER_LEFT, MID_X, MID_Y, CENTER}$/;"	e	enum:Pentomino.SolutionCategory	file:
+Node	DancingLinks.java	/^    Node() {$/;"	m	class:DancingLinks.Node
+Node	DancingLinks.java	/^    Node(Node<ColumnName> l, Node<ColumnName> r, Node<ColumnName> u, $/;"	m	class:DancingLinks.Node
+Node	DancingLinks.java	/^  private static class Node<ColumnName> {$/;"	c	class:DancingLinks
+OneSidedPentomino	OneSidedPentomino.java	/^  public OneSidedPentomino() {}$/;"	m	class:OneSidedPentomino
+OneSidedPentomino	OneSidedPentomino.java	/^  public OneSidedPentomino(int width, int height) {$/;"	m	class:OneSidedPentomino
+OneSidedPentomino	OneSidedPentomino.java	/^public class OneSidedPentomino extends Pentomino {$/;"	c
+PentMap	DistributedPentomino.java	/^  public static class PentMap extends MapReduceBase$/;"	c	class:DistributedPentomino
+Pentomino	Pentomino.java	/^  public Pentomino() {$/;"	m	class:Pentomino
+Pentomino	Pentomino.java	/^  public Pentomino(int width, int height) {$/;"	m	class:Pentomino
+Pentomino	Pentomino.java	/^public class Pentomino {$/;"	c
+Piece	Pentomino.java	/^    public Piece(String name, String shape, $/;"	m	class:Pentomino.Piece
+Piece	Pentomino.java	/^  protected static class Piece implements ColumnName {$/;"	c	class:Pentomino
+Point	Pentomino.java	/^    Point(int x, int y) {$/;"	m	class:Pentomino.Point
+Point	Pentomino.java	/^  static class Point implements ColumnName {$/;"	c	class:Pentomino
+RowConstraint	Sudoku.java	/^    RowConstraint(int num, int row) {$/;"	m	class:Sudoku.RowConstraint
+RowConstraint	Sudoku.java	/^  static private class RowConstraint implements ColumnName {$/;"	c	class:Sudoku
+SolutionAcceptor	DancingLinks.java	/^  public interface SolutionAcceptor<ColumnName> {$/;"	i	class:DancingLinks
+SolutionCatcher	DistributedPentomino.java	/^    class SolutionCatcher $/;"	c	class:DistributedPentomino.PentMap
+SolutionCategory	Pentomino.java	/^  public enum SolutionCategory {UPPER_LEFT, MID_X, MID_Y, CENTER}$/;"	g	class:Pentomino
+SolutionPrinter	Pentomino.java	/^    public SolutionPrinter(int width, int height) {$/;"	m	class:Pentomino.SolutionPrinter
+SolutionPrinter	Pentomino.java	/^  private static class SolutionPrinter $/;"	c	class:Pentomino
+SolutionPrinter	Sudoku.java	/^    public SolutionPrinter(int size) {$/;"	m	class:Sudoku.SolutionPrinter
+SolutionPrinter	Sudoku.java	/^  private static class SolutionPrinter $/;"	c	class:Sudoku
+SquareConstraint	Sudoku.java	/^    SquareConstraint(int num, int x, int y) {$/;"	m	class:Sudoku.SquareConstraint
+SquareConstraint	Sudoku.java	/^  static private class SquareConstraint implements ColumnName {$/;"	c	class:Sudoku
+Sudoku	Sudoku.java	/^  public Sudoku(InputStream stream) throws IOException {$/;"	m	class:Sudoku
+Sudoku	Sudoku.java	/^public class Sudoku {$/;"	c
+UPPER_LEFT	Pentomino.java	/^  public enum SolutionCategory {UPPER_LEFT, MID_X, MID_Y, CENTER}$/;"	e	enum:Pentomino.SolutionCategory	file:
+addColumn	DancingLinks.java	/^  public void addColumn(ColumnName name) {$/;"	m	class:DancingLinks
+addColumn	DancingLinks.java	/^  public void addColumn(ColumnName name, boolean primary) {$/;"	m	class:DancingLinks
+addRow	DancingLinks.java	/^  public void addRow(boolean[] values) {$/;"	m	class:DancingLinks
+advance	DancingLinks.java	/^  private Node<ColumnName> advance(int goalRow) {$/;"	m	class:DancingLinks	file:
+board	Sudoku.java	/^  private int[][] board;$/;"	f	class:Sudoku	file:
+column	Sudoku.java	/^    int column;$/;"	f	class:Sudoku.ColumnConstraint
+columns	DancingLinks.java	/^  private List<ColumnHeader<ColumnName>> columns;$/;"	f	class:DancingLinks	file:
+configure	DistributedPentomino.java	/^    public void configure(JobConf conf) {$/;"	m	class:DistributedPentomino.PentMap
+coverColumn	DancingLinks.java	/^  private void coverColumn(ColumnHeader<ColumnName> col) {$/;"	m	class:DancingLinks	file:
+createInputDirectory	DistributedPentomino.java	/^  private static void createInputDirectory(FileSystem fs, $/;"	m	class:DistributedPentomino	file:
+dancer	Pentomino.java	/^  private DancingLinks<ColumnName> dancer = new DancingLinks<ColumnName>();$/;"	f	class:Pentomino	file:
+depth	DistributedPentomino.java	/^    private int depth;$/;"	f	class:DistributedPentomino.PentMap	file:
+doFlip	Pentomino.java	/^    private int doFlip(boolean flip, int x, int max) {$/;"	m	class:Pentomino.Piece	file:
+down	DancingLinks.java	/^    Node<ColumnName> down;$/;"	f	class:DancingLinks.Node
+findBestColumn	DancingLinks.java	/^  private ColumnHeader<ColumnName> findBestColumn() {$/;"	m	class:DancingLinks	file:
+flippable	Pentomino.java	/^    private boolean flippable;$/;"	f	class:Pentomino.Piece	file:
+fourRotations	Pentomino.java	/^  protected static final int [] fourRotations = new int[]{0,1,2,3};$/;"	f	class:Pentomino
+generateRow	Sudoku.java	/^  private boolean[] generateRow(boolean[] rowValues, int x, int y, int num) {$/;"	m	class:Sudoku	file:
+generateRows	Pentomino.java	/^  private static void generateRows(DancingLinks dancer,$/;"	m	class:Pentomino	file:
+getCategory	Pentomino.java	/^  public SolutionCategory getCategory(List<List<ColumnName>> names) {$/;"	m	class:Pentomino
+getColumnName	DancingLinks.java	/^  public String getColumnName(int index) {$/;"	m	class:DancingLinks
+getFlippable	Pentomino.java	/^    public boolean getFlippable() {$/;"	m	class:Pentomino.Piece
+getName	Pentomino.java	/^    public String getName() {$/;"	m	class:Pentomino.Piece
+getNumberColumns	DancingLinks.java	/^  public int getNumberColumns() {$/;"	m	class:DancingLinks
+getRotations	Pentomino.java	/^    public int[] getRotations() {$/;"	m	class:Pentomino.Piece
+getRowName	DancingLinks.java	/^  private List<ColumnName> getRowName(Node<ColumnName> row) {$/;"	m	class:DancingLinks	file:
+getShape	Pentomino.java	/^    public boolean[][] getShape(boolean flip, int rotate) {$/;"	m	class:Pentomino.Piece
+getSplits	Pentomino.java	/^  public List<int[]> getSplits(int depth) {$/;"	m	class:Pentomino
+head	DancingLinks.java	/^    ColumnHeader<ColumnName> head;$/;"	f	class:DancingLinks.Node
+head	DancingLinks.java	/^  private ColumnHeader<ColumnName> head;$/;"	f	class:DancingLinks	file:
+height	DistributedPentomino.java	/^    private int height;$/;"	f	class:DistributedPentomino.PentMap	file:
+height	Pentomino.java	/^    int height;$/;"	f	class:Pentomino.SolutionPrinter
+height	Pentomino.java	/^  protected int height;$/;"	f	class:Pentomino
+initialize	Pentomino.java	/^  void initialize(int width, int height) {$/;"	m	class:Pentomino
+initializePieces	OneSidedPentomino.java	/^  protected void initializePieces() {$/;"	m	class:OneSidedPentomino
+initializePieces	Pentomino.java	/^  protected void initializePieces() {$/;"	m	class:Pentomino
+isSide	Pentomino.java	/^  private static boolean isSide(int offset, int shapeSize, int board) {$/;"	m	class:Pentomino	file:
+left	DancingLinks.java	/^    Node<ColumnName> left;$/;"	f	class:DancingLinks.Node
+main	DistributedPentomino.java	/^  public static void main(String[] args) throws Exception {$/;"	m	class:DistributedPentomino
+main	OneSidedPentomino.java	/^  public static void main(String[] args) {$/;"	m	class:OneSidedPentomino
+main	Pentomino.java	/^  public static void main(String[] args) {$/;"	m	class:Pentomino
+main	Sudoku.java	/^  public static void main(String[] args) throws IOException {$/;"	m	class:Sudoku
+makeModel	Sudoku.java	/^  private DancingLinks<ColumnName> makeModel() {$/;"	m	class:Sudoku	file:
+map	DistributedPentomino.java	/^    public void map(WritableComparable key, Text value,$/;"	m	class:DistributedPentomino.PentMap
+name	DancingLinks.java	/^    ColumnName name;$/;"	f	class:DancingLinks.ColumnHeader
+name	Pentomino.java	/^    private String name;$/;"	f	class:Pentomino.Piece	file:
+num	Sudoku.java	/^    int num;$/;"	f	class:Sudoku.ColumnConstraint
+num	Sudoku.java	/^    int num;$/;"	f	class:Sudoku.RowConstraint
+num	Sudoku.java	/^    int num;$/;"	f	class:Sudoku.SquareConstraint
+oneRotation	Pentomino.java	/^  protected static final int [] oneRotation = new int[]{0};$/;"	f	class:Pentomino
+org.apache.hadoop.examples.dancing	DancingLinks.java	/^package org.apache.hadoop.examples.dancing;$/;"	p
+org.apache.hadoop.examples.dancing	DistributedPentomino.java	/^package org.apache.hadoop.examples.dancing;$/;"	p
+org.apache.hadoop.examples.dancing	OneSidedPentomino.java	/^package org.apache.hadoop.examples.dancing;$/;"	p
+org.apache.hadoop.examples.dancing	Pentomino.java	/^package org.apache.hadoop.examples.dancing;$/;"	p
+org.apache.hadoop.examples.dancing	Sudoku.java	/^package org.apache.hadoop.examples.dancing;$/;"	p
+output	DistributedPentomino.java	/^    private OutputCollector<Text, Text> output;$/;"	f	class:DistributedPentomino.PentMap	file:
+pent	DistributedPentomino.java	/^    private Pentomino pent;$/;"	f	class:DistributedPentomino.PentMap	file:
+pieces	Pentomino.java	/^  protected List<Piece> pieces = new ArrayList<Piece>();$/;"	f	class:Pentomino
+prefixString	DistributedPentomino.java	/^    private Text prefixString;$/;"	f	class:DistributedPentomino.PentMap	file:
+printer	Pentomino.java	/^  private DancingLinks.SolutionAcceptor<ColumnName> printer;$/;"	f	class:Pentomino	file:
+rawWrite	Sudoku.java	/^    void rawWrite(List solution) {$/;"	m	class:Sudoku.SolutionPrinter
+reporter	DistributedPentomino.java	/^    private Reporter reporter;$/;"	f	class:DistributedPentomino.PentMap	file:
+right	DancingLinks.java	/^    Node<ColumnName> right;$/;"	f	class:DancingLinks.Node
+rollback	DancingLinks.java	/^  private void rollback(Node<ColumnName> row) {$/;"	m	class:DancingLinks	file:
+rotations	Pentomino.java	/^    private int[] rotations;$/;"	f	class:Pentomino.Piece	file:
+row	Sudoku.java	/^    int row;$/;"	f	class:Sudoku.RowConstraint
+run	DistributedPentomino.java	/^  public int run(String[] args) throws Exception {$/;"	m	class:DistributedPentomino
+search	DancingLinks.java	/^  private int search(List<Node<ColumnName>> partial, SolutionAcceptor<ColumnName> output) {$/;"	m	class:DancingLinks	file:
+searchPrefixes	DancingLinks.java	/^  private void searchPrefixes(int depth, int[] choices, $/;"	m	class:DancingLinks	file:
+setPrinter	Pentomino.java	/^  public void setPrinter(DancingLinks.SolutionAcceptor<ColumnName> printer) {$/;"	m	class:Pentomino
+shape	Pentomino.java	/^    private boolean [][] shape;$/;"	f	class:Pentomino.Piece	file:
+size	DancingLinks.java	/^    int size;$/;"	f	class:DancingLinks.ColumnHeader
+size	Sudoku.java	/^    int size;$/;"	f	class:Sudoku.SolutionPrinter
+size	Sudoku.java	/^  private int size;$/;"	f	class:Sudoku	file:
+solution	DancingLinks.java	/^    void solution(List<List<ColumnName>> value);$/;"	m	interface:DancingLinks.SolutionAcceptor
+solution	DistributedPentomino.java	/^      public void solution(List<List<Pentomino.ColumnName>> answer) {$/;"	m	class:DistributedPentomino.PentMap.SolutionCatcher
+solution	Pentomino.java	/^    public void solution(List<List<ColumnName>> names) {$/;"	m	class:Pentomino.SolutionPrinter
+solution	Sudoku.java	/^    public void solution(List<List<ColumnName>> names) {$/;"	m	class:Sudoku.SolutionPrinter
+solve	DancingLinks.java	/^  public int solve(SolutionAcceptor<ColumnName> output) {$/;"	m	class:DancingLinks
+solve	DancingLinks.java	/^  public int solve(int[] prefix, SolutionAcceptor<ColumnName> output) {$/;"	m	class:DancingLinks
+solve	Pentomino.java	/^  public int solve() {$/;"	m	class:Pentomino
+solve	Pentomino.java	/^  public int solve(int[] split) {$/;"	m	class:Pentomino
+solve	Sudoku.java	/^  public void solve() {$/;"	m	class:Sudoku
+split	DancingLinks.java	/^  public List<int[]> split(int depth) {$/;"	m	class:DancingLinks
+squareXSize	Sudoku.java	/^  private int squareXSize;$/;"	f	class:Sudoku	file:
+squareYSize	Sudoku.java	/^  private int squareYSize;$/;"	f	class:Sudoku	file:
+stringifySolution	Pentomino.java	/^  public static String stringifySolution(int width, int height, $/;"	m	class:Pentomino
+stringifySolution	Sudoku.java	/^  static String stringifySolution(int size, List<List<ColumnName>> solution) {$/;"	m	class:Sudoku
+toString	Sudoku.java	/^    public String toString() {$/;"	m	class:Sudoku.CellConstraint
+toString	Sudoku.java	/^    public String toString() {$/;"	m	class:Sudoku.ColumnConstraint
+toString	Sudoku.java	/^    public String toString() {$/;"	m	class:Sudoku.RowConstraint
+toString	Sudoku.java	/^    public String toString() {$/;"	m	class:Sudoku.SquareConstraint
+twoRotations	Pentomino.java	/^  protected static final int [] twoRotations = new int[]{0,1};$/;"	f	class:Pentomino
+uncoverColumn	DancingLinks.java	/^  private void uncoverColumn(ColumnHeader<ColumnName> col) {$/;"	m	class:DancingLinks	file:
+up	DancingLinks.java	/^    Node<ColumnName> up;$/;"	f	class:DancingLinks.Node
+width	DistributedPentomino.java	/^    private int width;$/;"	f	class:DistributedPentomino.PentMap	file:
+width	Pentomino.java	/^    int width;$/;"	f	class:Pentomino.SolutionPrinter
+width	Pentomino.java	/^  protected int width;$/;"	f	class:Pentomino
+x	Pentomino.java	/^    int x;$/;"	f	class:Pentomino.Point
+x	Sudoku.java	/^    int x;$/;"	f	class:Sudoku.CellConstraint
+x	Sudoku.java	/^    int x;$/;"	f	class:Sudoku.SquareConstraint
+y	Pentomino.java	/^    int y;$/;"	f	class:Pentomino.Point
+y	Sudoku.java	/^    int y;$/;"	f	class:Sudoku.CellConstraint
+y	Sudoku.java	/^    int y;$/;"	f	class:Sudoku.SquareConstraint
