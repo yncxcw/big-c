@@ -510,7 +510,6 @@ public class RMNodeImpl implements RMNode, EventHandler<RMNodeEvent> {
       // Set resource on RMNode
       rmNode.totalCapability = resourceOption.getResource();
       
-      LOG.info("update Node Resource From event and new memory is"+resourceOption.getResource().getMemory()+" total cpu is "+resourceOption.getResource().getVirtualCores());
   }
 
   public static class AddNodeTransition implements

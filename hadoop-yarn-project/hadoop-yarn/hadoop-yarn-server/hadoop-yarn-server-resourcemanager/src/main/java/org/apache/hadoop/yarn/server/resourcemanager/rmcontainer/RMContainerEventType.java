@@ -26,6 +26,10 @@ public enum RMContainerEventType {
   KILL, // Also from Node on NodeRemoval
   RESERVED,
 
+  //for preemption
+  SUSPEND,
+  RESUME,
+  
   RESOURCE_UPDATE,
   
   LAUNCHED,

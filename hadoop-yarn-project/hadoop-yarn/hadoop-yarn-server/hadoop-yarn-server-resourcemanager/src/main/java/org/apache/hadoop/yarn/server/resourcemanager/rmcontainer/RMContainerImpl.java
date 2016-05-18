@@ -110,13 +110,25 @@ public class RMContainerImpl implements RMContainer {
     // Transitions from RUNNING state
     .addTransition(RMContainerState.RUNNING, RMContainerState.COMPLETED,
         RMContainerEventType.FINISHED, new FinishedTransition())
+    .addTransition(RMContainerState.RUNNING, RMContainerState.DEHYDRATED,
+    		RMContainerEventType.SUSPEND,new ContainerSuspendTransition())
     .addTransition(RMContainerState.RUNNING, RMContainerState.KILLED,
         RMContainerEventType.KILL, new KillTransition())
     .addTransition(RMContainerState.RUNNING, RMContainerState.RELEASED,
         RMContainerEventType.RELEASED, new KillTransition())
     .addTransition(RMContainerState.RUNNING, RMContainerState.RUNNING,
         RMContainerEventType.EXPIRE)
-
+    
+     //Transition from DEHYDRATED state
+     .addTransition(RMContainerState.DEHYDRATED, RMContainerState.RUNNING, 
+    		 RMContainerEventType.RESUME,new ContainerResumeTransition())
+      .addTransition(RMContainerState.DEHYDRATED, RMContainerState.KILLED,
+        RMContainerEventType.KILL, new KillTransition())
+    .addTransition(RMContainerState.DEHYDRATED, RMContainerState.RELEASED,
+        RMContainerEventType.RELEASED, new KillTransition())
+    .addTransition(RMContainerState.DEHYDRATED, RMContainerState.DEHYDRATED,
+        RMContainerEventType.EXPIRE)
+        
     // Transitions from COMPLETED state
     .addTransition(RMContainerState.COMPLETED, RMContainerState.COMPLETED,
         EnumSet.of(RMContainerEventType.EXPIRE, RMContainerEventType.RELEASED,
@@ -159,6 +171,14 @@ public class RMContainerImpl implements RMContainer {
   private Priority reservedPriority;
   private long creationTime;
   private long finishTime;
+  
+  //record suspend time(may preempt for many times)
+  private List<Long> suspendTime;
+  //record resume time
+  private List<Long> resumeTime;
+  //record container utilization
+  private double utilization;
+  
   private ContainerStatus finishedStatus;
   private boolean isAMContainer;
   private List<ResourceRequest> resourceRequests;
@@ -195,6 +215,22 @@ public class RMContainerImpl implements RMContainer {
         this, this.creationTime);
   }
 
+  
+  public List<Long> getSuspendTime(){
+	  
+	  return suspendTime;
+  }
+  
+  public List<Long> getResumeTime(){
+	  
+	  return resumeTime;
+  }
+  
+  public double getUtilization(){
+	  
+	  return utilization;
+  }
+  
   @Override
   public ContainerId getContainerId() {
     return this.containerId;
@@ -436,6 +472,24 @@ public class RMContainerImpl implements RMContainer {
       }
     }
   }
+  
+  private static final class ContainerSuspendTransition extends
+  BaseTransition{
+	  @Override
+	    public void transition(RMContainerImpl container, RMContainerEvent event) {
+		  //add the suspend time
+		  container.suspendTime.add(System.currentTimeMillis());	  
+	  }	  
+  }
+  
+  private static final class ContainerResumeTransition extends
+  BaseTransition{
+	  @Override
+	    public void transition(RMContainerImpl container, RMContainerEvent event) {
+		 //add the resume time
+		 container.resumeTime.add(System.currentTimeMillis());
+	  }	  
+  }
 
   private static final class ContainerReservedTransition extends
   BaseTransition {
@@ -532,13 +586,22 @@ public class RMContainerImpl implements RMContainer {
         rmAttempt.getRMAppAttemptMetrics().updatePreemptionInfo(resource,
           container);
       }
-
+      
       if (rmAttempt != null) {
         long usedMillis = container.finishTime - container.creationTime;
         long memorySeconds = resource.getMemory()
                               * usedMillis / DateUtils.MILLIS_PER_SECOND;
         long vcoreSeconds = resource.getVirtualCores()
                              * usedMillis / DateUtils.MILLIS_PER_SECOND;
+        
+        if (container.suspendTime.size() >0 && container.resumeTime.size() >0 && container.suspendTime.size() == container.resumeTime.size()){
+        	double acc=0;
+        	for(int i=0; i < container.suspendTime.size();i++){
+        		
+        		acc = acc + (container.resumeTime.get(i) - container.suspendTime.get(i));
+        	}
+        	container.utilization = acc/usedMillis;  	
+        }
         rmAttempt.getRMAppAttemptMetrics()
                   .updateAggregateAppResourceUsage(memorySeconds,vcoreSeconds);
       }

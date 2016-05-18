@@ -24,6 +24,7 @@ public enum RMContainerState {
   ALLOCATED, 
   ACQUIRED, 
   RUNNING, 
+  DEHYDRATED,
   COMPLETED, 
   EXPIRED, 
   RELEASED, 
