@@ -46,5 +46,11 @@ public interface PreemptableResourceScheduler extends ResourceScheduler {
    * @param container
    */
   void killContainer(RMContainer container);
+  
+  /**
+   * Aas the scheduler to forcibly suspend the container
+   */
+  
+  void suspendContianer(RMContainer container);
 
 }

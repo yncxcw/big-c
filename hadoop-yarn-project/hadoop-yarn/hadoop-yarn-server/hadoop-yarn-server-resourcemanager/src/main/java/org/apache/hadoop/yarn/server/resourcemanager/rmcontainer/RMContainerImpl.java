@@ -478,7 +478,18 @@ public class RMContainerImpl implements RMContainer {
 	  @Override
 	    public void transition(RMContainerImpl container, RMContainerEvent event) {
 		  //add the suspend time
-		  container.suspendTime.add(System.currentTimeMillis());	  
+		  container.suspendTime.add(System.currentTimeMillis());
+		  
+		  Resource resource = container.getContainer().getResource();
+		  //update preempt metrics
+		  RMAppAttempt rmAttempt = container.rmContext.getRMApps()
+		          .get(container.getApplicationAttemptId().getApplicationId())
+		          .getCurrentAppAttempt();
+		      if (ContainerExitStatus.PREEMPTED == container.finishedStatus
+		        .getExitStatus()) {
+		        rmAttempt.getRMAppAttemptMetrics().updatePreemptionInfo(resource,
+		          container);
+		      }
 	  }	  
   }
   

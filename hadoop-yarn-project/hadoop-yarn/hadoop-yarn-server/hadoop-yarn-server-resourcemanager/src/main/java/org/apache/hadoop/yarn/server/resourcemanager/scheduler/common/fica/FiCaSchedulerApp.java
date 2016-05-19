@@ -66,6 +66,9 @@ public class FiCaSchedulerApp extends SchedulerApplicationAttempt {
 
   private final Set<ContainerId> containersToPreempt =
     new HashSet<ContainerId>();
+  
+  private final Set<ContainerId> containersSuspended =
+    new HashSet<ContainerId>();
     
   private CapacityHeadroomProvider headroomProvider;
 
@@ -87,6 +90,41 @@ public class FiCaSchedulerApp extends SchedulerApplicationAttempt {
     }
     
     setAMResource(amResource);
+  }
+  
+  //we keep all necesary parameters for future use
+  synchronized public boolean containerSuspend(RMContainer rmContainer,
+		  ContainerStatus containerStatus, RMContainerEventType event){
+	  //we try to find it from live container list
+	  if (null == liveContainers.get(rmContainer)){ 
+		  return false;
+	  }
+	  
+	  Container container = rmContainer.getContainer();
+	  ContainerId containerId = container.getId();
+
+	  // Inform the container
+	  rmContainer.handle(
+	        new RMContainerFinishedEvent(
+	            containerId,
+	            containerStatus, 
+	            event)
+	  );
+	  LOG.info("suspend container: " + rmContainer.getContainerId() + 
+		        " in state: " + rmContainer.getState() + " event:" + event);
+	  
+	  //add to suspended set
+	  containersSuspended.add(containerId);
+	  
+	  // Update usage metrics,we release resource here 
+	  Resource containerResource = rmContainer.getContainer().getResource();
+	  queue.getMetrics().releaseResources(getUser(), 1, containerResource);
+	  Resources.subtractFrom(currentConsumption, containerResource);
+
+	  // Clear resource utilization metrics cache.
+	  lastMemoryAggregateAllocationUpdateTime = -1;
+	  
+	  return true; 	  
   }
 
   synchronized public boolean containerCompleted(RMContainer rmContainer,

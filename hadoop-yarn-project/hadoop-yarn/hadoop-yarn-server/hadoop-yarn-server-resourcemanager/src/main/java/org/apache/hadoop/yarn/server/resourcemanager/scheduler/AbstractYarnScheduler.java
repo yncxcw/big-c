@@ -442,6 +442,8 @@ public abstract class AbstractYarnScheduler
   }
 
   /**
+   * 什么意思，什么叫pull the smae，我觉得这个状态是，AM已经把resource 的请求发出了，但是
+   * 该container还没有真正set up起来
    * Recover resource request back from RMContainer when a container is 
    * preempted before AM pulled the same. If container is pulled by
    * AM, then RMContainer will not have resource request to recover.

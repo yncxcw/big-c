@@ -1320,7 +1320,7 @@ public class CapacityScheduler extends
         container.getId().getApplicationAttemptId().getApplicationId();
     if (application == null) {
       LOG.info("Container " + container + " of" + " unknown application "
-          + appId + " completed with event " + event);
+          + appId + " completed or suspended with event " + event);
       return;
     }
     
@@ -1392,8 +1392,26 @@ public class CapacityScheduler extends
     }
     recoverResourceRequestForContainer(cont);
     completedContainer(cont, SchedulerUtils.createPreemptedContainerStatus(
-      cont.getContainerId(), SchedulerUtils.PREEMPTED_CONTAINER),
-      RMContainerEventType.KILL);
+    	      cont.getContainerId(), SchedulerUtils.PREEMPTED_CONTAINER),
+    	      RMContainerEventType.KILL);
+  }
+  
+  @Override
+  public void suspendContianer(RMContainer cont) {
+  	// TODO Auto-generated method stub
+	if (LOG.isDebugEnabled()) {
+	      LOG.debug("SUSPEND_CONTAINER: container" + cont.toString());
+	    }
+	
+	//we only suspend container in running state
+	if(cont.getState() != RMContainerState.RUNNING){
+		return;
+	}
+   //we do not recover requests here,incontrast we just need to suspend a container
+   completedContainer(cont, SchedulerUtils.createPreemptedContainerStatus(
+		      cont.getContainerId(), SchedulerUtils.PREEMPTED_CONTAINER),
+		      RMContainerEventType.SUSPEND);
+  	
   }
 
   @Override
@@ -1664,4 +1682,6 @@ public class CapacityScheduler extends
     }
     return ret;
   }
+
+
 }

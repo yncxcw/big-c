@@ -572,7 +572,7 @@ public class ParentQueue extends AbstractCSQueue {
         super.releaseResource(clusterResource, rmContainer.getContainer()
             .getResource(), node.getLabels());
 
-        LOG.info("completedContainer" +
+        LOG.info("completedContainer/suspend" +
             " queue=" + getQueueName() + 
             " usedCapacity=" + getUsedCapacity() +
             " absoluteUsedCapacity=" + getAbsoluteUsedCapacity() +

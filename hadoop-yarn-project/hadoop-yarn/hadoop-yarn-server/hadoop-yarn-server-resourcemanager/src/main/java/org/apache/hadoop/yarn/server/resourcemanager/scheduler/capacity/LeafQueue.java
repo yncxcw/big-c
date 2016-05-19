@@ -1632,10 +1632,17 @@ public class LeafQueue extends AbstractCSQueue {
           removed = unreserve(application, rmContainer.getReservedPriority(),
               node, rmContainer);
         } else {
+        	
+          //for container kill event	
+          if(event == RMContainerEventType.KILL){	
           removed =
             application.containerCompleted(rmContainer, containerStatus, event);
-            LOG.info("contianer FINISHED by capacity sheduler by completedContainers:"+container.getId().toString());
           node.releaseContainer(container);
+          //for container suspend event
+          }else if (event == RMContainerEventType.SUSPEND){
+        	 application.containerSuspend(rmContainer, containerStatus, event);
+        	 
+          }
         }
 
         // Book-keeping

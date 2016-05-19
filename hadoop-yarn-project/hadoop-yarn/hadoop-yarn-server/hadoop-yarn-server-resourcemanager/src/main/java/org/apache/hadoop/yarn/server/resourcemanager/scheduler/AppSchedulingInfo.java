@@ -125,6 +125,7 @@ public class AppSchedulingInfo {
    * The ApplicationMaster is updating resource requirements for the
    * application, by asking for more resources and releasing resources acquired
    * by the application.
+   * 如果是recover的话表明该资源被请求过，现在只不过是被抢占了，所以需要RM重新分配资源
    *
    * @param requests resources to be acquired
    * @param recoverPreemptedRequest recover Resource Request on preemption
