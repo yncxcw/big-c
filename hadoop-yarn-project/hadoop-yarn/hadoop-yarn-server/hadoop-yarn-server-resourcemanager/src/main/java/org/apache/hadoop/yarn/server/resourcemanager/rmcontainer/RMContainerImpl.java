@@ -19,6 +19,7 @@
 package org.apache.hadoop.yarn.server.resourcemanager.rmcontainer;
 
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
@@ -205,6 +206,10 @@ public class RMContainerImpl implements RMContainer {
     this.containerAllocationExpirer = rmContext.getContainerAllocationExpirer();
     this.isAMContainer = false;
     this.resourceRequests = null;
+    
+    this.utilization = 1;
+    this.suspendTime = new LinkedList<Long>();
+    this.resumeTime  = new LinkedList<Long>();
 
     ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     this.readLock = lock.readLock();
@@ -600,9 +605,9 @@ public class RMContainerImpl implements RMContainer {
       
       if (rmAttempt != null) {
         long usedMillis = container.finishTime - container.creationTime;
-        long memorySeconds = resource.getMemory()
+        long memorySeconds = resource.getMemory()*container.utilization
                               * usedMillis / DateUtils.MILLIS_PER_SECOND;
-        long vcoreSeconds = resource.getVirtualCores()
+        long vcoreSeconds = resource.getVirtualCores()*container.utilization
                              * usedMillis / DateUtils.MILLIS_PER_SECOND;
         
         if (container.suspendTime.size() >0 && container.resumeTime.size() >0 && container.suspendTime.size() == container.resumeTime.size()){

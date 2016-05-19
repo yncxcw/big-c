@@ -1637,11 +1637,14 @@ public class LeafQueue extends AbstractCSQueue {
           if(event == RMContainerEventType.KILL){	
           removed =
             application.containerCompleted(rmContainer, containerStatus, event);
-          node.releaseContainer(container);
+            node.releaseContainer(container);
           //for container suspend event
           }else if (event == RMContainerEventType.SUSPEND){
-        	 application.containerSuspend(rmContainer, containerStatus, event);
-        	 
+           removed =
+        	application.containerSuspend(rmContainer, containerStatus, event);
+        	//TODO we do not know if we need to record the suspended resource to Leaf Queue.
+            //we suspend the container on this node
+        	node.suspendContainer(container);
           }
         }
 

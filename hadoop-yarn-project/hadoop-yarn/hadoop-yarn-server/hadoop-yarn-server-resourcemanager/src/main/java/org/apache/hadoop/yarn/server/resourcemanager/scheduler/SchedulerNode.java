@@ -20,6 +20,7 @@ package org.apache.hadoop.yarn.server.resourcemanager.scheduler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,12 +57,14 @@ public abstract class SchedulerNode {
   private Resource usedResource = Resource.newInstance(0, 0);
   private Resource totalResourceCapability;
   private RMContainer reservedContainer;
-  private volatile int numContainers;
+
 
 
   /* set of containers that are allocated containers */
   private final Map<ContainerId, RMContainer> launchedContainers =
       new HashMap<ContainerId, RMContainer>();
+  
+  private final Set<ContainerId> suspendedContainers = new HashSet<ContainerId>();
 
   private final RMNode rmNode;
   private final String nodeName;
@@ -146,13 +149,13 @@ public abstract class SchedulerNode {
   public synchronized void allocateContainer(RMContainer rmContainer) {
     Container container = rmContainer.getContainer();
     deductAvailableResource(container.getResource());
-    ++numContainers;
+
 
     launchedContainers.put(container.getId(), rmContainer);
 
     LOG.info("Assigned container " + container.getId() + " of capacity "
         + container.getResource() + " on host " + rmNode.getNodeAddress()
-        + ", which has " + numContainers + " containers, "
+        + ", which has " + launchedContainers.size() + " containers, "
         + getUsedResource() + " used and " + getAvailableResource()
         + " available after allocation");
   }
@@ -193,7 +196,6 @@ public abstract class SchedulerNode {
 
   private synchronized void updateResource(Container container) {
     addAvailableResource(container.getResource());
-    --numContainers;
   }
 
   /**
@@ -210,15 +212,44 @@ public abstract class SchedulerNode {
 
     /* remove the containers from the nodemanger */
     if (null != launchedContainers.remove(container.getId())) {
-      updateResource(container);
+    	/*if this container is suspended, we also remove it*/
+        if(suspendedContainers.contains(container.getId())){
+        	suspendedContainers.remove(container.getId());	
+        }
+        updateResource(container);
     }
-
+    
     LOG.info("Released container " + container.getId() + " of capacity "
         + container.getResource() + " on host " + rmNode.getNodeAddress()
         + ", which currently has " + numContainers + " containers, "
         + getUsedResource() + " used and " + getAvailableResource()
         + " available" + ", release resources=" + true);
   }
+  /**
+   * Suspend an allocated container on this node.
+   * 
+   * @param container
+   *          container to be released
+   */
+  public synchronized void suspendContainer(Container container) {
+    if (!isValidContainer(container.getId())) {
+      LOG.error("Invalid container released " + container);
+      return;
+    }
+
+    /* add the containers to suspend containers */
+    if (null != launchedContainers.get(container.getId())) {
+      updateResource(container);
+      suspendedContainers.add(container.getId());
+    }
+
+    LOG.info("Suspended container " + container.getId() + " of capacity "
+        + container.getResource() + " on host " + rmNode.getNodeAddress()
+        + ", which currently has " + launchedContainers.size() + " containers, "
+        + getUsedResource() + " used and " + getAvailableResource()
+        + " available" + ", release resources=" + true);
+  }
+  
 
    synchronized void addAvailableResource(Resource resource) {
     if (resource == null) {
@@ -301,7 +332,7 @@ public abstract class SchedulerNode {
    * @return number of active containers on the node
    */
   public int getNumContainers() {
-    return numContainers;
+    return launchedContainers.size();
   }
 
   public synchronized List<RMContainer> getRunningContainers() {

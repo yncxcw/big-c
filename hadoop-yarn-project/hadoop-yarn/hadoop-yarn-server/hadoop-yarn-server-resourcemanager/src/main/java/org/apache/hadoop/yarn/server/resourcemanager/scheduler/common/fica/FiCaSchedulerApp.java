@@ -140,6 +140,14 @@ public class FiCaSchedulerApp extends SchedulerApplicationAttempt {
 
     Container container = rmContainer.getContainer();
     ContainerId containerId = container.getId();
+    
+    boolean suspended = false;
+    
+    //we are trying to complete a suspeded container
+    if(containersSuspended.contains(containerId)){
+    	suspended = true;
+    	containersSuspended.remove(containerId);
+    }
 
     // Inform the container
     rmContainer.handle(
@@ -157,11 +165,13 @@ public class FiCaSchedulerApp extends SchedulerApplicationAttempt {
         AuditConstants.RELEASE_CONTAINER, "SchedulerApp", 
         getApplicationId(), containerId);
     
-    // Update usage metrics 
+    // Update usage metrics, for suspended containers we do not update its resource consumption
+    if(!suspended){
     Resource containerResource = rmContainer.getContainer().getResource();
     queue.getMetrics().releaseResources(getUser(), 1, containerResource);
     Resources.subtractFrom(currentConsumption, containerResource);
-
+    
+    }
     // Clear resource utilization metrics cache.
     lastMemoryAggregateAllocationUpdateTime = -1;
 
