@@ -13,11 +13,11 @@ public interface DockerMonitor  extends EventHandler<DockerEvent>{
 	
 	public void Init(RMContext rmContext);
 	
-	public void DehydrateContainer(ContainerId containerId);
+	public boolean DehydrateContainer(ContainerId containerId);
 	
-	public void ResumeContainer(ContainerId containerId);
+	public boolean ResumeContainer(ContainerId containerId);
 	
-	public void UpdateContainerResource(ContainerId containerId, Resource resource);
+	public boolean UpdateContainerResource(ContainerId containerId, Resource resource);
 	
 	public List<DockerInfo> pollAppContainerStatus(ApplicationId applicationId);
 	
