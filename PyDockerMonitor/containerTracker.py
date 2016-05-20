@@ -8,6 +8,8 @@ from hostStatusUpdateRequest import HostUpdate,ContainerUpdate,ContainerAction
 from hostStatusUpdateResponse import ContainerCommand,HostResponse,ContainerResponse 
 from containerScheduler import ContainerScheduler
 from hostToContainerManager import HostToContainerManager
+from ContainerCommand import ContainerCommand 
+from YarnCommand import YarnCommand
 
 log=logging.getLogger("RMDocker.ContainerTracker")
 
@@ -90,8 +92,13 @@ class ContainerTracker:
 
 
     def containerCommand(self,dict_containerCommand):
-        pass
+        command = YarnCommand._dict_to_class_(dict_containerCommand)
+        if command.get_id() is None:
+            return False
+        log.info("get command for container %s",command.get_id())
+        return self.containerScheduler.schedule(command)
 
+    ##TODO get container run time information
     def containerPoll(self,containerId):
         pass
 

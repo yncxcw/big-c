@@ -22,90 +22,21 @@ class ContainerScheduler:
         log.info("deregister host %s from ContainerScheduler",host)
         del self.hostToCommands[host]
 
-    ##if receive heartbeat from host, then notify the scheduler
+    ##if receive heartbeat from host, then make response
     def notify(self, host, id=None, command=None, cgroupKeyValues=None):
         ##if we receive other commands from user or other schedulers
         if id is not None:
             self.hostToCommands[host].append(ContainerScheduler._make_contaienrResponse_(id,command,cgroupKeyValues))
         else:
             pass
-        self.schedule(host)
 
-    ##scheduler algorithms 
-    def schedule(self,host):
-        hostmemory=8*1024 - 512
-        containers = self.hostToContainerManager.getContainersOnHost(host)
-        log.info("%d containers are on host %s",len(containers),host)
-        if len(containers) == 0:
-            return
-        boost_containers    = []
-        run_containers       = []
-        suspend_containers   = []
+    ##scheduler yarn commands 
+    def schedule(self,command):
+        if self.hostToContainerManager.getContainerName(command.get_id()) is False:
+            return False
         
-        to_suspend_containers= []
-
-        for container in containers:
-            if container.getStatus() == CTContainerStatus.RUN:
-                ##check we need to suspend this running container
-                if ContainerScheduler.isToSuspend(container) is True:
-                    log.info("add container %s to to suspend",container.getName())
-                    to_suspend_containers.append(container)
-                else:
-                    log.info("add container %s to run",container.getName())
-                    run_containers.append(container)
-            elif container.getStatus() == CTContainerStatus.SUSPEND:
-                log.info("container %s has been suspended",container.getName())
-                suspend_containers.append(container)
-            elif container.getStatus() == CTContainerStatus.BOOST:
-                log.info("container %s has benn boosted",container.getName())
-                boost_containers.append(container)
-
-        ##if no contianers are swapping
-        swapping_containers = len(suspend_containers) + len(to_suspend_containers)
-        if  swapping_containers == 0:
-            return
-
-        log.info("swapping containers on host %s are %d",host,swapping_containers)
-
-        used_memory = 0
-        for container in run_containers:
-            used_memory = used_memory+ContainerScheduler.getContainerMemoryLimit(container)
-        
-        unused_memory = hostmemory - used_memory
-
-
-        log.info("unused memory on host is %d", unused_memory)
-        ##if there exits at least on is swapping, we boost one
-        if len(boost_containers) == 0:
-            ##we pick one to suspend container to boost
-            if len(to_suspend_containers) > 0:
-                to_boost_container = to_suspend_containers.pop()
-                if unused_memory > ContainerScheduler.getContainerMemoryLimit(to_boost_container):
-                    log.info("boost container from to suspend")
-                    self.boostContainerResponse(to_boost_container,unused_memory)
-            ##all containers are suspend
-            else:
-                to_boost_container = suspend_containers.pop()
-                if unused_memory > ContainerScheduler.getContainerMemoryLimit(to_boost_container):
-                    log.info("boost container from suspend")
-                    self.resumContainerResponse(to_boost_container)
-                    self.boostContainerResponse(to_boost_container,unused_memory)
-                
-        elif len(boost_containers) == 1: 
-            to_boost_container = boost_containers[0]
-            if unused_memory > ContainerScheduler.getContainerMemoryLimit(to_boost_container):
-
-                self.boostContainerResponse(to_boost_container,unused_memory)
- 
-        elif len(boost_containers) > 1:
-            log.error("more than one is boosted")
-       
-        log.info("still we have %d containers to suspend",len(to_suspend_containers)) 
-        ##suspend the rest       
-        for container in to_suspend_containers:
-            log.info("pre suspend")
-            self.suspendContainerResponse(container)
-              
+        return True
+                      
   
     @staticmethod
     def getContainerMemoryUsage(container):

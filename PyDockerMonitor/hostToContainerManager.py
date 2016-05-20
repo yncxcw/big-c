@@ -11,6 +11,8 @@ class HostToContainerManager:
     def __init__(self,configure):
         self.configure        = configure
         self.hostToContainers = {}
+        ##keep live containers name
+        self.liveContainers   = set()  
 
     ##called when the host send first hearbeat
     def register(self,host):
@@ -20,6 +22,13 @@ class HostToContainerManager:
     def deregister(self,host):
         log.info("deregister host %s from hostToContainerManager", host)
         del self.hostToContainers[host]
+
+    def getContainerName(containerName):
+        if containerName in self.liveContainers:
+            return True
+        else:
+            return False
+
 
     def update(self,hostUpdate):
         log.info("enter update")
@@ -33,6 +42,8 @@ class HostToContainerManager:
                 container.initialize(self.configure)
                 ##update/initialize the configure file
                 container.updateCgroup(status.getCgroupKeyValues())
+                ##add to live set
+                self.liveContainers.add(status.getName())
                 ## this is first container on this host
                 if self.hostToContainers[host] == None:
                     self.hostToContainers[host] = []
@@ -46,7 +57,8 @@ class HostToContainerManager:
                 if container == None:
                     log.error("container %s not found when deleting",status.getName())
                 else:
-                    self.hostToContainers[host].remove(container)  
+                    self.hostToContainers[host].remove(container) 
+                    self.liveContainers.remove(status.getName())
             elif status.getAction() == ContainerAction.UPDATE:
                 log.info("container %s from %s update and action is UPDATE",status.getName(),host)
                 container = self.findContainerOnHost(host,status.getID()) 
@@ -110,7 +122,6 @@ class CTContainer:
 
 
     def put(self,name,key,value):
-
         if self.defaultCgroupKeyValue.get(name) is None:
             self.defaultCgroupKeyValue[name]={}
 
