@@ -39,10 +39,17 @@ public class DockerCommand {
 	
 	static Map<String,String> commandToMap(DockerCommand command){
 		Map<String,String> dockerCommand = new HashMap<String,String>();
+		dockerCommand.put("__name__", DockerCommand.class.getName());
 		dockerCommand.put("containerId", command.getContainerId());
 		dockerCommand.put("commandType", Integer.toString(command.getType()));
-		dockerCommand.put("resource.memory", Integer.toString(command.getResource().getMemory()));
-		dockerCommand.put("resource.cores", Integer.toString(command.getResource().getVirtualCores()));
+		
+		if(command.getResource().getMemory() > 0 && command.getResource().getVirtualCores() > 0){
+		   dockerCommand.put("resource.memory", Integer.toString(command.getResource().getMemory()));
+		   dockerCommand.put("resource.vcores", Integer.toString(command.getResource().getVirtualCores()));
+		}else{
+		   dockerCommand.put("resource.memory",   "-1");
+		   dockerCommand.put("resource.vcores", "-1");	
+		}
 		return dockerCommand;
 	}
 }
