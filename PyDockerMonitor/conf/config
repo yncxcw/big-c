@@ -1,0 +1,23 @@
+## This is configureation file for RMDocker
+## The format of this file is like:
+## key = value1,value2,value3
+
+
+##configure Name Server
+nameserverID   = container.master
+nameserverPort = 9090
+nameserverHost = ym
+daemonserverPort = 56181
+  
+
+##configure for registered cpuset
+cgroup  = cpu,cpuset,memory 
+cpu     = cpu.shares,cpu.cfs_period_us,cpu.cfs_quota_us
+cpuset  = cpuset.cpus 
+memory  = memory.limit_in_bytes,memory.usage_in_bytes,memory.stat
+memory.stat = swap
+
+
+##configure for heartbeat 
+heartbeatInterval = 5 
+
