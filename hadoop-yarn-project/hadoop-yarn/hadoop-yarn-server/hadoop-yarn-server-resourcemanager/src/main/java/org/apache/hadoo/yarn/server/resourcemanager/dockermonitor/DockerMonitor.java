@@ -6,9 +6,12 @@ import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.ContainerId;
 import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.event.EventHandler;
+import org.apache.hadoop.yarn.server.resourcemanager.RMContext;
 
 
 public interface DockerMonitor  extends EventHandler<DockerEvent>{
+	
+	public void Init(RMContext rmContext);
 	
 	public void DehydrateContainer(ContainerId containerId);
 	
