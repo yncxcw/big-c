@@ -32,9 +32,25 @@ class ContainerScheduler:
 
     ##scheduler yarn commands 
     def schedule(self,command):
-        if self.hostToContainerManager.getContainerName(command.get_id()) is False:
+        containerId = command.get_id()
+        if self.hostToContainerManager.getContainerName(containerId) is False:
             return False
-        
+        container = self.hostToContainerManager.getContainerByName(containerId)
+        if command.get_type() == YarnCommandType.DEHYDRATE:
+            if container.getStatus() == CTContainerStatus.SUSPEND:
+                log.info("contianer %s is suspending, can not suspend again",containerId)
+                return False
+            else:
+                self.suspendContainerResponse(container)
+        elif command.get_type() == YarnCommandType.RESUME:
+            if container.getStatus() != CTContainerStatus.SUSPEND:
+                log.info("contianer %s is not suspending, can not resume again",containerId)
+                return False
+            else:
+                self.resumContainerResponse(container)
+        elif command.get_type() == YarnCommandType.UPDATE:
+            ##TODO support in future release
+            pass                
         return True
                       
   
@@ -87,9 +103,7 @@ class ContainerScheduler:
         log.info("enter suspend")
         ##set memory 1% of total memory
         old_limit = str(int(ContainerScheduler.getContainerMemoryLimit(container)))+"m"
-        log.info("we got old here")
         container.put("memory","memory.limit_in_bytes",old_limit)
-        log.info("after put")
         limit    = "100m"
         ##set cpu usage 1% of total cpu frequency
         quota = "10000"

@@ -12,7 +12,7 @@ class HostToContainerManager:
         self.configure        = configure
         self.hostToContainers = {}
         ##keep live containers name
-        self.liveContainers   = set()  
+        self.liveContainers   = {}  
 
     ##called when the host send first hearbeat
     def register(self,host):
@@ -23,11 +23,11 @@ class HostToContainerManager:
         log.info("deregister host %s from hostToContainerManager", host)
         del self.hostToContainers[host]
 
-    def getContainerName(containerName):
-        if containerName in self.liveContainers:
-            return True
+    def getContainerByName(containerName):
+        if containerName in self.liveContainers.keys():
+            return None
         else:
-            return False
+            return self.liveContainers[containerName]
 
 
     def update(self,hostUpdate):
@@ -42,8 +42,8 @@ class HostToContainerManager:
                 container.initialize(self.configure)
                 ##update/initialize the configure file
                 container.updateCgroup(status.getCgroupKeyValues())
-                ##add to live set
-                self.liveContainers.add(status.getName())
+                ##add to name to container mapping
+                self.liveContainers[status.getName] = container
                 ## this is first container on this host
                 if self.hostToContainers[host] == None:
                     self.hostToContainers[host] = []
@@ -58,7 +58,7 @@ class HostToContainerManager:
                     log.error("container %s not found when deleting",status.getName())
                 else:
                     self.hostToContainers[host].remove(container) 
-                    self.liveContainers.remove(status.getName())
+                    del self.liveContainers[status.getName()]
             elif status.getAction() == ContainerAction.UPDATE:
                 log.info("container %s from %s update and action is UPDATE",status.getName(),host)
                 container = self.findContainerOnHost(host,status.getID()) 
