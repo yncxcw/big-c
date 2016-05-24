@@ -62,27 +62,4 @@ public abstract class  AbstractDockerMonitor implements DockerMonitor {
 	
 	public abstract boolean ExecuteCommand(DockerCommand command);
 	
-	@Override
-	public void handle(DockerEvent event) {
-		// TODO Auto-generated method stub
-		ContainerId containerId = event.getContainerId();
-		switch(event.getType()){
-		   case SUSPEND_CONTAIENR:
-			   DehydrateContainer(containerId);
-			   break;
-		   case RESUME_CONTAINER:
-			   ResumeContainer(containerId);
-		       break;
-		   case UPDATE_CONTAIENR:
-			   DockerResourceUpdateEvent revent = (DockerResourceUpdateEvent) event;
-		       Resource resource = revent.getResource();
-			   UpdateContainerResource(containerId,resource);
-		       break;
-		   case MONITOR_CONTAIENR:
-			   //TODO we are not supporting yet
-			   break;
-		}
-		
-	}
-
 }

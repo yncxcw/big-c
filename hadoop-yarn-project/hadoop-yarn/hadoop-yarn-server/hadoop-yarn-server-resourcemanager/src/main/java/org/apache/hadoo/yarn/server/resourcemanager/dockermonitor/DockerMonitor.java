@@ -9,7 +9,7 @@ import org.apache.hadoop.yarn.event.EventHandler;
 import org.apache.hadoop.yarn.server.resourcemanager.RMContext;
 
 
-public interface DockerMonitor  extends EventHandler<DockerEvent>{
+public interface DockerMonitor{
 	
 	public void Init(RMContext rmContext);
 	

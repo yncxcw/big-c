@@ -12,8 +12,7 @@ import net.razorvine.pyro.*;
 
 public class PythonDockerMonitor extends AbstractDockerMonitor {
 	
-	 private static final Log LOG =
-			    LogFactory.getLog(AbstractDockerMonitor.class);
+	 private static final Log LOG = LogFactory.getLog(AbstractDockerMonitor.class);
 	//name server which should be launched by python
 	private NameServerProxy nameServerProxy = null;
 	//remote object which presents the python docker monitor daemon
@@ -50,11 +49,9 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
 
 	@Override
 	public boolean ExecuteCommand(DockerCommand command) {
-		
 		if(!isWorking){
 		    return false;	
 		}
-		
 		Map<String,String> commandMap= DockerCommand.commandToMap(command);
 		
 		boolean result = false;
