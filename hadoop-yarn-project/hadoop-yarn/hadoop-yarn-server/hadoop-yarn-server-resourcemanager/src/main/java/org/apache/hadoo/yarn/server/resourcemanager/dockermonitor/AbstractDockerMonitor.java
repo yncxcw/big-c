@@ -13,6 +13,11 @@ public abstract class  AbstractDockerMonitor implements DockerMonitor {
 	
 	boolean isWorking;
 	
+	public AbstractDockerMonitor(){
+    //we should make sure if the Docker monitor daemon is working
+		this.isWorking = false;
+	}
+	
 	@Override
 	public void Init(RMContext rmContext) {
 		this.rmContext = rmContext;
@@ -62,11 +67,14 @@ public abstract class  AbstractDockerMonitor implements DockerMonitor {
 		// TODO Auto-generated method stub
 		ContainerId containerId = event.getContainerId();
 		switch(event.getType()){
-		   case SUSPEND_CONTAIENR:DehydrateContainer(containerId);
+		   case SUSPEND_CONTAIENR:
+			   DehydrateContainer(containerId);
 			   break;
-		   case RESUME_CONTAINER:ResumeContainer(containerId);
+		   case RESUME_CONTAINER:
+			   ResumeContainer(containerId);
 		       break;
-		   case UPDATE_CONTAIENR:DockerResourceUpdateEvent revent = (DockerResourceUpdateEvent) event;
+		   case UPDATE_CONTAIENR:
+			   DockerResourceUpdateEvent revent = (DockerResourceUpdateEvent) event;
 		       Resource resource = revent.getResource();
 			   UpdateContainerResource(containerId,resource);
 		       break;
