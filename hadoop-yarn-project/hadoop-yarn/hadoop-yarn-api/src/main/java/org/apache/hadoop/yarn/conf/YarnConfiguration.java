@@ -400,6 +400,14 @@ public class YarnConfiguration extends Configuration {
   
   public static final String RECOVERY_ENABLED = RM_PREFIX + "recovery.enabled";
   public static final boolean DEFAULT_RM_RECOVERY_ENABLED = false;
+  
+  //if enable docker container monitor 
+  public static final String DOCKER_CONTAINER_MONITOR_ENABLED   = RM_PREFIX+"docker-container-monitor.enabled";
+  public static final boolean DEFAULT_DOCKER_CONTAINER_MONITOR_ENABLED = false;
+  
+  //remote object name for python object
+  public static final String DOCKER_PYTHON_RPC_OBJECT           = RM_PREFIX+"docker-python-rpc-object";
+  public static final String DEFAULT_DOCKER_PYTHON_RPC_OBJECT   = "container.master";
 
   @Private
   public static final String RM_WORK_PRESERVING_RECOVERY_ENABLED = RM_PREFIX

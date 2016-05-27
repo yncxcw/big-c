@@ -605,9 +605,9 @@ public class RMContainerImpl implements RMContainer {
       
       if (rmAttempt != null) {
         long usedMillis = container.finishTime - container.creationTime;
-        long memorySeconds = resource.getMemory()*container.utilization
+        long memorySeconds = (long)(resource.getMemory()*container.utilization)
                               * usedMillis / DateUtils.MILLIS_PER_SECOND;
-        long vcoreSeconds = resource.getVirtualCores()*container.utilization
+        long vcoreSeconds = (long)(resource.getVirtualCores()*container.utilization)
                              * usedMillis / DateUtils.MILLIS_PER_SECOND;
         
         if (container.suspendTime.size() >0 && container.resumeTime.size() >0 && container.suspendTime.size() == container.resumeTime.size()){

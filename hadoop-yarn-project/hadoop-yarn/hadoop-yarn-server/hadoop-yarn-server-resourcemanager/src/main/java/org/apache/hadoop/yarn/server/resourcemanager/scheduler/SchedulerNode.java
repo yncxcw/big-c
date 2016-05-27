@@ -221,7 +221,7 @@ public abstract class SchedulerNode {
     
     LOG.info("Released container " + container.getId() + " of capacity "
         + container.getResource() + " on host " + rmNode.getNodeAddress()
-        + ", which currently has " + numContainers + " containers, "
+        + ", which currently has " + launchedContainers.size() + " containers, "
         + getUsedResource() + " used and " + getAvailableResource()
         + " available" + ", release resources=" + true);
   }
