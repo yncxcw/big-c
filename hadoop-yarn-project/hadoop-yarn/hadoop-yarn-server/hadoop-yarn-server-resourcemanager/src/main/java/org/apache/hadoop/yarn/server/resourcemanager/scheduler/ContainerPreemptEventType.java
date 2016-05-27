@@ -21,6 +21,7 @@ public enum ContainerPreemptEventType {
 
   DROP_RESERVATION,
   PREEMPT_CONTAINER,
+  SUSPEND_CONTAINER,
   KILL_CONTAINER
 
 }

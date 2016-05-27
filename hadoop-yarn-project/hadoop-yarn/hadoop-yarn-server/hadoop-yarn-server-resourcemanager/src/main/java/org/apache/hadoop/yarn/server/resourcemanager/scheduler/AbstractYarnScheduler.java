@@ -27,6 +27,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoo.yarn.server.resourcemanager.dockermonitor.DockerMonitor;
+import org.apache.hadoo.yarn.server.resourcemanager.dockermonitor.PythonDockerMonitor;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.service.AbstractService;
 import org.apache.hadoop.yarn.api.records.ApplicationAttemptId;
@@ -94,6 +96,9 @@ public abstract class AbstractYarnScheduler
   protected RMContext rmContext;
   protected Map<ApplicationId, SchedulerApplication<T>> applications;
   protected int nmExpireInterval;
+  
+  protected DockerMonitor dockerMonitor;
+  protected boolean dockerMonitorEnabled;
 
   protected final static List<Container> EMPTY_CONTAINER_LIST =
       new ArrayList<Container>();
@@ -121,6 +126,14 @@ public abstract class AbstractYarnScheduler
         conf.getLong(YarnConfiguration.RM_WORK_PRESERVING_RECOVERY_SCHEDULING_WAIT_MS,
           YarnConfiguration.DEFAULT_RM_WORK_PRESERVING_RECOVERY_SCHEDULING_WAIT_MS);
     createReleaseCache();
+    //TODO get configure if we should initizlie Docker monitor here
+    dockerMonitorEnabled = conf.getBoolean(YarnConfiguration.DOCKER_CONTAINER_MONITOR_ENABLED, 
+    		YarnConfiguration.DEFAULT_DOCKER_CONTAINER_MONITOR_ENABLED);
+    if(dockerMonitorEnabled){
+     	//TODO currently we only support python monitor
+    	dockerMonitor = new PythonDockerMonitor();
+    	dockerMonitor.Init(conf);
+    }
     super.serviceInit(conf);
   }
 

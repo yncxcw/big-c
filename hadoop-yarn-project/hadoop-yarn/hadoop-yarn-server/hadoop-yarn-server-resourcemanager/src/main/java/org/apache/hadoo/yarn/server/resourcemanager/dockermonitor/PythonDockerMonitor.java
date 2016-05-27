@@ -3,6 +3,8 @@ package org.apache.hadoo.yarn.server.resourcemanager.dockermonitor;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.server.resourcemanager.RMContext;
 import org.apache.hadoop.yarn.server.resourcemanager.monitor.capacity.ProportionalCapacityPreemptionPolicy;
 import org.apache.commons.logging.Log;
@@ -21,11 +23,11 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
     private String pyClassName;
 	
 	@Override
-	public void Init(RMContext rmContext) {
-		
-		//TODO add this option to configure files
-	    this.pyClassName = "container.master";
-		this.rmContext = rmContext;
+	public void Init(Configuration conf) {
+		super.Init(conf);
+		//TODO be careful for this, will cause serious error if misconfigured
+		this.pyClassName = conf.get(YarnConfiguration.DOCKER_PYTHON_RPC_OBJECT, 
+				                             YarnConfiguration.DEFAULT_DOCKER_PYTHON_RPC_OBJECT);  
 		
 		//fisrt we try to locate name server
 		try{
@@ -50,6 +52,7 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
 	@Override
 	public boolean ExecuteCommand(DockerCommand command) {
 		if(!isWorking){
+			LOG.info("python docker monitor is not working");
 		    return false;	
 		}
 		Map<String,String> commandMap= DockerCommand.commandToMap(command);

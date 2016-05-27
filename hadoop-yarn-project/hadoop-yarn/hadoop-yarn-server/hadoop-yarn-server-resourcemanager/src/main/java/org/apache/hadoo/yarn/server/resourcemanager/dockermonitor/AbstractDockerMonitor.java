@@ -2,15 +2,14 @@ package org.apache.hadoo.yarn.server.resourcemanager.dockermonitor;
 
 import java.util.List;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.ContainerId;
 import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.server.resourcemanager.RMContext;
 
 public abstract class  AbstractDockerMonitor implements DockerMonitor {
-    
-	RMContext rmContext;
-	
+  
 	boolean isWorking;
 	
 	public AbstractDockerMonitor(){
@@ -19,9 +18,9 @@ public abstract class  AbstractDockerMonitor implements DockerMonitor {
 	}
 	
 	@Override
-	public void Init(RMContext rmContext) {
-		this.rmContext = rmContext;
-		// TODO Auto-generated method stub
+	public void Init(Configuration conf) {
+	
+		
 	}
 
 	@Override

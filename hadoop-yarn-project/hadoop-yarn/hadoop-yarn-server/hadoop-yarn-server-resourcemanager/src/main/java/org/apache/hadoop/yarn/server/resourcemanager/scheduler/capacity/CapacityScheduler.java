@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoo.yarn.server.resourcemanager.dockermonitor.DockerMonitor;
 import org.apache.hadoop.classification.InterfaceAudience.LimitedPrivate;
 import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceStability.Evolving;
@@ -1407,11 +1408,20 @@ public class CapacityScheduler extends
 	if(cont.getState() != RMContainerState.RUNNING){
 		return;
 	}
+	if(dockerMonitorEnabled){
    //we do not recover requests here,incontrast we just need to suspend a container
-   completedContainer(cont, SchedulerUtils.createPreemptedContainerStatus(
+	if(dockerMonitor.DehydrateContainer(cont.getContainerId())){	
+    
+		completedContainer(cont, SchedulerUtils.createPreemptedContainerStatus(
 		      cont.getContainerId(), SchedulerUtils.PREEMPTED_CONTAINER),
 		      RMContainerEventType.SUSPEND);
-  	
+	}else{
+	   	
+	    LOG.info("we get error when we are trying to suspend container  "+cont.getContainerId()+"please check your log");	
+	}
+	}else{
+	LOG.info("suspend container is not supported, please check your configuration"); 		
+	}
   }
 
   @Override
