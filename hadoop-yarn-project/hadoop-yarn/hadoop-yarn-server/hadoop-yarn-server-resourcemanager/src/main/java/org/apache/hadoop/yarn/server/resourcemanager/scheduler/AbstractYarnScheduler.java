@@ -127,6 +127,7 @@ public abstract class AbstractYarnScheduler
           YarnConfiguration.DEFAULT_RM_WORK_PRESERVING_RECOVERY_SCHEDULING_WAIT_MS);
     createReleaseCache();
     //TODO get configure if we should initizlie Docker monitor here
+    //LOG.info("get Docker Monitor enable option");
     dockerMonitorEnabled = conf.getBoolean(YarnConfiguration.DOCKER_CONTAINER_MONITOR_ENABLED, 
     		YarnConfiguration.DEFAULT_DOCKER_CONTAINER_MONITOR_ENABLED);
     if(dockerMonitorEnabled){

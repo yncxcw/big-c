@@ -35,6 +35,7 @@
   <!-- Do not add dependencies here, add them to the POM of the leaf module -->
 
   <modules>
+    <module>Pyrolite</module> 
     <module>hadoop-yarn-server-common</module>
     <module>hadoop-yarn-server-nodemanager</module>
     <module>hadoop-yarn-server-web-proxy</module>

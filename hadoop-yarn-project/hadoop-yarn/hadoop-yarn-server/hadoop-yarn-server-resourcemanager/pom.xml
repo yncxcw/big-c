@@ -39,13 +39,15 @@
       <artifactId>serpent</artifactId>
       <version>1.11</version>
     </dependency>
-
+    
     <!-- http://mvnrepository.com/artifact/net.razorvine/pyrolite -->
     <dependency>
       <groupId>net.razorvine</groupId>
       <artifactId>pyrolite</artifactId>
       <version>4.4</version>
+      <scope>provided</scope>
     </dependency>
+    
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>

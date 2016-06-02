@@ -26,13 +26,15 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
 	public void Init(Configuration conf) {
 		super.Init(conf);
 		//TODO be careful for this, will cause serious error if misconfigured
+		LOG.info("try to initial PyDockerMonitor");
 		this.pyClassName = conf.get(YarnConfiguration.DOCKER_PYTHON_RPC_OBJECT, 
 				                             YarnConfiguration.DEFAULT_DOCKER_PYTHON_RPC_OBJECT);  
 		
 		//fisrt we try to locate name server
 		try{
 			nameServerProxy = NameServerProxy.locateNS(null);
-		}catch(IOException e){
+						
+		}catch(Exception e){
 			LOG.info("failed to locate name server"+e.getMessage());
 			return;
 		}
@@ -40,6 +42,7 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
 		//second we try to locate remote Docker daemon
 		try{
 			pyroProxy = new PyroProxy(nameServerProxy.lookup(pyClassName));
+			
 		}catch(IOException e){
 			LOG.info("ns loop up exception"+e.getMessage());
 			return;

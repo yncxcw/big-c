@@ -19,8 +19,14 @@
 package org.apache.hadoop.yarn.server.resourcemanager;
 
 import com.google.common.annotations.VisibleForTesting;
+
+import net.razorvine.pyro.NameServerProxy;
+import net.razorvine.pyro.PyroProxy;
+
+//import net.razorvine.;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.ha.HAServiceProtocol;
@@ -402,6 +408,7 @@ public class ResourceManager extends CompositeService implements Recoverable {
 
     @Override
     protected void serviceInit(Configuration configuration) throws Exception {
+    	
       activeServiceContext = new RMActiveServiceContext();
       rmContext.setActiveServiceContext(activeServiceContext);
 
@@ -1193,9 +1200,11 @@ public class ResourceManager extends CompositeService implements Recoverable {
   }
 
   public static void main(String argv[]) {
+	
     Thread.setDefaultUncaughtExceptionHandler(new YarnUncaughtExceptionHandler());
     StringUtils.startupShutdownMessage(ResourceManager.class, argv, LOG);
     try {
+	
       Configuration conf = new YarnConfiguration();
       GenericOptionsParser hParser = new GenericOptionsParser(conf, argv);
       argv = hParser.getRemainingArgs();
@@ -1214,6 +1223,7 @@ public class ResourceManager extends CompositeService implements Recoverable {
       LOG.fatal("Error starting ResourceManager", t);
       System.exit(-1);
     }
+    
   }
 
   /**
