@@ -61,4 +61,6 @@ public abstract class  AbstractDockerMonitor implements DockerMonitor {
 	
 	public abstract boolean ExecuteCommand(DockerCommand command);
 	
+	public abstract void closeMonitor();
+	
 }

@@ -71,4 +71,19 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
 		return result;
 	}
 
+	@Override
+	public void closeMonitor() {
+		// TODO Auto-generated method stub
+		if(nameServerProxy != null){
+			
+			nameServerProxy.close();
+		}
+		
+		if(pyroProxy != null){
+			
+			pyroProxy.close();
+		}
+		
+	}
+
 }
