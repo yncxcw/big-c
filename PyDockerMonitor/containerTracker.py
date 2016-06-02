@@ -8,7 +8,6 @@ from hostStatusUpdateRequest import HostUpdate,ContainerUpdate,ContainerAction
 from hostStatusUpdateResponse import ContainerCommand,HostResponse,ContainerResponse 
 from containerScheduler import ContainerScheduler
 from hostToContainerManager import HostToContainerManager
-from ContainerCommand import ContainerCommand 
 from YarnCommand import YarnCommand
 
 log=logging.getLogger("RMDocker.ContainerTracker")
