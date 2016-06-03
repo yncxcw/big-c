@@ -44,7 +44,8 @@ public class DockerCommand {
 		dockerCommand.put("containerId", command.getContainerId());
 		dockerCommand.put("commandType", Integer.toString(command.getType()));
 		
-		if(command.getResource().getMemory() > 0 && command.getResource().getVirtualCores() > 0){
+		if((command.getResource() !=null && command.getResource().getMemory() > 0) && 
+		   (command.getResource() !=null && command.getResource().getVirtualCores() > 0)){
 		   dockerCommand.put("resource.memory", Integer.toString(command.getResource().getMemory()));
 		   dockerCommand.put("resource.vcores", Integer.toString(command.getResource().getVirtualCores()));
 		}else{

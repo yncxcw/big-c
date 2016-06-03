@@ -26,7 +26,7 @@ public abstract class  AbstractDockerMonitor implements DockerMonitor {
 	@Override
 	public boolean DehydrateContainer(ContainerId containerId) {
 		// we may do more check here, do it later
-		String id = Long.toString(containerId.getContainerId());
+		String id = containerId.toString();
 		DockerCommand command = new DockerCommand(id,null,DockerCommand.DEHYDRATE);
 		return ExecuteCommand(command);
 	}
@@ -34,7 +34,7 @@ public abstract class  AbstractDockerMonitor implements DockerMonitor {
 	@Override
 	public boolean ResumeContainer(ContainerId containerId) {
 		// we may do more check here, do it later
-		String id = Long.toString(containerId.getContainerId());
+		String id = containerId.toString();
 		DockerCommand command = new DockerCommand(id,null,DockerCommand.RESUME);
 		return ExecuteCommand(command);
 	}
@@ -42,7 +42,7 @@ public abstract class  AbstractDockerMonitor implements DockerMonitor {
 	@Override
 	public boolean UpdateContainerResource(ContainerId containerId,Resource resource) {
 		// we may do more check here, do it later
-		String id = Long.toString(containerId.getContainerId());
+		String id = containerId.toString();
 		DockerCommand command = new DockerCommand(id,resource,DockerCommand.UPDATE);
 		return ExecuteCommand(command);
 	}

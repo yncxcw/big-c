@@ -91,6 +91,7 @@ class ContainerTracker:
 
 
     def containerCommand(self,dict_containerCommand):
+        LOG.info("get container command")    
         command = YarnCommand._dict_to_class_(dict_containerCommand)
         if command.get_id() is None:
             return False
