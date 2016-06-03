@@ -1406,12 +1406,14 @@ public class CapacityScheduler extends
 	
 	//we only suspend container in running state
 	if(cont.getState() != RMContainerState.RUNNING){
+		LOG.info("we can only suspend container which is running"+cont.getContainerId());
 		return;
 	}
 	if(dockerMonitorEnabled){
    //we do not recover requests here,incontrast we just need to suspend a container
 	if(dockerMonitor.DehydrateContainer(cont.getContainerId())){	
     
+		LOG.info("successfully suspend container: "+cont.getContainerId());
 		completedContainer(cont, SchedulerUtils.createPreemptedContainerStatus(
 		      cont.getContainerId(), SchedulerUtils.PREEMPTED_CONTAINER),
 		      RMContainerEventType.SUSPEND);

@@ -257,9 +257,10 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         // if we tried to preempt this for more than maxWaitTime
         if (preempted.get(container) != null &&
             preempted.get(container) + maxWaitTime < clock.getTime()) {
-          // kill it
+          // suspend it
+          LOG.info("get container "+container.getContainerId()+" to suspend");
           dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
-                ContainerPreemptEventType.KILL_CONTAINER));
+                ContainerPreemptEventType.SUSPEND_CONTAINER));
           preempted.remove(container);
         } else {
           //otherwise just send preemption events

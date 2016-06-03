@@ -62,6 +62,10 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
 		
 		boolean result = false;
 		try{
+			//TODO delete debug info
+			for(String key:commandMap.keySet()){
+				LOG.info("key: "+key+" value: "+commandMap.get(key));
+			}
 			result=(boolean) pyroProxy.call("containerCommand", commandMap);
 		}catch(IOException e){
 			LOG.info("call remote object exception at "+command.getType()+"container :"+command.getContainerId());
