@@ -58,7 +58,7 @@ class ContainerTracker:
 
     def statusUpdate(self, dict_hostUpdate):
         hostUpdate=HostUpdate._dict_to_class_(dict_hostUpdate)
-        log.info("get heartbeat: %s",hostUpdate.getHost()) 
+        #log.info("get heartbeat: %s",hostUpdate.getHost()) 
         host = hostUpdate.getHost()
         if  host not in self.hostToTimeStamp.keys():
             log.error("unknown host %s",host)
@@ -91,7 +91,6 @@ class ContainerTracker:
 
 
     def containerCommand(self,dict_containerCommand):
-        LOG.info("get container command")    
         command = YarnCommand._dict_to_class_(dict_containerCommand)
         if command.get_id() is None:
             return False

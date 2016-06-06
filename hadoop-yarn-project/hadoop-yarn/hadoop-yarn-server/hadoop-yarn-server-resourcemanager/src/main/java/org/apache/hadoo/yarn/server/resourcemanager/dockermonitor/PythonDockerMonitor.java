@@ -1,6 +1,7 @@
 package org.apache.hadoo.yarn.server.resourcemanager.dockermonitor;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
@@ -26,7 +27,6 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
 	public void Init(Configuration conf) {
 		super.Init(conf);
 		//TODO be careful for this, will cause serious error if misconfigured
-		LOG.info("try to initial PyDockerMonitor");
 		this.pyClassName = conf.get(YarnConfiguration.DOCKER_PYTHON_RPC_OBJECT, 
 				                             YarnConfiguration.DEFAULT_DOCKER_PYTHON_RPC_OBJECT);  
 		
@@ -34,7 +34,7 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
 		try{
 			nameServerProxy = NameServerProxy.locateNS(null);
 						
-		}catch(Exception e){
+		}catch(IOException e){
 			LOG.info("failed to locate name server"+e.getMessage());
 			return;
 		}
@@ -58,6 +58,8 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
 			LOG.info("python docker monitor is not working");
 		    return false;	
 		}
+		
+		LOG.info("execute command:"+command.getType()+" on container "+command.getContainerId());
 		Map<String,String> commandMap= DockerCommand.commandToMap(command);
 		
 		boolean result = false;
@@ -67,10 +69,11 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
 				LOG.info("key: "+key+" value: "+commandMap.get(key));
 			}
 			result=(boolean) pyroProxy.call("containerCommand", commandMap);
-		}catch(Exception e){
+		}catch(IOException e){
 			LOG.info("call remote object exception at "+command.getType()+"container :"+command.getContainerId());
 			nameServerProxy.close();
 			pyroProxy.close();
+			isWorking=false;
 		}
 		return result;
 	}

@@ -1,7 +1,7 @@
 package net.razorvine.pyro;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ import net.razorvine.pickle.PickleException;
  */
 public class NameServerProxy extends PyroProxy implements Serializable {
 	
-	 private static final Log LOG = LogFactory.getLog(NameServerProxy.class);
+	 //private static final Log LOG = LogFactory.getLog(NameServerProxy.class);
 
 	private static final long serialVersionUID = -3774989423700493399L;
 
@@ -46,7 +46,6 @@ public class NameServerProxy extends PyroProxy implements Serializable {
 	}
 	
 	public PyroURI lookup(String name) throws PickleException, IOException {
-		LOG.info("look up called here");
 		return (PyroURI) this.call("lookup", name);
 	}
 	

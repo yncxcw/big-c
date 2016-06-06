@@ -1,8 +1,8 @@
 package net.razorvine.pyro;
 
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,7 +28,7 @@ import net.razorvine.pyro.serializer.PyroSerializer;
 public class PyroProxy implements Serializable {
 	
 	
-	private static final Log LOG = LogFactory.getLog(PyroProxy.class);	
+	//private static final Log LOG = LogFactory.getLog(PyroProxy.class);	
 
 	private static final long serialVersionUID = -5564313476693913031L;
 	public String hostname;
@@ -230,17 +230,12 @@ public class PyroProxy implements Serializable {
 	 */
 	private Object internal_call(String method, String actual_objectId, int flags, boolean checkMethodName, Object... parameters) throws PickleException, PyroException, IOException {
 		
-		LOG.info("internal_call called");
-		
 		if(actual_objectId==null) actual_objectId=this.objectid;
 		synchronized (this) {
-		LOG.info("try to connect");	
 			connect();
 			sequenceNr=(sequenceNr+1)&0xffff;		// stay within an unsigned short 0-65535
-		LOG.info("finish connecting");	
 		}
 		if(pyroAttrs.contains(method)) {
-			LOG.info("can not call attribute exception");
 			throw new PyroException("cannot call an attribute");
 		}
 		if(pyroOneway.contains(method)) {
