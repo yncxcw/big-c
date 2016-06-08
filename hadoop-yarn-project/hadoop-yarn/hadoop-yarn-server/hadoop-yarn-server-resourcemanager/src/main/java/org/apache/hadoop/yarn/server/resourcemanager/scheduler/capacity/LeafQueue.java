@@ -1079,6 +1079,7 @@ public class LeafQueue extends AbstractCSQueue {
 
     
       String userName = application.getUser();
+      /*
       LOG.info("User limit computation for " + userName + 
           " in queue " + getQueueName() +
           " userLimit=" + userLimit +
@@ -1092,6 +1093,7 @@ public class LeafQueue extends AbstractCSQueue {
           " activeUsers: " + activeUsers +
           " clusterCapacity: " + clusterResource
       );
+      */
     
     user.setUserResourceLimit(limit);
     return limit;

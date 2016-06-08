@@ -240,7 +240,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     Map<ApplicationAttemptId,Set<RMContainer>> toPreempt =
         getContainersToPreempt(queues, clusterResources);
 
-    if (LOG.isDebugEnabled()) 
+   // if (LOG.isDebugEnabled()) 
     {  
     logToCSV(queues);
     }

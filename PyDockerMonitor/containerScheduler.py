@@ -3,6 +3,8 @@ import logging
 from hostStatusUpdateResponse import ContainerCommand, HostResponse, ContainerResponse
 from hostToContainerManager import CTContainerStatus  
 from collections import deque
+from YarnCommand import YarnCommandType
+
 log=logging.getLogger("RMDocker.ContainerScheduler")
 
 MAX_BOOST=1
@@ -33,7 +35,8 @@ class ContainerScheduler:
     ##scheduler yarn commands 
     def schedule(self,command):
         containerId = command.get_id()
-        if self.hostToContainerManager.getContainerName(containerId) is False:
+        if self.hostToContainerManager.getContainerByName(containerId) is None:
+            log.info("can not find container %s",containerId)
             return False
         container = self.hostToContainerManager.getContainerByName(containerId)
         if command.get_type() == YarnCommandType.DEHYDRATE:
@@ -41,12 +44,14 @@ class ContainerScheduler:
                 log.info("contianer %s is suspending, can not suspend again",containerId)
                 return False
             else:
+                log.info("successfully suspend container %s",containerId)
                 self.suspendContainerResponse(container)
         elif command.get_type() == YarnCommandType.RESUME:
             if container.getStatus() != CTContainerStatus.SUSPEND:
                 log.info("contianer %s is not suspending, can not resume again",containerId)
                 return False
             else:
+                log.info("successfully resume contaienr %s",containerId)
                 self.resumContainerResponse(container)
         elif command.get_type() == YarnCommandType.UPDATE:
             ##TODO support in future release

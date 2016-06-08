@@ -23,8 +23,13 @@ class HostToContainerManager:
         log.info("deregister host %s from hostToContainerManager", host)
         del self.hostToContainers[host]
 
-    def getContainerByName(containerName):
-        if containerName in self.liveContainers.keys():
+    def getContainerByName(self,containerName):
+        log.info("try to get container by name")
+        if self.liveContainers.keys is None:
+            log.info("live container is none")
+            return None
+        elif containerName not in self.liveContainers.keys():
+            log.info("container is not in live container")
             return None
         else:
             return self.liveContainers[containerName]
@@ -43,7 +48,7 @@ class HostToContainerManager:
                 ##update/initialize the configure file
                 container.updateCgroup(status.getCgroupKeyValues())
                 ##add to name to container mapping
-                self.liveContainers[status.getName] = container
+                self.liveContainers[status.getName()] = container
                 ## this is first container on this host
                 if self.hostToContainers[host] == None:
                     self.hostToContainers[host] = []

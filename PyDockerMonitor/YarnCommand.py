@@ -1,7 +1,10 @@
 #!/usr/bin/python
 
 import json
+import logging
+import logging
 
+log=logging.getLogger("RMDocker.YarnCommand")
 
 class YarnCommandType:
 
@@ -35,7 +38,7 @@ class YarnCommand:
     @staticmethod
     def _dict_to_class_(dic):
         className = dic["__name__"]
-        assert(className == "org.apache.hadoop.yarn.server.resourcemanager.dockermonitor.DockerCommand")
+        assert(className == "org.apache.hadoo.yarn.server.resourcemanager.dockermonitor.DockerCommand")
         resource = Resource(
                             vcores = int(dic["resource.vcores"]),
                             memory = int(dic["resource.memory"])
