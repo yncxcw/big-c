@@ -155,6 +155,12 @@ public class SchedulerApplicationAttempt {
   public synchronized Collection<RMContainer> getLiveContainers() {
     return new ArrayList<RMContainer>(liveContainers.values());
   }
+  
+  
+  public synchronized Collection<RMContainer> getUnPreemtedContainers() {
+	  LOG.info("call here unpreemted containers");
+	  return new ArrayList<RMContainer>(liveContainers.values());
+   }
 
   public AppSchedulingInfo getAppSchedulingInfo() {
     return this.appSchedulingInfo;

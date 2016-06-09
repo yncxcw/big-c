@@ -18,6 +18,8 @@
 
 package org.apache.hadoop.yarn.server.resourcemanager.scheduler.common.fica;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -91,12 +93,25 @@ public class FiCaSchedulerApp extends SchedulerApplicationAttempt {
     
     setAMResource(amResource);
   }
+ 
+  @Override
+  public synchronized Collection<RMContainer> getUnPreemtedContainers() {
+	    Collection<RMContainer> returnList = new ArrayList<RMContainer>();
+	    for(RMContainer rmContainer : liveContainers.values()){
+	    	//we only add contianers which is not preempted yet
+	    	if(!containersSuspended.contains(rmContainer.getContainerId())){
+	    		returnList.add(rmContainer);
+	    	}
+	    }
+	     
+	    return returnList;
+}
   
   //we keep all necesary parameters for future use
   synchronized public boolean containerSuspend(RMContainer rmContainer,
 		  ContainerStatus containerStatus, RMContainerEventType event){
 	  //we try to find it from live container list
-	  if (null == liveContainers.get(rmContainer)){ 
+	  if (liveContainers.keySet().contains(rmContainer.getContainerId())){ 
 		  return false;
 	  }
 	  

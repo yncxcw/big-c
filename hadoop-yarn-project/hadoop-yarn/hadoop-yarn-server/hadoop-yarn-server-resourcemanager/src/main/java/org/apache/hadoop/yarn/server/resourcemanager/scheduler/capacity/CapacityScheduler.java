@@ -986,12 +986,13 @@ public class CapacityScheduler extends
     // Processing the newly launched containers
     for (ContainerStatus launchedContainer : newlyLaunchedContainers) {
       containerLaunchedOnNode(launchedContainer.getContainerId(), node);
+      LOG.info("Container LAUNCHED:"+launchedContainer.getContainerId());
     }
 
     // Process completed containers
     for (ContainerStatus completedContainer : completedContainers) {
       ContainerId containerId = completedContainer.getContainerId();
-      LOG.debug("Container FINISHED: " + containerId);
+      LOG.info("Container FINISHED: " + containerId);
       completedContainer(getRMContainer(containerId), 
           completedContainer, RMContainerEventType.FINISHED);
     }

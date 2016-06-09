@@ -665,7 +665,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     // reverse priority and reverse allocation order and mark them for
     // preemption
     List<RMContainer> containers =
-      new ArrayList<RMContainer>(app.getLiveContainers());
+      new ArrayList<RMContainer>(((FiCaSchedulerApp)app).getUnPreemtedContainers());
 
     sortContainers(containers);
 

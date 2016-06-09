@@ -1634,22 +1634,20 @@ public class LeafQueue extends AbstractCSQueue {
           removed = unreserve(application, rmContainer.getReservedPriority(),
               node, rmContainer);
         } else {
-        	
-          //for container kill event	
-          if(event == RMContainerEventType.KILL){	
-          removed =
-            application.containerCompleted(rmContainer, containerStatus, event);
-            node.releaseContainer(container);
-          //for container suspend event
-          }else if (event == RMContainerEventType.SUSPEND){
+          //for container suspend event	       
+          if (event == RMContainerEventType.SUSPEND){
            removed =
         	application.containerSuspend(rmContainer, containerStatus, event);
         	//TODO we do not know if we need to record the suspended resource to Leaf Queue.
             //we suspend the container on this node
         	node.suspendContainer(container);
+          }else{
+        	  removed =
+        	            application.containerCompleted(rmContainer, containerStatus, event);
+        	            node.releaseContainer(container);
+        	          //for container suspend event
           }
         }
-
         // Book-keeping
         if (removed) {
            //更新资源试用情况

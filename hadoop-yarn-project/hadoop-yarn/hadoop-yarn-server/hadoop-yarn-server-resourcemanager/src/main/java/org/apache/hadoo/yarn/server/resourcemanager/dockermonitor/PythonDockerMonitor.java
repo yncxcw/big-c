@@ -61,13 +61,8 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
 		
 		LOG.info("execute command:"+command.getType()+" on container "+command.getContainerId());
 		Map<String,String> commandMap= DockerCommand.commandToMap(command);
-		
 		boolean result = false;
 		try{
-			//TODO delete debug info
-			for(String key:commandMap.keySet()){
-				LOG.info("key: "+key+" value: "+commandMap.get(key));
-			}
 			result=(boolean) pyroProxy.call("containerCommand", commandMap);
 		}catch(IOException e){
 			LOG.info("call remote object exception at "+command.getType()+"container :"+command.getContainerId());
