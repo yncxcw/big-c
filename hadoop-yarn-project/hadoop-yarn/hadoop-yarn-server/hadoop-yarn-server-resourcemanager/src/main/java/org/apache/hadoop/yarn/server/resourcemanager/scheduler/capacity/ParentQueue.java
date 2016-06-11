@@ -432,7 +432,7 @@ public class ParentQueue extends AbstractCSQueue {
       } else {
         break;
       }
-
+      if (LOG.isDebugEnabled())
      {
         LOG.info("ParentQ=" + getQueueName()
           + " assignedSoFarInThisIteration=" + assignment.getResource()

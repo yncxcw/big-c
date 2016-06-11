@@ -17,9 +17,13 @@
 */
 package org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
 import org.apache.hadoop.yarn.api.records.Resource;
+import org.apache.hadoop.yarn.api.records.ContainerId;
 import org.apache.hadoop.yarn.server.resourcemanager.rmcontainer.RMContainer;
 import org.apache.hadoop.yarn.server.resourcemanager.scheduler.NodeType;
 import org.apache.hadoop.yarn.server.resourcemanager.scheduler.common.fica.FiCaSchedulerApp;
@@ -33,8 +37,10 @@ public class CSAssignment {
   private final RMContainer excessReservation;
   private final FiCaSchedulerApp application;
   private final boolean skipped;
+  private Set<ContainerId> containersToResume =new HashSet<ContainerId>();
   
-  public CSAssignment(Resource resource, NodeType type) {
+
+public CSAssignment(Resource resource, NodeType type) {
     this.resource = resource;
     this.type = type;
     this.application = null;
@@ -57,7 +63,27 @@ public class CSAssignment {
     this.excessReservation = null;
     this.skipped = skipped;
   }
+  
+  public void merge(CSAssignment assignment){
+	  Resources.addTo(this.resource, assignment.getResource());
+	  this.addContainersToResume(assignment.getContainersToResume());
+  }
+  
+  public void addContainersToResume(ContainerId cntId){
+	  this.containersToResume.add(cntId);
+  }
 
+  public void addContainersToResume(Set<ContainerId> cntIds){
+	  for(ContainerId cntId : cntIds){  
+		  this.containersToResume.add(cntId);
+	  }
+  }
+  
+  public Set<ContainerId> getContainersToResume() {
+	return containersToResume;
+}
+
+  
   public Resource getResource() {
     return resource;
   }

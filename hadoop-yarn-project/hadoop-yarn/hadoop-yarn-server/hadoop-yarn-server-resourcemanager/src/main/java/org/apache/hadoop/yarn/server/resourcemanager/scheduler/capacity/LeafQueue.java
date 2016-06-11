@@ -26,8 +26,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -88,6 +90,7 @@ public class LeafQueue extends AbstractCSQueue {
   private float userLimitFactor;
 
   protected int maxApplications;
+  
   protected int maxApplicationsPerUser;
   
   private float maxAMResourcePerQueuePercent;
@@ -98,6 +101,10 @@ public class LeafQueue extends AbstractCSQueue {
   Map<ApplicationAttemptId, FiCaSchedulerApp> applicationAttemptMap = 
       new HashMap<ApplicationAttemptId, FiCaSchedulerApp>();
   
+  //this hash  table is used to record the suspend time of app
+  Queue<ApplicationAttemptId> suspendedApps = 
+	  new LinkedList<ApplicationAttemptId>();
+    
   Set<FiCaSchedulerApp> pendingApplications;
   
   private float minimumAllocationFactor;
@@ -126,7 +133,7 @@ public class LeafQueue extends AbstractCSQueue {
       String queueName, CSQueue parent, CSQueue old) throws IOException {
     super(cs, queueName, parent, old);
     this.scheduler = cs;
-
+   
     this.activeUsersManager = new ActiveUsersManager(metrics); 
 
     if(LOG.isDebugEnabled()) {
@@ -562,8 +569,6 @@ public class LeafQueue extends AbstractCSQueue {
      Resource queueCap = Resources.max(resourceCalculator, lastClusterResource,
        absoluteCapacityResource, queueCurrentLimit);
      
-     LOG.info("absolute limit:"+absoluteCapacityResource.getMemory()+"memory"+absoluteCapacityResource.getVirtualCores()+"cores");
-     LOG.info("current  limit:"+queueCurrentLimit.getMemory()+"memory"+queueCurrentLimit.getVirtualCores()+"cores");
      return Resources.multiplyAndNormalizeUp( 
           resourceCalculator,
           queueCap, 
@@ -777,6 +782,42 @@ public class LeafQueue extends AbstractCSQueue {
       }
     }
     
+    LinkedList<Container> containersToResume = new LinkedList<Container>();
+    //try to resume containers which are suspended
+    for(ApplicationAttemptId appId: this.suspendedApps){
+    	FiCaSchedulerApp app = this.applicationAttemptMap.get(appId);
+    	for(ContainerId cntId : app.getContainersSuspended()){
+    		//if we find one container suspended on this node, we try to resume this container
+    		//we get its resource to try if we can resume this container
+    		Container container = app.getLiveContainersMap().get(cntId).getContainer();
+    		Resource required = container.getResource();
+    		if(node.getSuspendedContainers().contains(cntId)){
+    		//if we can not allcoate container due to insufficiency of resource ,we just give up continuing 
+    		//allcoating resource 
+    			if (!super.canAssignToThisQueue(clusterResource, node.getLabels(),
+    		              currentResourceLimits, required, app.getCurrentReservation())) {
+    				LOG.info("insufficienct resource for queue"+this.getQueueName()+", return here");
+    		            return NULL_ASSIGNMENT;
+    		       }
+    			  //compute user limit 
+    			  Resource userLimit = 
+    		              computeUserLimitAndSetHeadroom(app, clusterResource, 
+    		                  required, null); 
+    			 //check we can allocate resource for this user, TODO drop this judge because we do not care about user 
+    			 //resource consumption for resource resume
+    			 if (!assignToUser(clusterResource, app.getUser(), userLimit,
+    			              app, null, currentResourceLimits)) {
+    				LOG.info("insufficienct resource for user"+app.getUser()+", return here");
+    				 return NULL_ASSIGNMENT;
+    			  }
+
+    			
+    			
+    		}
+    		
+    	}
+    }
+    
     // Try to assign containers to applications in order。这是核心的分配算法
     for (FiCaSchedulerApp application : activeApplications) {
       
@@ -980,7 +1021,7 @@ public class LeafQueue extends AbstractCSQueue {
             clusterResource, userLimit);
     
    {
-      LOG.info("Headroom calculation for user " + user + ": " + 
+      LOG.debug("Headroom calculation for user " + user + ": " + 
           " userLimit=" + userLimit + 
           " queueMaxAvailRes=" + cachedResourceLimitsForHeadroom.getLimit() +
           " consumed=" + queueUser.getUsed() + 
@@ -1434,13 +1475,61 @@ public class LeafQueue extends AbstractCSQueue {
     return container;
   }
 
+  private boolean resumeContainer(Resource clusterResource, FiCaSchedulerNode node, FiCaSchedulerApp application,
+		  RMContainer rmContainer){
+	  LOG.info("resumeContainers: node=" + node.getNodeName()
+		        + " application=" + application.getApplicationId()
+		        + " container=" + rmContainer.getContainerId());
+	    Resource capability = rmContainer.getContainer().getResource();
+	    Resource available = node.getAvailableResource();
+	    Resource totalResource = node.getTotalResource();
+
+	    //节点资源不够的情况，
+	    if (!Resources.lessThanOrEqual(resourceCalculator, clusterResource,
+	        capability, totalResource)) {
+	      LOG.info("Node : " + node.getNodeID()
+	          + " does not have sufficient resource for request : " + capability
+	          + " node total capability : " + node.getTotalResource());
+	      return false;
+	    }
+
+	    //节点上有资源
+	    assert Resources.greaterThan(
+	        resourceCalculator, clusterResource, available, Resources.none());
+	    
+	   // Can we allocate a container on this node? we do not consider reserve container in current version
+	    int availableContainers = 
+	        resourceCalculator.computeAvailableContainers(available, capability);
+	    
+	    if (availableContainers > 0) {
+	    	
+	    	 boolean resumeContainer = 
+	    	          application.containerResume(rmContainer);
+             // Does the application need this resource?
+	         if (!resumeContainer) {
+	    	        return false;
+	    	 }
+	    	// Inform the node
+	    	node.recoverContainer(rmContainer);
+
+	        LOG.info("Resume Container" +
+	            " application attempt=" + application.getApplicationAttemptId() +
+	            " container=" + rmContainer.getContainerId() + 
+	            " queue=" + this + 
+	            " clusterResource=" + clusterResource);
+	    	
+	    	//if everything goes fine, return true here
+	    	return true;    	
+	    }
+	  return false;
+  }
 
   private Resource assignContainer(Resource clusterResource, FiCaSchedulerNode node, 
       FiCaSchedulerApp application, Priority priority, 
       ResourceRequest request, NodeType type, RMContainer rmContainer,
       MutableObject createdContainer, ResourceLimits currentResoureLimits) {
     {
-      LOG.info("assignContainers: node=" + node.getNodeName()
+      LOG.debug("assignContainers: node=" + node.getNodeName()
         + " application=" + application.getApplicationId()
         + " priority=" + priority.getPriority()
         + " request=" + request + " type=" + type);
@@ -1638,7 +1727,10 @@ public class LeafQueue extends AbstractCSQueue {
           if (event == RMContainerEventType.SUSPEND){
            removed =
         	application.containerSuspend(rmContainer, containerStatus, event);
-        	//TODO we do not know if we need to record the suspended resource to Leaf Queue.
+        	//suspend and resume in fifo order
+            if(!suspendedApps.contains(application.getApplicationAttemptId())){
+            	suspendedApps.add(application.getApplicationAttemptId());
+            }
             //we suspend the container on this node
         	node.suspendContainer(container);
           }else{

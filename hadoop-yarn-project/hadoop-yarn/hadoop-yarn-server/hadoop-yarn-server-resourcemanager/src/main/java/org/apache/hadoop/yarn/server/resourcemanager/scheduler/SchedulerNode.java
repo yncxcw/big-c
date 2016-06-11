@@ -66,7 +66,7 @@ public abstract class SchedulerNode {
   
   private final Set<ContainerId> suspendedContainers = new HashSet<ContainerId>();
 
-  private final RMNode rmNode;
+private final RMNode rmNode;
   private final String nodeName;
   
   private volatile Set<String> labels = null;
@@ -92,6 +92,10 @@ public abstract class SchedulerNode {
     return this.rmNode;
   }
 
+  public Set<ContainerId> getSuspendedContainers() {
+	return suspendedContainers;
+}
+  
   /**
    * Set total resources on the node.
    * @param resource total resources on the node.
@@ -248,6 +252,31 @@ public abstract class SchedulerNode {
         + ", which currently has " + launchedContainers.size() + " containers, "
         + getUsedResource() + " used and " + getAvailableResource()
         + " available" + ", release resources=" + true);
+  }
+  
+  public synchronized void resumeContainer(Container container){
+	  if (!isValidContainer(container.getId())) {
+	      LOG.error("Invalid container released " + container);
+	      return;
+	    }
+	  //I know this impossible, just in case
+	  if(!this.launchedContainers.containsKey(container.getId())){
+		  return;
+	  }
+	  //drop container from suspended list and update resource
+	  if(suspendedContainers.contains(container.getId())){
+		  deductAvailableResource(container.getResource());
+		  suspendedContainers.remove(container.getId());
+	  }
+
+	    LOG.info("Resume container " + container.getId() + " of capacity "
+	        + container.getResource() + " on host " + rmNode.getNodeAddress()
+	        + ", which currently has " + launchedContainers.size() + " containers, "
+	        + getUsedResource() + " used and " + getAvailableResource()
+	        + " available");
+	  
+	  return;
+	  
   }
   
 

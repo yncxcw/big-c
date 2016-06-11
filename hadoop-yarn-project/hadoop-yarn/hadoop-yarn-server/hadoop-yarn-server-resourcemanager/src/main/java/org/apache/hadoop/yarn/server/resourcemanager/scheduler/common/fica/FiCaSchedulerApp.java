@@ -72,8 +72,10 @@ public class FiCaSchedulerApp extends SchedulerApplicationAttempt {
   private final Set<ContainerId> containersSuspended =
     new HashSet<ContainerId>();
     
-  private CapacityHeadroomProvider headroomProvider;
-
+private CapacityHeadroomProvider headroomProvider;
+  
+  private boolean isSuspending;
+  
   public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId, 
       String user, Queue queue, ActiveUsersManager activeUsersManager,
       RMContext rmContext) {
@@ -107,6 +109,12 @@ public class FiCaSchedulerApp extends SchedulerApplicationAttempt {
 	    return returnList;
 }
   
+  public Set<ContainerId> getContainersSuspended() {
+		return containersSuspended;
+  }
+  
+  ///TODO we need a function to resume a container from suspended list
+  
   //we keep all necesary parameters for future use
   synchronized public boolean containerSuspend(RMContainer rmContainer,
 		  ContainerStatus containerStatus, RMContainerEventType event){
@@ -115,6 +123,8 @@ public class FiCaSchedulerApp extends SchedulerApplicationAttempt {
 		  return false;
 	  }
 	  
+	  isSuspending = true;
+
 	  Container container = rmContainer.getContainer();
 	  ContainerId containerId = container.getId();
 
@@ -193,6 +203,52 @@ public class FiCaSchedulerApp extends SchedulerApplicationAttempt {
     return true;
   }
 
+  //resume a container from suspended state
+  synchronized public boolean containerResume(RMContainer rmContainer){
+	  
+	  ContainerId containerId = rmContainer.getContainerId();
+	  
+	  if(isStopped){
+		  return false;
+	  }
+	  
+	  if(!isSuspending){
+		  return false;
+	  }
+	  
+	  if(!containersSuspended.contains(containerId)){
+		  return false;
+	  }
+	  
+	  
+	  //delete contaienr from containersSuspended
+	  this.containersSuspended.remove(containerId);
+	  //update resource usage
+	  Resource containerResource = rmContainer.getContainer().getResource();
+	  queue.getMetrics().allocateResources(getUser(), 1, containerResource, true);
+	  //inform RMContainer
+	  rmContainer.handle(
+			          new RMContainerEvent(containerId,RMContainerEventType.RESUME)  
+			            );
+	  
+	  if(this.containersSuspended.size() == 0){
+		  
+		  isSuspending = false;
+		  
+	  }
+
+	    if (LOG.isDebugEnabled()) {
+	      LOG.debug("allocate: applicationAttemptId=" 
+	          + this.getApplicationAttemptId() 
+	          + " container=" + containerId + " host="
+	          + rmContainer.getContainer().getNodeId().getHost() 
+	        );
+	    }
+	  
+	  return true;
+	  
+  }
+  
   synchronized public RMContainer allocate(NodeType type, FiCaSchedulerNode node,
       Priority priority, ResourceRequest request, 
       Container container) {

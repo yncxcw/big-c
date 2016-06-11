@@ -997,7 +997,7 @@ public class CapacityScheduler extends
           completedContainer, RMContainerEventType.FINISHED);
     }
 
-    // Now node data structures are upto date and ready for scheduling.
+    // Now node data structures are up to date and ready for scheduling.
     if(LOG.isDebugEnabled()) {
       LOG.debug("Node being looked for scheduling " + nm
         + " availableResource: " + node.getAvailableResource());
