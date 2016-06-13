@@ -420,7 +420,9 @@ public class ParentQueue extends AbstractCSQueue {
             nodeLabels);
         
         // Track resource utilization in this pass of the scheduler
-        Resources.addTo(assignment.getResource(), assignedToChild.getResource());
+        //Resources.addTo(assignment.getResource(), assignedToChild.getResource());
+        //we need to merge the resumed containers and accumulate the resource
+        assignment.merge(assignedToChild);
         
         LOG.info("assignedContainer" +
             " queue=" + getQueueName() + 

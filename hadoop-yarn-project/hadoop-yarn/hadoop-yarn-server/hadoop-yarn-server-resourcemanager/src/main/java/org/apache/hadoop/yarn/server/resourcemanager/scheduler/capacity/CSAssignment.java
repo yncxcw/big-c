@@ -37,7 +37,7 @@ public class CSAssignment {
   private final RMContainer excessReservation;
   private final FiCaSchedulerApp application;
   private final boolean skipped;
-  private Set<ContainerId> containersToResume =new HashSet<ContainerId>();
+  private Set<RMContainer> containersToResume =new HashSet<RMContainer>();
   
 
 public CSAssignment(Resource resource, NodeType type) {
@@ -47,6 +47,15 @@ public CSAssignment(Resource resource, NodeType type) {
     this.excessReservation = null;
     this.skipped = false;
   }
+
+public CSAssignment(Resource resource, NodeType type, RMContainer cnt){
+	this.resource = resource;
+	this.type     = type;
+	this.application=null;
+	this.excessReservation=null;
+	this.skipped = false;
+	this.containersToResume.add(cnt);
+}
   
   public CSAssignment(FiCaSchedulerApp application, RMContainer excessReservation) {
     this.resource = excessReservation.getContainer().getResource();
@@ -69,17 +78,17 @@ public CSAssignment(Resource resource, NodeType type) {
 	  this.addContainersToResume(assignment.getContainersToResume());
   }
   
-  public void addContainersToResume(ContainerId cntId){
-	  this.containersToResume.add(cntId);
+  public void addContainersToResume(RMContainer cnt){
+	  this.containersToResume.add(cnt);
   }
 
-  public void addContainersToResume(Set<ContainerId> cntIds){
-	  for(ContainerId cntId : cntIds){  
-		  this.containersToResume.add(cntId);
+  public void addContainersToResume(Set<RMContainer> cnts){
+	  for(RMContainer cnt : cnts){  
+		  this.containersToResume.add(cnt);
 	  }
   }
   
-  public Set<ContainerId> getContainersToResume() {
+  public Set<RMContainer> getContainersToResume() {
 	return containersToResume;
 }
 

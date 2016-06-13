@@ -1111,13 +1111,17 @@ public class CapacityScheduler extends
           LOG.debug("Trying to schedule on node: " + node.getNodeName() +
               ", available: " + node.getAvailableResource());
         }
-        root.assignContainers(
+        CSAssignment assignment =root.assignContainers(
             clusterResource,
             node,
             // TODO, now we only consider limits for parent for non-labeled
             // resources, should consider labeled resources as well.
             new ResourceLimits(labelManager.getResourceByLabel(
                 RMNodeLabelsManager.NO_LABEL, clusterResource)));
+        //we try to assume container after resource updating
+        for(RMContainer cont : assignment.getContainersToResume()){
+        	this.resumeContainer(cont);
+        }
       }
     } else {
       LOG.info("Skipping scheduling since node " + node.getNodeID() + 
@@ -1398,6 +1402,28 @@ public class CapacityScheduler extends
     	      RMContainerEventType.KILL);
   }
   
+  public void resumeContainer(RMContainer cont){
+	  if (LOG.isDebugEnabled()) {
+	      LOG.debug("RESUME_CONTAINER: container" + cont.toString());
+	  }
+	  
+	  if(cont.getState() != RMContainerState.DEHYDRATED){
+		LOG.info("we can only suspend container which is running"+cont.getContainerId());
+		return;
+	  }
+	  
+	  if(dockerMonitorEnabled){
+		if(dockerMonitor.ResumeContainer(cont.getContainerId())){
+			
+			LOG.info("successfully resume container: "+cont.getContainerId());
+		}else{
+			LOG.info("we get error when we are trying to resume container  "+cont.getContainerId()+"please check your log");	
+		}  
+	 }else{ 
+		LOG.info("suspend container is not supported, please check your configuration"); 
+	 }
+  }
+  
   @Override
   public void suspendContianer(RMContainer cont) {
   	// TODO Auto-generated method stub
@@ -1422,8 +1448,11 @@ public class CapacityScheduler extends
 	   	
 	    LOG.info("we get error when we are trying to suspend container  "+cont.getContainerId()+"please check your log");	
 	}
+	
 	}else{
+		
 	LOG.info("suspend container is not supported, please check your configuration"); 		
+	
 	}
   }
 

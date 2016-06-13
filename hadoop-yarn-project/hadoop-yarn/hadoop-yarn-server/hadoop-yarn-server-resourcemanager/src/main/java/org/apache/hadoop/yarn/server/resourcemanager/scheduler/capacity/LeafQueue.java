@@ -783,17 +783,18 @@ public class LeafQueue extends AbstractCSQueue {
     }
     
     LinkedList<Container> containersToResume = new LinkedList<Container>();
-    //try to resume containers which are suspended
+    //try to resume containers which are suspended in fifo order
     for(ApplicationAttemptId appId: this.suspendedApps){
     	FiCaSchedulerApp app = this.applicationAttemptMap.get(appId);
     	for(ContainerId cntId : app.getContainersSuspended()){
     		//if we find one container suspended on this node, we try to resume this container
     		//we get its resource to try if we can resume this container
-    		Container container = app.getLiveContainersMap().get(cntId).getContainer();
-    		Resource required = container.getResource();
+    		RMContainer rmContainer=app.getLiveContainersMap().get(cntId);
+    		Container container    =  rmContainer.getContainer();
+    		Resource required      = container.getResource();
     		if(node.getSuspendedContainers().contains(cntId)){
-    		//if we can not allcoate container due to insufficiency of resource ,we just give up continuing 
-    		//allcoating resource 
+    		//if we can not allocate container due to insufficiency of resource ,we just give up continuing 
+    		//allocating resource 
     			if (!super.canAssignToThisQueue(clusterResource, node.getLabels(),
     		              currentResourceLimits, required, app.getCurrentReservation())) {
     				LOG.info("insufficienct resource for queue"+this.getQueueName()+", return here");
@@ -810,13 +811,27 @@ public class LeafQueue extends AbstractCSQueue {
     				LOG.info("insufficienct resource for user"+app.getUser()+", return here");
     				 return NULL_ASSIGNMENT;
     			  }
-
-    			
-    			
+    			 
+    			  //try to resume this container
+    			  CSAssignment assignment = this.resumeContainer(clusterResource, node, app, rmContainer);
+    			  Resource assigned = assignment.getResource();
+    	          if (Resources.greaterThan(
+    	              resourceCalculator, clusterResource, assigned, Resources.none())) {
+    	              //update queue and user resource usage   	  
+    	         	  this.allocateResource(clusterResource, assigned,node.getLabels());
+    	        	  return assignment;
+    	          }else{
+    	          //this case only happens when the node resource is insufficient, we give up the chance to continue allocation
+    	          //resource to new requests
+    	        	  return NULL_ASSIGNMENT;
+    	          }
+    			  
     		}
-    		
+    		//we come here because node does not have cntId
     	}
+    	//we come here means app doesn't have any contId on node
     }
+    //we come here means all apps do not have contId on node
     
     // Try to assign containers to applications in order。这是核心的分配算法
     for (FiCaSchedulerApp application : activeApplications) {
@@ -1475,7 +1490,7 @@ public class LeafQueue extends AbstractCSQueue {
     return container;
   }
 
-  private boolean resumeContainer(Resource clusterResource, FiCaSchedulerNode node, FiCaSchedulerApp application,
+  private CSAssignment resumeContainer(Resource clusterResource, FiCaSchedulerNode node, FiCaSchedulerApp application,
 		  RMContainer rmContainer){
 	  LOG.info("resumeContainers: node=" + node.getNodeName()
 		        + " application=" + application.getApplicationId()
@@ -1490,7 +1505,7 @@ public class LeafQueue extends AbstractCSQueue {
 	      LOG.info("Node : " + node.getNodeID()
 	          + " does not have sufficient resource for request : " + capability
 	          + " node total capability : " + node.getTotalResource());
-	      return false;
+	      return NULL_ASSIGNMENT;
 	    }
 
 	    //节点上有资源
@@ -1507,7 +1522,7 @@ public class LeafQueue extends AbstractCSQueue {
 	    	          application.containerResume(rmContainer);
              // Does the application need this resource?
 	         if (!resumeContainer) {
-	    	        return false;
+	    	        return NULL_ASSIGNMENT;
 	    	 }
 	    	// Inform the node
 	    	node.recoverContainer(rmContainer);
@@ -1519,9 +1534,9 @@ public class LeafQueue extends AbstractCSQueue {
 	            " clusterResource=" + clusterResource);
 	    	
 	    	//if everything goes fine, return true here
-	    	return true;    	
+	    	return new CSAssignment(capability,NodeType.NODE_LOCAL,rmContainer);     	
 	    }
-	  return false;
+	  return NULL_ASSIGNMENT;
   }
 
   private Resource assignContainer(Resource clusterResource, FiCaSchedulerNode node, 
