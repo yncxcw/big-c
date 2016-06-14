@@ -123,6 +123,8 @@ public class RMContainerImpl implements RMContainer {
      //Transition from DEHYDRATED state
      .addTransition(RMContainerState.DEHYDRATED, RMContainerState.RUNNING, 
     		 RMContainerEventType.RESUME,new ContainerResumeTransition())
+      .addTransition(RMContainerState.DEHYDRATED, RMContainerState.COMPLETED,
+    		RMContainerEventType.FINISHED, new FinishedTransition())
       .addTransition(RMContainerState.DEHYDRATED, RMContainerState.KILLED,
         RMContainerEventType.KILL, new KillTransition())
     .addTransition(RMContainerState.DEHYDRATED, RMContainerState.RELEASED,
@@ -482,18 +484,22 @@ public class RMContainerImpl implements RMContainer {
   BaseTransition{
 	  @Override
 	    public void transition(RMContainerImpl container, RMContainerEvent event) {
+		  RMContainerFinishedEvent finishedEvent = (RMContainerFinishedEvent) event;
 		  //add the suspend time
 		  container.suspendTime.add(System.currentTimeMillis());
+		  Resource resource = container.getContainer().getResource();  
+		  container.finishedStatus = finishedEvent.getRemoteContainerStatus();
 		  
-		  Resource resource = container.getContainer().getResource();
 		  //update preempt metrics
 		  RMAppAttempt rmAttempt = container.rmContext.getRMApps()
 		          .get(container.getApplicationAttemptId().getApplicationId())
 		          .getCurrentAppAttempt();
+		  
 		      if (ContainerExitStatus.PREEMPTED == container.finishedStatus
 		        .getExitStatus()) {
 		        rmAttempt.getRMAppAttemptMetrics().updatePreemptionInfo(resource,
 		          container);
+		   
 		      }
 	  }	  
   }

@@ -1407,10 +1407,13 @@ public class CapacityScheduler extends
 	      LOG.debug("RESUME_CONTAINER: container" + cont.toString());
 	  }
 	  
+	  //TODO we will not do this check here, actually it's dangerous to do so
+	  /*
 	  if(cont.getState() != RMContainerState.DEHYDRATED){
-		LOG.info("we can only suspend container which is running"+cont.getContainerId());
+		LOG.info("we can only resume container which is dehydrated"+cont.getContainerId());
 		return;
 	  }
+	  */
 	  
 	  if(dockerMonitorEnabled){
 		if(dockerMonitor.ResumeContainer(cont.getContainerId())){

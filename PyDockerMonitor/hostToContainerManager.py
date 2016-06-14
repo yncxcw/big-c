@@ -36,7 +36,6 @@ class HostToContainerManager:
 
 
     def update(self,hostUpdate):
-        log.info("enter update")
         host = hostUpdate.getHost()
         for status in  hostUpdate.getContainerUpdates():
             ##new container found on host
@@ -71,7 +70,6 @@ class HostToContainerManager:
                     log.error("container %s not found when updating",status.getName())
                 else:
                     container.updateCgroup(status.getCgroupKeyValues())
-        log.info("leave update")
 
          
 

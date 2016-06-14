@@ -76,7 +76,8 @@ private CapacityHeadroomProvider headroomProvider;
   
   private boolean isSuspending;
   
-  public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId, 
+ 
+public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId, 
       String user, Queue queue, ActiveUsersManager activeUsersManager,
       RMContext rmContext) {
     super(applicationAttemptId, user, queue, activeUsersManager, rmContext);
@@ -113,13 +114,25 @@ private CapacityHeadroomProvider headroomProvider;
 		return containersSuspended;
   }
   
+  public boolean isSuspending() {
+		return isSuspending;
+   }
+
+  
   ///TODO we need a function to resume a container from suspended list
   
   //we keep all necesary parameters for future use
   synchronized public boolean containerSuspend(RMContainer rmContainer,
 		  ContainerStatus containerStatus, RMContainerEventType event){
 	  //we try to find it from live container list
-	  if (liveContainers.keySet().contains(rmContainer.getContainerId())){ 
+	  LOG.info("app suspend "+rmContainer.getContainerId());
+	  if (!liveContainers.keySet().contains(rmContainer.getContainerId())){
+		  LOG.info("app suspend comes here");
+		  return false;
+	  }
+	  
+	  if(this.containersSuspended.contains(rmContainer.getContainerId())){
+		  LOG.info("app container "+rmContainer.getContainerId()+" is already suspended"); 
 		  return false;
 	  }
 	  
@@ -129,13 +142,14 @@ private CapacityHeadroomProvider headroomProvider;
 	  ContainerId containerId = container.getId();
 
 	  // Inform the container
+	  
 	  rmContainer.handle(
 	        new RMContainerFinishedEvent(
 	            containerId,
 	            containerStatus, 
 	            event)
 	  );
-	  LOG.info("suspend container: " + rmContainer.getContainerId() + 
+	  LOG.info("app suspend container: " + rmContainer.getContainerId() + 
 		        " in state: " + rmContainer.getState() + " event:" + event);
 	  
 	  //add to suspended set
