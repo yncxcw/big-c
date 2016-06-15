@@ -41,7 +41,7 @@ class HostToContainerManager:
             ##new container found on host
             if status.getAction() == ContainerAction.NEW:
                 container = CTContainer(id=status.getID(),name=status.getName(),host=host)
-                log.info("container %s from %s update and action is NEW",status.getName(),host)
+                #log.info("container %s from %s update and action is NEW",status.getName(),host)
                 ##initialize with configure file
                 container.initialize(self.configure)
                 ##update/initialize the configure file
@@ -56,7 +56,7 @@ class HostToContainerManager:
                     self.hostToContainers[host].append(container)
             ##delete this container from host 
             elif status.getAction() == ContainerAction.DIE:
-                log.info("container %s from %s update and action is DELETE",status.getName(),host)
+                #log.info("container %s from %s update and action is DELETE",status.getName(),host)
                 container = self.findContainerOnHost(host,status.getID()) 
                 if container == None:
                     log.error("container %s not found when deleting",status.getName())
@@ -64,7 +64,7 @@ class HostToContainerManager:
                     self.hostToContainers[host].remove(container) 
                     del self.liveContainers[status.getName()]
             elif status.getAction() == ContainerAction.UPDATE:
-                log.info("container %s from %s update and action is UPDATE",status.getName(),host)
+                #log.info("container %s from %s update and action is UPDATE",status.getName(),host)
                 container = self.findContainerOnHost(host,status.getID()) 
                 if container == None:
                     log.error("container %s not found when updating",status.getName())

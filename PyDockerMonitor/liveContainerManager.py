@@ -68,7 +68,7 @@ class LiveContainerManager:
                 statusList.append(status)
                 ##we have already seen this contianer before, just sent update info
             else:
-                #log.info("update containers %s",container.getName())
+                log.info("update containers %s",container.getName())
                 ##read from cgroup file system to update cgroup values
                 self.liveContainers[container.getID()].read()
                 status = self.constructionContainerUpdate(container,ContainerAction.UPDATE)
