@@ -24,7 +24,7 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
     private String pyClassName;
 	
 	@Override
-	public void Init(Configuration conf) {
+	public boolean Init(Configuration conf) {
 		super.Init(conf);
 		//TODO be careful for this, will cause serious error if misconfigured
 		this.pyClassName = conf.get(YarnConfiguration.DOCKER_PYTHON_RPC_OBJECT, 
@@ -36,7 +36,7 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
 						
 		}catch(IOException e){
 			LOG.info("failed to locate name server"+e.getMessage());
-			return;
+			return false;
 		}
 		
 		//second we try to locate remote Docker daemon
@@ -45,11 +45,13 @@ public class PythonDockerMonitor extends AbstractDockerMonitor {
 			
 		}catch(IOException e){
 			LOG.info("ns loop up exception"+e.getMessage());
-			return;
+			return false;
 		}
 		
 		this.isWorking = true;
 		LOG.info("initially pythonDockerMonitor successfully");
+		
+		return true;
 	}
 
 	@Override

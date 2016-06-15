@@ -782,7 +782,10 @@ public class LeafQueue extends AbstractCSQueue {
       }
     }
     
-    LinkedList<Container> containersToResume = new LinkedList<Container>();
+
+    //we do nothing, if not enbaled yet
+    if(scheduler.isDockerMonitorEnabled()){
+    
     //try to resume containers which are suspended in fifo order
     for(ApplicationAttemptId appId: this.suspendedApps){
     	FiCaSchedulerApp app = this.applicationAttemptMap.get(appId);
@@ -839,7 +842,7 @@ public class LeafQueue extends AbstractCSQueue {
     }
     //we come here means all apps do not have contId on node
      
-     
+    }
     
     // Try to assign containers to applications in order。这是核心的分配算法
     for (FiCaSchedulerApp application : activeApplications) {

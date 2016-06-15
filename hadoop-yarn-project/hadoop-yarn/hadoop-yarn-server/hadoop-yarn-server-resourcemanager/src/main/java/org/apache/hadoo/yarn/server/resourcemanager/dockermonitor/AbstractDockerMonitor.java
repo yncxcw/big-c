@@ -18,9 +18,10 @@ public abstract class  AbstractDockerMonitor implements DockerMonitor {
 	}
 	
 	@Override
-	public void Init(Configuration conf) {
+	public boolean Init(Configuration conf) {
 	
 		
+		return false;
 	}
 
 	@Override

@@ -100,7 +100,8 @@ public abstract class AbstractYarnScheduler
   protected DockerMonitor dockerMonitor;
   protected boolean dockerMonitorEnabled;
 
-  protected final static List<Container> EMPTY_CONTAINER_LIST =
+
+protected final static List<Container> EMPTY_CONTAINER_LIST =
       new ArrayList<Container>();
   protected static final Allocation EMPTY_ALLOCATION = new Allocation(
     EMPTY_CONTAINER_LIST, Resources.createResource(0), null, null, null);
@@ -133,7 +134,7 @@ public abstract class AbstractYarnScheduler
     if(dockerMonitorEnabled){
      	//TODO currently we only support python monitor
     	dockerMonitor = new PythonDockerMonitor();
-    	dockerMonitor.Init(conf);
+    	this.dockerMonitorEnabled = dockerMonitor.Init(conf);
     }
     super.serviceInit(conf);
   }
@@ -160,6 +161,11 @@ public abstract class AbstractYarnScheduler
     return containerList;
   }
 
+  public boolean isDockerMonitorEnabled() {
+	return dockerMonitorEnabled;
+}
+
+  
   public Map<ApplicationId, SchedulerApplication<T>>
       getSchedulerApplications() {
     return applications;

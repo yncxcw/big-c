@@ -11,7 +11,7 @@ import org.apache.hadoop.yarn.api.records.Resource;
 
 public interface DockerMonitor{
 	
-	public void Init(Configuration config);
+	public boolean Init(Configuration config);
 	
 	public boolean DehydrateContainer(ContainerId containerId);
 	

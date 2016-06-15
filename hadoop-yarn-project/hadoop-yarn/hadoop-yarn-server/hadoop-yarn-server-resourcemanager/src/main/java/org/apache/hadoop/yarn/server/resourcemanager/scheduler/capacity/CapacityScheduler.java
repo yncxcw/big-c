@@ -158,6 +158,11 @@ public class CapacityScheduler extends
       yarnConf = conf;
   }
   
+  @Override 
+  public boolean isDockerMonitorEnabled() {
+	return dockerMonitorEnabled;
+}
+  
   private void validateConf(Configuration conf) {
     // validate scheduler memory allocation setting
     int minMem = conf.getInt(

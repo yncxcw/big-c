@@ -44,6 +44,7 @@ public interface CapacitySchedulerContext {
   RMContainerTokenSecretManager getContainerTokenSecretManager();
   
   int getNumClusterNodes();
+  
 
   RMContext getRMContext();
   
@@ -61,4 +62,6 @@ public interface CapacitySchedulerContext {
   Comparator<CSQueue> getQueueComparator();
   
   FiCaSchedulerNode getNode(NodeId nodeId);
+
+  boolean isDockerMonitorEnabled();
 }
