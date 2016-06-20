@@ -13,11 +13,16 @@ class Container:
     def __init__(self,id,name,configure):
         self.image = ""
         self.status= ""
+        self.pid   =None
         self.name = name
         self.id   = id
         self.testPath="/sys/fs/cgroup/memory/docker/"+str(id)
         self.configure = configure
         self.cgroups = {}
+
+
+    def getPid(self):
+        return self.pid
    
     def getName(self):
         return self.name
