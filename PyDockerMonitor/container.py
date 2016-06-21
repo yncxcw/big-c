@@ -3,6 +3,7 @@
 import logging
 
 from cgroup import Cgroup
+from containerFlow import ContainerFlow
 import os
 
 log = logging.getLogger("RMDocker.Container")
@@ -13,12 +14,28 @@ class Container:
     def __init__(self,id,name,configure):
         self.image = ""
         self.status= ""
-        self.pid   =None
+        self.pid   = 0
         self.name = name
         self.id   = id
         self.testPath="/sys/fs/cgroup/memory/docker/"+str(id)
         self.configure = configure
         self.cgroups = {}
+        ##read in pid
+        pid_path = self.testPath+"cpu/cgroup.procs"
+        try:
+            file = open(pid_path)
+            for line in file.readlines():
+                if int(line.strip()) > self.pid:
+                    self.pid = int(line.strip())
+        except Exception as error
+            log.error("get pid error %s",error)
+
+        ##work flow monitor
+        flow = ContainerFlow(self.pid)
+
+
+    def getWorkFlow():
+        return self.monitor()
 
 
     def getPid(self):

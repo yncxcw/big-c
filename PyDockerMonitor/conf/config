@@ -8,7 +8,7 @@ nameserverID   = container.master
 nameserverPort = 9090
 nameserverHost = ym
 daemonserverPort = 56181
-  
+networkflow      = 1  
 
 ##configure for registered cpuset
 cgroup  = cpu,cpuset,memory 

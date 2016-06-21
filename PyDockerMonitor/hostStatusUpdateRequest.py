@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import json
-
+from ContainerFlow import ContainerConnect 
 
 class ContainerAction:
 
@@ -53,17 +53,21 @@ class ContainerUpdate:
     ##we may extend this class in the future
     ##so we only keep key parts in construction
     ##function 
-    def __init__(self,name,id,action,cgroupKeyValues=None):
+    def __init__(self,name,id,action,cgroupKeyValues=None,netflows=None):
         self.name   = name
         self.id     = id
         self.action = action
         self.cgroupKeyValues = cgroupKeyValues
+        self.netflows = netflows
 
     def getName(self):
         return self.name
 
     def getID(self):
         return self.id
+
+    def getNetflow(self):
+        return self.netflows
 
     def getAction(self):
         return self.action
@@ -75,19 +79,27 @@ class ContainerUpdate:
     @staticmethod
     def _class_to_dict_(obj):
         assert(isinstance(obj,ContainerUpdate))
+        netflows = []
+        for net in obj.getNetflow():
+            netflows.append(ContainerConnect._class_to_dict_(net))
         return{"__name__"       : ContainerUpdate.__name__,
               "name"            : obj.name,
               "id"              : obj.id,
-              "action"         : obj.action,
-              "cgroupKeyValues" : obj.cgroupKeyValues
+              "action"          : obj.action,
+              "cgroupKeyValues" : obj.cgroupKeyValues,
+              "netflows"        : netflows      
               }
 
     @staticmethod
     def _dict_to_class_(dic):
         assert(dic["__name__"]==ContainerUpdate.__name__)
+        netflows=[]
+        for net in dic["netflows"]:
+            netflows.append(ContainerConnect._dict_to_class_(net))
         containerUpdate = ContainerUpdate(name  =dic["name"],
                                           id    =dic["id"]  ,
                                           action=dic["action"],
                                           cgroupKeyValues=dic["cgroupKeyValues"]
+                                          netflows = netflows
                                          )
         return containerUpdate 
