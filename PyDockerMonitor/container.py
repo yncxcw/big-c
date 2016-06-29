@@ -21,21 +21,21 @@ class Container:
         self.configure = configure
         self.cgroups = {}
         ##read in pid
-        pid_path = self.testPath+"cpu/cgroup.procs"
+        pid_path = self.testPath+"/cgroup.procs"
         try:
             file = open(pid_path)
             for line in file.readlines():
                 if int(line.strip()) > self.pid:
                     self.pid = int(line.strip())
-        except Exception as error
-            log.error("get pid error %s",error)
+        except Exception as exce:
+            log.error("get pid error %s",exce)
 
         ##work flow monitor
-        flow = ContainerFlow(self.pid)
+        self.flow = ContainerFlow(self.pid)
 
 
-    def getWorkFlow():
-        return self.monitor()
+    def getWorkFlow(self):
+        return self.flow.monitor()
 
 
     def getPid(self):

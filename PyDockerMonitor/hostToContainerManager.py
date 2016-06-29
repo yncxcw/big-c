@@ -2,6 +2,7 @@
 
 import logging
 from hostStatusUpdateRequest import HostUpdate,ContainerUpdate,ContainerAction
+from netFlowAnalyze import NetflowAnalyze
 
 log=logging.getLogger("RMDocker.HostToContainerManager")
 
@@ -10,6 +11,7 @@ class HostToContainerManager:
 
     def __init__(self,configure):
         self.configure        = configure
+        self.netAnalyze       = NetflowAnalyze()
         self.hostToContainers = {}
         ##keep live containers name
         self.liveContainers   = {}  
@@ -37,11 +39,12 @@ class HostToContainerManager:
 
     def update(self,hostUpdate):
         host = hostUpdate.getHost()
+        #log.info("get host update from %s",host)
         for status in  hostUpdate.getContainerUpdates():
             ##new container found on host
             if status.getAction() == ContainerAction.NEW:
                 container = CTContainer(id=status.getID(),name=status.getName(),host=host)
-                #log.info("container %s from %s update and action is NEW",status.getName(),host)
+                log.info("container %s from %s update and action is NEW",status.getName(),host)
                 ##initialize with configure file
                 container.initialize(self.configure)
                 ##update/initialize the configure file
@@ -56,7 +59,7 @@ class HostToContainerManager:
                     self.hostToContainers[host].append(container)
             ##delete this container from host 
             elif status.getAction() == ContainerAction.DIE:
-                #log.info("container %s from %s update and action is DELETE",status.getName(),host)
+                log.info("container %s from %s update and action is DELETE",status.getName(),host)
                 container = self.findContainerOnHost(host,status.getID()) 
                 if container == None:
                     log.error("container %s not found when deleting",status.getName())
@@ -64,11 +67,13 @@ class HostToContainerManager:
                     self.hostToContainers[host].remove(container) 
                     del self.liveContainers[status.getName()]
             elif status.getAction() == ContainerAction.UPDATE:
-                #log.info("container %s from %s update and action is UPDATE",status.getName(),host)
+                log.info("container %s from %s update and action is UPDATE",status.getName(),host)
                 container = self.findContainerOnHost(host,status.getID()) 
                 if container == None:
                     log.error("container %s not found when updating",status.getName())
                 else:
+                    ##analyzie network
+                    self.netAnalyze.update(container.getName(),status.getNetflow())
                     container.updateCgroup(status.getCgroupKeyValues())
 
          

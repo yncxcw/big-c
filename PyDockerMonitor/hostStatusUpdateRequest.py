@@ -1,7 +1,11 @@
 #!/usr/bin/python
 
+import logging
+
 import json
-from ContainerFlow import ContainerConnect 
+from containerFlow import ContainerConnect 
+
+log = logging.getLogger("RMDocker.HostUpdate")
 
 class ContainerAction:
 
@@ -80,8 +84,11 @@ class ContainerUpdate:
     def _class_to_dict_(obj):
         assert(isinstance(obj,ContainerUpdate))
         netflows = []
-        for net in obj.getNetflow():
-            netflows.append(ContainerConnect._class_to_dict_(net))
+        if obj.getNetflow() is not None:
+            for net in obj.getNetflow():
+                netflows.append(ContainerConnect._class_to_dict_(net))
+        else:
+            pass
         return{"__name__"       : ContainerUpdate.__name__,
               "name"            : obj.name,
               "id"              : obj.id,
@@ -99,7 +106,7 @@ class ContainerUpdate:
         containerUpdate = ContainerUpdate(name  =dic["name"],
                                           id    =dic["id"]  ,
                                           action=dic["action"],
-                                          cgroupKeyValues=dic["cgroupKeyValues"]
+                                          cgroupKeyValues=dic["cgroupKeyValues"],
                                           netflows = netflows
                                          )
         return containerUpdate 

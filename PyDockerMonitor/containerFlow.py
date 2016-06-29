@@ -33,9 +33,32 @@ class ContainerConnect:
     def get_state(self):
         return self.state
 
+    def equal(self,connect):
+        if self.lport != connect.lport:
+            return False
+
+        if self.laddr != connect.laddr:
+            return False
+
+        if self.rport != connect.rport:
+            return False
+
+        if self.raddr != connect.raddr:
+            return False
+
+        if self.state != connect.state:
+            return False
+
+        return True
+
     @staticmethod
     def _class_to_dict_(obj):
         assert(isinstance(obj,ContainerConnect))
+        #log.info("lport %d",obj.lport)
+        #log.info("laddr %s",obj.laddr)
+        #log.info("rport %d",obj.rport)
+        #log.info("raddr %s",obj.raddr)
+        #log.info("state %s",obj.state)
         return{
                 "__name__" :ContainerConnect.__name__,
                 "lport"   :str(obj.lport),
@@ -52,7 +75,7 @@ class ContainerConnect:
                                    laddr = dic["laddr"],
                                    lport = int(dic["lport"]),
                                    raddr = dic["raddr"],
-                                   rport = int(dic["rport"])
+                                   rport = int(dic["rport"]),
                                    state = dic["state"]
                                   )
         return connect
@@ -65,12 +88,16 @@ class ContainerFlow:
         self.pid = pid
 
     def monitor(self):
+        log.info("get network flow for pid %d",self.pid)
+        process = None
         try:
             process = psutil.Process(self.pid)
         except Exception as excep:
             log.error("getting process error: %s",excep)
+
+        connections = None
         try:    
-            connections = process.get_connections()
+            connections = process.connections()
         except Exception as excep:
             log.error("getting connection error: %s",excep)
 
@@ -95,13 +122,15 @@ class ContainerFlow:
                 raddr = ""
                 rport = -1
 
-            status = connect.status
+            state = connect.status
             containerConnect = ContainerConnect(
-                                               lport = lport
-                                               laddr = laddr
-                                               rport = rport
-                                               raddr = raddr
+                                               lport = lport,
+                                               laddr = laddr,
+                                               rport = rport,
+                                               raddr = raddr,
+                                               state = state
                                                )
             containerConnects.append(containerConnect)
+        return containerConnects
 
 

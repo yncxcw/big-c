@@ -140,15 +140,17 @@ class LiveContainerManager:
                 self.updateContianer(containerResponse.getID(),containerResponse.getCgroupKeyValues())
                                    
     def constructionContainerUpdate(self,container,action):
+        ##network flow detect(all plungable function added here)
         if self.configure.get("networkflow") is not None:
             networkflows = container.getWorkFlow()
         else:
             networkflows = None
+
         containerUpdate = ContainerUpdate(
                                           name=container.getName(),
                                           id=container.getID(),
                                           action=action,
-                                          cgroupKeyValues=container.getCgroupKeyValues()
+                                          cgroupKeyValues=container.getCgroupKeyValues(),
                                           netflows = networkflows 
                                          )
         #print (container.getCgroupKeyValues())
