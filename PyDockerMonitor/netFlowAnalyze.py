@@ -35,12 +35,14 @@ class NetflowAnalyze:
             return False
         
     def update(self,container,netflow):
-        #log.info("get network flow for %s length %d",container,len(netflow))
+        ##nothing need to update
+        if len(netflow) == 0:
+            return 
+
         old_flow = self.containerToNet.get(container)
         ##we update
         self.containerToNet[container] = netflow
         #if  self.netEquals(old_flow,netflow):
-        #    log.info("network flow not changed")
         #    ##We do nothing, because network status remains unchanged
         #    return
 
