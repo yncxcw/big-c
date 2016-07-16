@@ -1,6 +1,6 @@
 #!/usr/bin/expect
 
-set password 1
+set password password
 spawn su root
 expect "Password"
 send "$password\r"

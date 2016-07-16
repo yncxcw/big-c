@@ -43,6 +43,7 @@ class ContainerTracker:
     def currentTime(self):
 	    return int(round(time.time()*1000))	
 
+    @Pyro4.expose
     def register(self,host):
 	    ## we have already seen this host before
         if host in self.hostToTimeStamp.keys():
@@ -56,6 +57,7 @@ class ContainerTracker:
 
         return True
 
+    @Pyro4.expose
     def statusUpdate(self, dict_hostUpdate):
         hostUpdate=HostUpdate._dict_to_class_(dict_hostUpdate)
         #log.info("get heartbeat: %s",hostUpdate.getHost()) 
@@ -89,7 +91,7 @@ class ContainerTracker:
         dict_hostResponse = HostResponse._class_to_dict_(hostResponse)
         return dict_hostResponse   
 
-
+    @Pyro4.expose
     def containerCommand(self,dict_containerCommand):
         command = YarnCommand._dict_to_class_(dict_containerCommand)
         if command.get_id() is None:
@@ -98,6 +100,7 @@ class ContainerTracker:
         return self.containerScheduler.schedule(command)
 
     ##TODO get container run time information
+    @Pyro4.expose
     def containerPoll(self,containerId):
         pass
 

@@ -3,8 +3,8 @@
 this="`dirname "$0"`"
 this="`cd "$this"/../;pwd`"
 
-
-export RMDOCKER_PASSWORD=1
+export RMDOCKER_NAME_SERVER=host6
+export RMDOCKER_PASSWORD=password
 export RMDOCKER_SLAVE_SLEEP=2
 export RMDOCKER_SLAVES="slaves"
 export RMDOCKER_PREFIX="$this"

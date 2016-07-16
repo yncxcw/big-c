@@ -38,7 +38,7 @@ case $2  in
  
   
   if [ $1 = "master" ]; then 
-  nohup python3 -m Pyro4.naming -n ym > myout1.file 2>&1& #< /dev/null& 
+  nohup python3 -m Pyro4.naming -n $RMDOCKER_NAME_SERVER > myout1.file 2>&1& #< /dev/null& 
   newpid=$!
   echo $newpid > $pid_name
   echo "startting nameserver as process $newpid"  
