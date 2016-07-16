@@ -6,7 +6,7 @@
 ##configure Name Server
 nameserverID   = container.master
 nameserverPort = 9090
-nameserverHost = ym
+nameserverHost = host6
 daemonserverPort = 56181
 #networkflow      = 1  
 
