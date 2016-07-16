@@ -3,7 +3,7 @@ import os
 
 import time
 import logging
-
+import Pyro4
 from hostStatusUpdateRequest import HostUpdate,ContainerUpdate,ContainerAction
 from hostStatusUpdateResponse import ContainerCommand,HostResponse,ContainerResponse 
 from containerScheduler import ContainerScheduler
