@@ -1423,7 +1423,7 @@ public class CapacityScheduler extends
 	  if(dockerMonitorEnabled){
 		if(dockerMonitor.ResumeContainer(cont.getContainerId())){
 			
-			LOG.info("successfully resume container: "+cont.getContainerId());
+			LOG.info("sr container: "+cont.getContainerId());
 		}else{
 			LOG.info("we get error when we are trying to resume container  "+cont.getContainerId()+"please check your log");	
 		}  
@@ -1448,7 +1448,7 @@ public class CapacityScheduler extends
    //we do not recover requests here,incontrast we just need to suspend a container
 	if(dockerMonitor.DehydrateContainer(cont.getContainerId())){	
     
-		LOG.info("successfully suspend container: "+cont.getContainerId());
+		LOG.info("ss container: "+cont.getContainerId());
 		completedContainer(cont, SchedulerUtils.createPreemptedContainerStatus(
 		      cont.getContainerId(), SchedulerUtils.PREEMPTED_CONTAINER),
 		      RMContainerEventType.SUSPEND);

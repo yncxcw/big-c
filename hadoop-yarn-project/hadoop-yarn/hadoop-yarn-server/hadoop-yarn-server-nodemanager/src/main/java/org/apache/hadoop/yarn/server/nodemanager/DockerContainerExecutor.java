@@ -146,8 +146,7 @@ public class DockerContainerExecutor extends ContainerExecutor {
                              List<String> localDirs, List<String> logDirs) throws IOException {
     String containerImageName = getConf().get(YarnConfiguration.NM_DOCKER_CONTAINER_EXECUTOR_IMAGE_NAME,YarnConfiguration.NM_DEFAULT_DOCKER_CONTAINER_EXECUTOR_IMAGE_NAME);
     
-    
-    LOG.info("containerImageName from launchContext: " + containerImageName);
+    LOG.info("image name: "+containerImageName);
     
     Preconditions.checkArgument(!Strings.isNullOrEmpty(containerImageName), "Container image must not be null");
     containerImageName = containerImageName.replaceAll("['\"]", "");

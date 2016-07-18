@@ -107,29 +107,43 @@ class ContainerScheduler:
     def suspendContainerResponse(self,container):
         log.info("enter suspend")
         ##set memory 1% of total memory
+        memory_value = int(ContainerScheduler.getContainerMemoryLimit(container))
         old_limit = str(int(ContainerScheduler.getContainerMemoryLimit(container)))+"m"
         container.put("memory","memory.limit_in_bytes",old_limit)
-        limit    = "100m"
-        ##set cpu usage 1% of total cpu frequency
+        ##set cpu usage 1% of total cpu frequency,suspense cpu first
         quota = "10000"
         period= "1000000"
-        cgroupKeyValues={"memory":{
-                                   "memory.limit_in_bytes":limit 
-                                   },
-                        "cpu"    :{
+        cgroupCpuKeyValue ={
+                          "cpu"    :{
                                    "cpu.cfs_period_us"    :period,
                                    "cpu.cfs_quota_us"     :quota
                                    }
-                        }
-        log.info("after keyvalue")
-        containerResponse = ContainerScheduler._make_containerResponse_(
+
+                          }
+        containerCpuResponse = ContainerScheduler._make_containerResponse_(
                                                                         id             = container.getID(),
                                                                         command        = ContainerCommand.UPDATE_CGROUP_PARAMETER,
-                                                                        cgroupKeyValues=cgroupKeyValues
+                                                                        cgroupKeyValues=cgroupCpuKeyValue
                                                                         )
+        self.hostToCommands[container.getHost()].append(containerCpuResponse)
+        ##suspense memory incrementally
+        while memory_value > 128:
+            memory_value = memory_value * 0.9
+            memory_value_str = str(memory_value)+"m"
+            cgroupMemoryKeyValue={
+                                 "memory":{
+                                          "memory.limit_in_bytes":memory_value_str
+                                    }
+                                  }
+            containerMemoryResponse = ContainerScheduler._make_containerResponse_(
+                                                                                id             = container.getID(),
+                                                                                command        = ContainerCommand.UPDATE_CGROUP_PARAMETER,
+                                                                                cgroupKeyValues=cgroupMemoryKeyValue
+                                                                               )
+            self.hostToCommands[container.getHost()].append(containerMemoryResponse)
+
         container.setStatus(CTContainerStatus.SUSPEND)
         log.info("suspend container %s",container.getName())
-        self.hostToCommands[container.getHost()].append(containerResponse)
 
     
     
