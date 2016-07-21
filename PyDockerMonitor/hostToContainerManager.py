@@ -185,7 +185,7 @@ class CTContainer:
             return
         for key,value in keyValues.items():
             ##TODO for debug
-            log.info("container %s get key %s, value %s",self.getName(),key,value)
+            #log.info("container %s get key %s, value %s",self.getName(),key,value)
             self.cgroups[name].updateValue(key,value)
 
     def updateCgroupKeyValue(self,name,key,value):
