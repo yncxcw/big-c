@@ -10,7 +10,7 @@ log=logging.getLogger("RMDocker.Parameter")
 class Parameter:
 
 
-    retried = 4
+    retried = 10
 
 
     def __init__(self,name,path,configure):
@@ -69,6 +69,8 @@ class Parameter:
             break
         if isSuccess: 
             self.changed = False
+        else:
+            log.error("write value error")
         return isSuccess
         
     def get(self):

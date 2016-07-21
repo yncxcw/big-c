@@ -1536,7 +1536,7 @@ public class LeafQueue extends AbstractCSQueue {
 	         
 	         // if we come here, container has been resumed
 	         if(!application.isSuspending()){
-	        	 LOG.info(application.getApplicationAttemptId()+"has been move out of suspending list");
+	        	 LOG.info(application.getApplicationAttemptId()+"out suspending list");
 	        	 this.suspendedApps.remove(application.getApplicationAttemptId());
 	         }
 	    	// Inform the node
@@ -1759,6 +1759,7 @@ public class LeafQueue extends AbstractCSQueue {
         	application.containerSuspend(rmContainer, containerStatus, event);
         	//suspend and resume in fifo order
             if(!suspendedApps.contains(application.getApplicationAttemptId())){
+            	LOG.info(application.getApplicationAttemptId()+"into suspending list");
             	suspendedApps.add(application.getApplicationAttemptId());
             }
             //we suspend the container on this node
