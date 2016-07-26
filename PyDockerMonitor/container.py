@@ -150,7 +150,7 @@ class Container(threading.Thread):
                 for name in cgroup:
                     for key,value in cgroup[name].items():
                         ##we append the new key
-                        if self.task_map[key] is not None:
+                        if self.task_map.get(key) is not None:
                             self.task_map[key].append(value)
                         ##it's a new key we never met before
                         else:
@@ -159,7 +159,6 @@ class Container(threading.Thread):
                             log.info("append new key item name %s key %s",name,key)
                             new_key_item = (name,key)
                             self.task_key.append(new_key_item)
-                            assert(self.task_map[key] is None)
                             ##update task_map
                             self.task_map[key] = []
                             self.task_map[key].append(value)
