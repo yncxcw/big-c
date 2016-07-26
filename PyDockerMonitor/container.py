@@ -106,9 +106,11 @@ class Container(threading.Thread):
                     ##we should make sure if at least one value
                     ##in task_map[key]
                     value     = self.task_map[key].pop()
+                    log.info("get name %s key %s value %s",name,key,value)
                     if len(self.task_map[key]) == 0:
                         del self.task_map[key]
                         ##each time we delete the first element of the list
+                        log.info("delete key %s",key)
                         delete_item = self.task_key.pop()
                         assert(delete_item[1] == key)
                         log.info("delete item %s",key)
