@@ -12,7 +12,7 @@ class Container(threading.Thread):
   
      
     def __init__(self,id,name,configure):
-        Thread.__init__(self)
+        threading.Thread.__init__(self)
         self.image = ""
         self.status= ""
         self.pid   = 0
