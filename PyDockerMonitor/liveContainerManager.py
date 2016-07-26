@@ -106,7 +106,7 @@ class LiveContainerManager:
         pass
 
     def updateContianers(self,containerToCgroups):
-        for id in containerToCgroups.keys()
+        for id in containerToCgroups.keys():
             try:
                 container = self.liveContainers[id]
             except Exception as error:
