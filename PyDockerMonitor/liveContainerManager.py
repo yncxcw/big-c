@@ -116,7 +116,7 @@ class LiveContainerManager:
                 log.error("container is not running")
                 return
             ##add the cgroups to contaienr's task list
-            container.updateValues(containerToCgroups[key])
+            container.update(containerToCgroups[id])
 
          
     ##execute the command sent back from master
