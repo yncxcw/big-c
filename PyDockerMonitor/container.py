@@ -97,29 +97,29 @@ class Container(threading.Thread):
             if len(self.task_key) == 0:
                 time.sleep(1)
             else:
-                log.info("enter thread lock %s",self.name)
                 name=None
                 key=None
                 value=None
                 with self.task_lock:
                     log.info("enter thread update %s",self.name)
+                    log.info("task_key %s",self.task_key)
+                    log.info("task_map %s",self.task_map)
                     task_item = self.task_key[0]
                     name      = task_item[0]
                     key       = task_item[1]
                     ##we should make sure if at least one value
                     ##in task_map[key]
-                    value     = self.task_map[key].pop()
+                    value     = self.task_map[key].pop(0)
                     log.info("get name %s key %s value %s",name,key,value)
                     if len(self.task_map[key]) == 0:
                         del self.task_map[key]
                         ##each time we delete the first element of the list
                         log.info("delete key %s",key)
-                        delete_item = self.task_key.pop()
+                        delete_item = self.task_key.pop(0)
                         #assert(delete_item[1] == key)
                         log.info("delete item %s",delete_item)
                     log.info("exit thread update %s",self.name)
                 log.info("we update name %s key %s value %s",name,key,value)
-                log.info("exit thread lock %s",self.name)
                 ##we do actually update and sync here
                 self.updateKeyValue(name,key,value)
                 self.syncKeyValue(name,key)
@@ -142,7 +142,6 @@ class Container(threading.Thread):
         ##update cgroup in order, this the the order
         ##how we update cgroup
         ##delete previous key to override
-        log.info("enter update lock %s",self.name)
         with self.task_lock:
             log.info("enter update")
             for cgroup in cgroups:
@@ -168,7 +167,6 @@ class Container(threading.Thread):
                             self.task_map[key] = []
                             self.task_map[key].append(value)
             log.info("exit update %s",self.name)
-        log.info("exit update lock %s",self.name)
     
     def updateKeyValue(self,name,key,value):
         self.cgroups[name].update(key,value)
