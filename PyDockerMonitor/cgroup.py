@@ -63,12 +63,8 @@ class Cgroup:
         for parameter in self.subParameters.values():
             parameter.read()
 
-    def sync(self):
-        isSuccess = True
-        for parameter in self.subParameters.values():
-            if parameter.sync() is False:
-                isSuccess = False
-        return isSuccess
+    def sync(self,key):
+        return self.subParameters[key].sync()
 
     def printCgroup(self):
         for parameter in self.subParameters.keys():

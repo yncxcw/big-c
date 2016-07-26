@@ -64,6 +64,9 @@ class LiveContainerManager:
                 log.info("created containers: %s",container.getName())
                 ##this is a newly set up container
                 self.liveContainers[container.getID()] = container
+                ##start its update thread
+                container.start()
+                ##construct its initial key values
                 status = self.constructionContainerUpdate(container,ContainerAction.NEW)
                 statusList.append(status)
                 ##we have already seen this contianer before, just sent update info
@@ -101,21 +104,19 @@ class LiveContainerManager:
     def startContainer(self,id):
         ##TODO
         pass
-    def updateContianer(self,id,cgroupKeyValues):
-        try:
-            container = self.liveContainers[id]
-        except Exception as error:
-            log.error("find contianer error %s",error)
-        ##update key value
-        if container.isRunning() is False:
-            log.error("container is not running")
-            return
-        for cgroup in cgroupKeyValues.keys():
-            for key in cgroupKeyValues[cgroup].keys():
-                container.updateValue(cgroup,key,cgroupKeyValues[cgroup][key])
-        ##write to file system
-        container.sync()
-        ##TODO add log here mark write success 
+
+    def updateContianers(self,containerToCgroups):
+        for id in containerToCgroups.keys()
+            try:
+                container = self.liveContainers[id]
+            except Exception as error:
+                log.error("find contianer error %s",error)
+            ##update key value
+            if container.isRunning() is False:
+                log.error("container is not running")
+                return
+            ##add the cgroups to contaienr's task list
+            container.updateValues(containerToCgroups[key])
 
          
     ##execute the command sent back from master
@@ -125,19 +126,31 @@ class LiveContainerManager:
             return
         if hostUpdate.getContainerResponses() is None:
             return
+
+        ##store cgroup updating for one heartbeat
+        containerToCgroups = {}
         for containerResponse in hostUpdate.getContainerResponses():
             ##none command
             if containerResponse.getCommand() is ContainerCommand.NONE:
                 continue
             elif containerResponse.getCommand() is ContainerCommand.KILL_CONTAINER:
+                ##we do it immediately
                 log.info("kill command %s",containerResponse.getID())
                 self.killContainer(containerResponse.getID()) 
             elif containerResponse.getCommand() is ContainerCommand.START_CONTAINER:
+                ##we do it immediately
                 log.info("start command %s",containerResponse.getID())
                 self.startContainer(containerResponse.getID()) 
             elif containerResponse.getCommand() is ContainerCommand.UPDATE_CGROUP_PARAMETER:
                 log.info("update command %s",containerResponse.getID())
-                self.updateContianer(containerResponse.getID(),containerResponse.getCgroupKeyValues())
+                cnt_id = containerResponse.getID()
+                if containerToCgroups.get(cnt_id) is None:
+                    containerToCgroups[cnt_id] = []
+                    containerToCgroups[cnt_id].append(containerResponse.getCgroupKeyValues())
+                else:
+                    containerToCgroups[cnt_id].append(containerResponse.getCgroupKeyValues())
+
+        self.updateContianers(containerToCgroups)
                                    
     def constructionContainerUpdate(self,container,action):
         ##network flow detect(all plungable function added here)

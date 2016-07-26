@@ -1,14 +1,14 @@
 #!/usr/bin/python
 
 import logging
-
+import threading
 from cgroup import Cgroup
 from containerFlow import ContainerFlow
 import os
 
 log = logging.getLogger("RMDocker.Container")
 
-class Container:
+class Container(threading.Thread):
   
      
     def __init__(self,id,name,configure):
@@ -20,6 +20,10 @@ class Container:
         self.testPath="/sys/fs/cgroup/memory/docker/"+str(id)
         self.configure = configure
         self.cgroups = {}
+        ##task key list and its hash map
+        self.task_key = []
+        self.task_map = {}
+        self.task_lock= threading.Lock()
         ##read in pid
         pid_path = self.testPath+"/cgroup.procs"
         try:
@@ -80,18 +84,84 @@ class Container:
         for key in self.cgroups.keys():
             cgroupKeyValues[key] = self.cgroups[key].getKeyValues()
         return cgroupKeyValues
-  
-    def updateValue(self,name,key,value):
+
+
+    ##a thread to execute update command
+    ##the order is restricted by task_map
+    ##and task_key
+    def run(self):
+        while(self.isRunning()):
+            if len(self.task_key) == 0:
+                sleep(1)
+            else:
+                with self.task_lock:
+                    task_item = self.task_key[0]
+                    name      = task_item[0]
+                    key       = task_item[1]
+                    ##we should make sure if at least one value
+                    ##in task_map[key]
+                    value     = self.task_map[key].pop()
+                    if len(self.task_map[key]) == 0:
+                        del self.task_map[key]
+                        ##each time we delete the first element of the list
+                        delete_item = self.task_key.pop()
+                        assert(delete_item[1] == key)
+                        log.info("delete item %s",key)
+                log.info("we update name %s key %s value %s",name,key,value)
+                ##we do actually update and sync here
+                self.updateKeyValue(name,key,value)
+                self.syncKeyValue(name,key)
+                
+        ##TODO release resource
+
+
+    ##this is an one time updating for heartbeat
+    ##if we found previous value for a same key, we override this value
+    ##cgroup is a list of cgroups
+    ##cgroup is a hash map
+    ##{ 
+    ##      "cpu":{
+    ##           "cpu.cfs_period_us":100000,
+    ##           "cpu.cfs_quota_us":1000
+    ##            }
+    ##}
+    def update(self,cgroups):
+        ##update cgroup in order, this the the order
+        ##how we update cgroup
+        ##delete previous key to override
+        with self.task_lock:
+            for cgroup in cgroups:
+                for name in cgroup:
+                    for key in cgroup[name].keys():
+                        if self.task_map[key] is not None:
+                            self.task_map[key].clear()
+            ##we insert new key value
+            for cgroup in cgroups:
+                for name in cgroup:
+                    for key,value in cgroup[name].items():
+                        ##we append the new key
+                        if self.task_map[key] is not None:
+                            self.task_map[key].append(value)
+                        ##it's a new key we never met before
+                        else:
+                            ##like(memory,memory,limite_in_bytes)
+                            ##update task_key
+                            new_key_item = (name,key)
+                            self.task_key.append(new_key_item)
+                            assert(self.task_map[key] is None)
+                            ##update task_map
+                            self.task_map[key] = []
+                            self.task_map[key].append(value)
+    
+    def updateKeyValue(self,name,key,value):
         self.cgroups[name].update(key,value)
 
     def read(self):
         for key in self.cgroups.keys():
             self.cgroups[key].read()
     
-    def sync(self):
-        isSuccess = False
-        for key in self.cgroups.keys():
-           self.cgroups[key].sync()     
+    def syncKeyValue(self,name,key):
+        return self.cgroups[name].sync(key)     
 
     def getCgroupSize(self):
         return len(self.cgroups)
