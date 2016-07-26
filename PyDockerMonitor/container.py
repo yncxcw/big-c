@@ -98,6 +98,9 @@ class Container(threading.Thread):
                 time.sleep(1)
             else:
                 log.info("enter thread lock %s",self.name)
+                name=None
+                key=None
+                value=None
                 with self.task_lock:
                     log.info("enter thread update %s",self.name)
                     task_item = self.task_key[0]
