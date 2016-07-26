@@ -26,7 +26,7 @@ class Container(threading.Thread):
         ##task key list and its hash map
         self.task_key = []
         self.task_map = {}
-        self.task_lock= threading.Lock()
+        self.task_lock= threading.RLock()
         ##read in pid
         pid_path = self.testPath+"/cgroup.procs"
         try:
@@ -97,7 +97,9 @@ class Container(threading.Thread):
             if len(self.task_key) == 0:
                 time.sleep(1)
             else:
+                log.info("enter thread lock %s",self.name)
                 with self.task_lock:
+                    log.info("enter thread update %s",self.name)
                     task_item = self.task_key[0]
                     name      = task_item[0]
                     key       = task_item[1]
@@ -110,10 +112,13 @@ class Container(threading.Thread):
                         delete_item = self.task_key.pop()
                         assert(delete_item[1] == key)
                         log.info("delete item %s",key)
+                    log.info("exit thread update %s",self.name)
                 log.info("we update name %s key %s value %s",name,key,value)
+                log.info("exit thread lock %s",self.name)
                 ##we do actually update and sync here
                 self.updateKeyValue(name,key,value)
                 self.syncKeyValue(name,key)
+        log.info("safe exit from thread container %s",self.name)
                 
         ##TODO release resource
 
@@ -132,7 +137,9 @@ class Container(threading.Thread):
         ##update cgroup in order, this the the order
         ##how we update cgroup
         ##delete previous key to override
+        log.info("enter update lock %s",self.name)
         with self.task_lock:
+            log.info("enter update")
             for cgroup in cgroups:
                 for name in cgroup:
                     for key in cgroup[name].keys():
@@ -149,12 +156,15 @@ class Container(threading.Thread):
                         else:
                             ##like(memory,memory,limite_in_bytes)
                             ##update task_key
+                            log.info("append new key item name %s key %s",name,key)
                             new_key_item = (name,key)
                             self.task_key.append(new_key_item)
                             assert(self.task_map[key] is None)
                             ##update task_map
                             self.task_map[key] = []
                             self.task_map[key].append(value)
+            log.info("exit update %s",self.name)
+        log.info("exit update lock %s",self.name)
     
     def updateKeyValue(self,name,key,value):
         self.cgroups[name].update(key,value)
