@@ -53,8 +53,8 @@ class Parameter:
             return True
         count = self.retried
         file=None
-        #log.info("key %s",self.path)
-        #log.info("value %s",self.value)
+        log.info("key %s",self.path)
+        log.info("value %s",self.value)
         while count > 0:
             try:
                 file=open(self.path,"w")

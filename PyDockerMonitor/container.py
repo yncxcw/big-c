@@ -6,6 +6,8 @@ from cgroup import Cgroup
 from containerFlow import ContainerFlow
 import os
 
+import time
+
 log = logging.getLogger("RMDocker.Container")
 
 class Container(threading.Thread):
@@ -93,7 +95,7 @@ class Container(threading.Thread):
     def run(self):
         while(self.isRunning()):
             if len(self.task_key) == 0:
-                sleep(1)
+                time.sleep(1)
             else:
                 with self.task_lock:
                     task_item = self.task_key[0]
@@ -134,7 +136,7 @@ class Container(threading.Thread):
             for cgroup in cgroups:
                 for name in cgroup:
                     for key in cgroup[name].keys():
-                        if self.task_map[key] is not None:
+                        if self.task_map.get(key) is not None:
                             self.task_map[key].clear()
             ##we insert new key value
             for cgroup in cgroups:
