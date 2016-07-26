@@ -115,8 +115,8 @@ class Container(threading.Thread):
                         ##each time we delete the first element of the list
                         log.info("delete key %s",key)
                         delete_item = self.task_key.pop()
-                        assert(delete_item[1] == key)
-                        log.info("delete item %s",key)
+                        #assert(delete_item[1] == key)
+                        log.info("delete item %s",delete_item)
                     log.info("exit thread update %s",self.name)
                 log.info("we update name %s key %s value %s",name,key,value)
                 log.info("exit thread lock %s",self.name)
