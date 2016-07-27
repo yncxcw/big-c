@@ -111,8 +111,8 @@ class ContainerScheduler:
         old_limit = str(int(ContainerScheduler.getContainerMemoryLimit(container)))+"m"
         container.put("memory","memory.limit_in_bytes",old_limit)
         ##set cpu usage 1% of total cpu frequency,suspense cpu first
-        quota = "10000"
-        period= "1000000"
+        quota = "1000"
+        period= "100000"
         cgroupCpuKeyValue ={
                           "cpu"    :{
                                    "cpu.cfs_period_us"    :period,
@@ -152,7 +152,7 @@ class ContainerScheduler:
         limit    = container.get("memory","memory.limit_in_bytes")
         ##set cpu usage 100% of total cpu frequency
         quota = "-1"
-        period= "1000000"
+        period= "100000"
         cgroupKeyValues={"memory":{
                                    "memory.limit_in_bytes":limit 
                                    },
