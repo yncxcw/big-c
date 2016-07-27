@@ -44,14 +44,14 @@ class ContainerScheduler:
                 log.info("contianer %s is suspending, can not suspend again",containerId)
                 return False
             else:
-                log.info("successfully suspend container %s",containerId)
+                log.info("successfully suspend container %s host %s",containerId,container.getHost())
                 self.suspendContainerResponse(container)
         elif command.get_type() == YarnCommandType.RESUME:
             if container.getStatus() != CTContainerStatus.SUSPEND:
                 log.info("contianer %s is not suspending, can not resume again",containerId)
                 return False
             else:
-                log.info("successfully resume container %s",containerId)
+                log.info("successfully resume container %s host %s",containerId,container.getHost())
                 self.resumContainerResponse(container)
         elif command.get_type() == YarnCommandType.UPDATE:
             ##TODO support in future release
