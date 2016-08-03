@@ -806,7 +806,7 @@ public class LeafQueue extends AbstractCSQueue {
     				LOG.info("resume containers:insufficienct resource for queue"+this.getQueueName()+", return here");
     		            return NULL_ASSIGNMENT;
     		       }
-    			  //compute user limit 
+    			  //compute user limit nnn
     			  Resource userLimit = 
     		              computeUserLimitAndSetHeadroom(app, clusterResource, 
     		                  required, null); 
