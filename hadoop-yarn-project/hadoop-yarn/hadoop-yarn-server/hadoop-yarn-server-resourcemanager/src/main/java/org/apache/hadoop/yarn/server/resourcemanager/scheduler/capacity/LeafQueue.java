@@ -695,7 +695,8 @@ public class LeafQueue extends AbstractCSQueue {
       removeApplicationAttempt(application, getUser(application.getUser()));
     }
     
-    LOG.info("finish Application attempt"+application.getApplicationId().getId()+"in queue"+queue);
+    LOG.info("finish Application attempt"+application.getApplicationId()+"in queue"+queue);
+    
     getParent().finishApplicationAttempt(application, queue);
   }
 
@@ -709,7 +710,10 @@ public class LeafQueue extends AbstractCSQueue {
       user.getResourceUsage().decAMUsed(application.getAMResource());
     }
     applicationAttemptMap.remove(application.getApplicationAttemptId());
-
+    
+    //remove from suspended list
+    this.suspendedApps.remove(application.getApplicationAttemptId());
+    
     user.finishApplication(wasActive);
     if (user.getTotalApplications() == 0) {
       users.remove(application.getUser());
