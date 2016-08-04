@@ -61,8 +61,8 @@ class Parameter:
                 file.write(str(self.value))
                 file.close()
             except Exception as error:
-                log.error("write value to file with error %s",error)
                 count = count - 1
+                log.error("write value to file with error %s count %d",error,10-count)
                 time.sleep(1)
                 continue
             isSuccess = True

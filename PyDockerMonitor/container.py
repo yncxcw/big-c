@@ -101,7 +101,7 @@ class Container(threading.Thread):
                 key=None
                 value=None
                 with self.task_lock:
-                    log.info("enter thread update %s",self.name)
+                    log.info("enter thread update %s id %s",self.name,self.id)
                     log.info("task_key %s",self.task_key)
                     log.info("task_map %s",self.task_map)
                     task_item = self.task_key[0]
