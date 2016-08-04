@@ -123,6 +123,7 @@ class Container(threading.Thread):
                 ##we do actually update and sync here
                 self.updateKeyValue(name,key,value)
                 self.syncKeyValue(name,key)
+                time.sleep(1)
         log.info("safe exit from thread container %s",self.name)
                 
         ##TODO release resource
