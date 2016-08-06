@@ -129,7 +129,7 @@ class ContainerScheduler:
         ##suspense memory incrementally
         while memory_value > 128:
             if memory_value > 1024:
-                memory_value = int(memory_value-1024)
+                memory_value = int(memory_value-2048)
             else:
                 memory_value = int(memory_value * 0.5)
             memory_value_str = str(memory_value)+"m"
