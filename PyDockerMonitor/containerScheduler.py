@@ -128,8 +128,10 @@ class ContainerScheduler:
         self.hostToCommands[container.getHost()].append(containerCpuResponse)
         ##suspense memory incrementally
         while memory_value > 128:
-            if memory_value > 1024:
-                memory_value = int(memory_value-2048)
+            if memory_value > 4*1024:
+                memory_value = int(memory_value-4096)
+            elif memory_value > 1024 and memory_value < 1024*4:
+                memory_value = int(memory_value-1024)
             else:
                 memory_value = int(memory_value * 0.5)
             memory_value_str = str(memory_value)+"m"
