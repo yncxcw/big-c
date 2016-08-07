@@ -572,7 +572,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
                 Resources.none())) {
               break;
             }
-            log.info("now try to preempt applicatin:"+fc.getApplicationId());
+            LOG.info("now try to preempt applicatin:"+fc.getApplicationId());
             preemptMap.put(
                 fc.getApplicationAttemptId(),
                 preemptFrom(fc, clusterResource, resToObtain,
