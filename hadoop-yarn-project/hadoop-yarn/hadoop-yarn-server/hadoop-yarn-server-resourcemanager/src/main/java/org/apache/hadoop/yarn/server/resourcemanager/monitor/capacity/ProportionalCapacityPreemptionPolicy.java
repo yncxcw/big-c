@@ -240,7 +240,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     Map<ApplicationAttemptId,Set<RMContainer>> toPreempt =
         getContainersToPreempt(queues, clusterResources);
 
-   // if (LOG.isDebugEnabled()) 
+   if (LOG.isDebugEnabled()) 
     {  
     logToCSV(queues);
     }
@@ -264,7 +264,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
                 ContainerPreemptEventType.SUSPEND_CONTAINER));
           }else{
         	  dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
-                      ContainerPreemptEventType.KILL_CONTAINER)); 
+                ContainerPreemptEventType.KILL_CONTAINER)); 
           }
           preempted.remove(container);
         } else {
@@ -561,6 +561,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 
         // lock the leafqueue while we scan applications and unreserve
         synchronized (qT.leafQueue) {
+          //what is the descending order
           NavigableSet<FiCaSchedulerApp> ns = 
               (NavigableSet<FiCaSchedulerApp>) qT.leafQueue.getApplications();
           Iterator<FiCaSchedulerApp> desc = ns.descendingIterator();
@@ -571,6 +572,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
                 Resources.none())) {
               break;
             }
+            log.info("now try to preempt applicatin:"+fc.getApplicationId());
             preemptMap.put(
                 fc.getApplicationAttemptId(),
                 preemptFrom(fc, clusterResource, resToObtain,
