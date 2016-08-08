@@ -188,6 +188,8 @@ public class NodeManager implements ContainerManagementProtocol {
           BuilderUtils.newContainer(containerID, this.nodeId, nodeHttpAddress,
             tokenId.getResource(), null, null // DKDC - Doesn't matter
             );
+      
+      LOG.info("Nodemanager get container resource   "+tokenId.getResource());
 
       ContainerStatus containerStatus =
           BuilderUtils.newContainerStatus(container.getId(),
