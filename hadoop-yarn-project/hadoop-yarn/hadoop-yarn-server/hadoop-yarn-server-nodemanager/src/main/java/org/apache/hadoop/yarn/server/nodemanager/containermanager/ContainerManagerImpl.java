@@ -796,6 +796,8 @@ public class ContainerManagerImpl extends CompositeService implements
      * belongs to correct Node Manager (part of retrieve password). c) It has
      * correct RMIdentifier. d) It is not expired.
      */
+	  
+	 LOG.info("entern start container Internal");
     authorizeStartRequest(nmTokenIdentifier, containerTokenIdentifier);
  
     if (containerTokenIdentifier.getRMIdentifier() != nodeStatusUpdater
@@ -831,6 +833,9 @@ public class ContainerManagerImpl extends CompositeService implements
 
     Credentials credentials = parseCredentials(launchContext);
 
+    LOG.info("internal get resource:"+containerTokenIdentifier.getResource());
+    
+    
     Container container =
         new ContainerImpl(getConfig(), this.dispatcher,
             context.getNMStateStore(), launchContext,
