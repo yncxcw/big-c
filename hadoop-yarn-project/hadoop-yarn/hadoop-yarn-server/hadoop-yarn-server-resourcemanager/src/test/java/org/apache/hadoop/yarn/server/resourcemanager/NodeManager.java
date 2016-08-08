@@ -155,6 +155,8 @@ public class NodeManager implements ContainerManagementProtocol {
   synchronized public StartContainersResponse startContainers(
       StartContainersRequest requests) 
   throws YarnException {
+	  
+	 LOG.info("enter startContainers ");
 
     for (StartContainerRequest request : requests.getStartContainerRequests()) {
       Token containerToken = request.getContainerToken();
@@ -199,8 +201,9 @@ public class NodeManager implements ContainerManagementProtocol {
       Resources.subtractFrom(available, tokenId.getResource());
       Resources.addTo(used, tokenId.getResource());
 
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("startContainer:" + " node=" + containerManagerAddress
+      //if (LOG.isDebugEnabled()) {
+      {
+        LOG.info("startContainer:" + " node=" + containerManagerAddress
             + " application=" + applicationId + " container=" + container
             + " available=" + available + " used=" + used);
       }
