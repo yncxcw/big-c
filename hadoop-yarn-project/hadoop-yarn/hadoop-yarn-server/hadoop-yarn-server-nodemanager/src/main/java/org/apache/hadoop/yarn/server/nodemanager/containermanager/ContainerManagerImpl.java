@@ -74,6 +74,7 @@ import org.apache.hadoop.yarn.api.records.ContainerState;
 import org.apache.hadoop.yarn.api.records.ContainerStatus;
 import org.apache.hadoop.yarn.api.records.LogAggregationContext;
 import org.apache.hadoop.yarn.api.records.NodeId;
+import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.api.records.SerializedException;
 import org.apache.hadoop.yarn.api.records.impl.pb.ApplicationIdPBImpl;
 import org.apache.hadoop.yarn.api.records.impl.pb.LogAggregationContextPBImpl;
@@ -832,9 +833,13 @@ public class ContainerManagerImpl extends CompositeService implements
 
     Credentials credentials = parseCredentials(launchContext);
 
-    LOG.info("internal get resource:"+containerTokenIdentifier.getResource());
-    LOG.info("internal cpuset:"+containerTokenIdentifier.getResource().getCpuSetCores().size());
-    
+    Resource resource = containerTokenIdentifier.getResource();
+    LOG.info("internal get resource:"+resource);
+    if(resource.getCpuSetCores() == null){
+      LOG.info("internal cpuset null");	
+    }else{
+      LOG.info("internal cpuset:"+containerTokenIdentifier.getResource().getCpuSetCores().size());
+    }
     Container container =
         new ContainerImpl(getConfig(), this.dispatcher,
             context.getNMStateStore(), launchContext,

@@ -627,6 +627,10 @@ public class ApplicationMasterService extends AbstractService implements
 		  container.getResource().setCpuSetCores(cpuSetCores);
 	  }
 	  
+	  for(Container container : containers){
+		 LOG.info("container cpuset:"+container.getResource().getCpuSetCores().size()); 
+	  }
+	  
 	  
   }
   
