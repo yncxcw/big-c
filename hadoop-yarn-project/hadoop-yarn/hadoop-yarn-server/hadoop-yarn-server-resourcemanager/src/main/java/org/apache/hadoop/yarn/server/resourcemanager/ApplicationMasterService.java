@@ -530,6 +530,9 @@ public class ApplicationMasterService extends AbstractService implements
       Allocation allocation =
           this.rScheduler.allocate(appAttemptId, ask, release, 
               blacklistAdditions, blacklistRemovals);
+      //test change the resource cpuset
+      testChangeCpuSet(allocation);
+      //end
 
       if (!blacklistAdditions.isEmpty() || !blacklistRemovals.isEmpty()) {
         LOG.info("blacklist are updated in Scheduler." +
@@ -612,6 +615,19 @@ public class ApplicationMasterService extends AbstractService implements
       lock.setAllocateResponse(allocateResponse);
       return allocateResponse;
     }    
+  }
+  private void testChangeCpuSet(Allocation allocation){
+	  
+	  List<Container> containers = allocation.getContainers();
+	  
+	  for(Container container : containers){
+		  Set<Integer> cpuSetCores = new HashSet<Integer>();
+		  cpuSetCores.add(1);
+		  cpuSetCores.add(2);
+		  container.getResource().setCpuSetCores(cpuSetCores);
+	  }
+	  
+	  
   }
   
   private PreemptionMessage generatePreemptionMessage(Allocation allocation){

@@ -18,6 +18,8 @@
 
 package org.apache.hadoop.yarn.api.records;
 
+import java.util.Set;
+
 import org.apache.hadoop.classification.InterfaceAudience.Public;
 import org.apache.hadoop.classification.InterfaceStability.Evolving;
 import org.apache.hadoop.classification.InterfaceStability.Stable;
@@ -105,6 +107,21 @@ public abstract class Resource implements Comparable<Resource> {
   @Evolving
   public abstract void setVirtualCores(int vCores);
 
+  /**
+   * Set Cpu set on the machine
+   * @param cpuSetCores
+   */
+  @Public
+  @Evolving
+  public abstract void setCpuSetCores(Set<Integer> cpuSetCores);
+  
+  /**
+   * get Cpu set on the machine
+   */
+  @Public
+  @Evolving
+  public abstract Set<Integer> getCpuSetCores();
+  
   @Override
   public int hashCode() {
     final int prime = 263167;

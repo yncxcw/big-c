@@ -56,7 +56,7 @@ message ContainerIdProto {
 message ResourceProto {
   optional int32 memory = 1;
   optional int32 virtual_cores = 2;
-  repeated int32 cpuset_cores = 3
+  repeated int32 cpuset_cores = 3;
 }
 
 message ResourceOptionProto {

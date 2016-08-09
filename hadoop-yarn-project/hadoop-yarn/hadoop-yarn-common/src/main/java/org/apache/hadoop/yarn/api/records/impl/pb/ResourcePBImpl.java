@@ -19,6 +19,9 @@
 package org.apache.hadoop.yarn.api.records.impl.pb;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
 import org.apache.hadoop.yarn.api.records.Resource;
@@ -30,6 +33,8 @@ import org.apache.hadoop.yarn.proto.YarnProtos.ResourceProtoOrBuilder;
 public class ResourcePBImpl extends Resource {
   ResourceProto proto = ResourceProto.getDefaultInstance();
   ResourceProto.Builder builder = null;
+  Set<Integer> cpuSetCores;
+  
   boolean viaProto = false;
   
   public ResourcePBImpl() {
@@ -87,6 +92,25 @@ public class ResourcePBImpl extends Resource {
     }
     return diff;
   }
+
+@Override
+public void setCpuSetCores(Set<Integer> cpuSetCores) {
+	maybeInitBuilder();
+	builder.clearCpusetCores();
+	builder.addAllCpusetCores(cpuSetCores);
+	this.cpuSetCores = cpuSetCores;	
+}
+
+@Override
+public Set<Integer> getCpuSetCores() {
+	if(this.cpuSetCores != null){
+		return this.cpuSetCores;
+	}
+	ResourceProtoOrBuilder p = viaProto ? proto : builder;
+	this.cpuSetCores = new HashSet<Integer>();
+	this.cpuSetCores.addAll(p.getCpusetCoresList());
+	return null;
+}
   
   
 }  

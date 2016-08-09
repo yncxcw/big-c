@@ -18,6 +18,8 @@
 
 package org.apache.hadoop.yarn.util.resource;
 
+import java.util.Set;
+
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
 import org.apache.hadoop.yarn.api.records.Resource;
@@ -58,6 +60,18 @@ public class Resources {
       }
       return diff;
     }
+
+	@Override
+	public void setCpuSetCores(Set<Integer> cpuSetCores) {
+		throw new RuntimeException("NONE cannot be modified!");
+		
+	}
+
+	@Override
+	public Set<Integer> getCpuSetCores() {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
   };
   
@@ -91,6 +105,18 @@ public class Resources {
       }
       return diff;
     }
+
+	@Override
+	public void setCpuSetCores(Set<Integer> cpuSetCores) {
+	  throw new RuntimeException("NONE cannot be modified!");
+		
+	}
+
+	@Override
+	public Set<Integer> getCpuSetCores() {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
   };
 

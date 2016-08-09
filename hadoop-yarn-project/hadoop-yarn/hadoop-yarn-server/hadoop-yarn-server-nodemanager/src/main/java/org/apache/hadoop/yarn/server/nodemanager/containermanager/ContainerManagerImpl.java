@@ -797,7 +797,6 @@ public class ContainerManagerImpl extends CompositeService implements
      * correct RMIdentifier. d) It is not expired.
      */
 	  
-	 LOG.info("entern start container Internal");
     authorizeStartRequest(nmTokenIdentifier, containerTokenIdentifier);
  
     if (containerTokenIdentifier.getRMIdentifier() != nodeStatusUpdater
@@ -816,7 +815,7 @@ public class ContainerManagerImpl extends CompositeService implements
     String user = containerTokenIdentifier.getApplicationSubmitter();
 
     LOG.info("Start request for " + containerIdStr + " by user " + user);
-
+ 
     ContainerLaunchContext launchContext = request.getContainerLaunchContext();
 
     Map<String, ByteBuffer> serviceData = getAuxServiceMetaData();
@@ -834,7 +833,7 @@ public class ContainerManagerImpl extends CompositeService implements
     Credentials credentials = parseCredentials(launchContext);
 
     LOG.info("internal get resource:"+containerTokenIdentifier.getResource());
-    
+    LOG.info("internal cpuset:"+containerTokenIdentifier.getResource().getCpuSetCores().size());
     
     Container container =
         new ContainerImpl(getConfig(), this.dispatcher,
