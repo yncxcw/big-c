@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -117,6 +118,8 @@ public class ContainerImpl implements Container {
       new ConcurrentHashMap<LocalResourceRequest, Path>();
   private final Map<LocalResourceRequest, Boolean> resourcesUploadPolicies =
       new ConcurrentHashMap<LocalResourceRequest, Boolean>();
+  
+  private final Set<Integer> cpuCores;
 
   // whether container has been recovered after a restart
   private RecoveredContainerStatus recoveredStatus =
@@ -127,7 +130,7 @@ public class ContainerImpl implements Container {
   public ContainerImpl(Configuration conf, Dispatcher dispatcher,
       NMStateStoreService stateStore, ContainerLaunchContext launchContext,
       Credentials creds, NodeManagerMetrics metrics,
-      ContainerTokenIdentifier containerTokenIdentifier) {
+      ContainerTokenIdentifier containerTokenIdentifier,Set<Integer> cpuCores) {
     this.daemonConf = conf;
     this.dispatcher = dispatcher;
     this.stateStore = stateStore;
@@ -142,6 +145,7 @@ public class ContainerImpl implements Container {
     ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     this.readLock = readWriteLock.readLock();
     this.writeLock = readWriteLock.writeLock();
+    this.cpuCores  = cpuCores;
 
     stateMachine = stateMachineFactory.make(this);
   }
@@ -152,9 +156,9 @@ public class ContainerImpl implements Container {
       Credentials creds, NodeManagerMetrics metrics,
       ContainerTokenIdentifier containerTokenIdentifier,
       RecoveredContainerStatus recoveredStatus, int exitCode,
-      String diagnostics, boolean wasKilled) {
+      String diagnostics, boolean wasKilled, Set<Integer> cpuCores) {
     this(conf, dispatcher, stateStore, launchContext, creds, metrics,
-        containerTokenIdentifier);
+        containerTokenIdentifier,cpuCores);
     this.recoveredStatus = recoveredStatus;
     this.exitCode = exitCode;
     this.recoveredAsKilled = wasKilled;
@@ -422,8 +426,10 @@ public class ContainerImpl implements Container {
   public ContainerStatus cloneAndGetContainerStatus() {
     this.readLock.lock();
     try {
-      return BuilderUtils.newContainerStatus(this.containerId,
-        getCurrentState(), diagnostics.toString(), exitCode);
+      ContainerStatus containerStatus = BuilderUtils.newContainerStatus(this.containerId,
+    	        getCurrentState(), diagnostics.toString(), exitCode);
+      containerStatus.setCpuCores(cpuCores);
+      return containerStatus;
     } finally {
       this.readLock.unlock();
     }

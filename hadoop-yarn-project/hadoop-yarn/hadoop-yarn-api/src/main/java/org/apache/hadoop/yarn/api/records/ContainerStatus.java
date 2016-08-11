@@ -18,6 +18,8 @@
 
 package org.apache.hadoop.yarn.api.records;
 
+import java.util.Set;
+
 import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceAudience.Public;
 import org.apache.hadoop.classification.InterfaceStability.Stable;
@@ -114,4 +116,18 @@ public abstract class ContainerStatus {
   @Private
   @Unstable
   public abstract void setDiagnostics(String diagnostics);
+  
+  
+  /**
+   * Get <em>cpuCores messages</em> for failed containers.
+   * @return <em>cpuCores messages</em> for failed containers
+   */
+  @Public
+  @Stable
+  public abstract Set<Integer> getCpuCores();
+  
+  @Private
+  @Unstable
+  public abstract void setCpuCores(Set<Integer> cpuCores);
+  
 }

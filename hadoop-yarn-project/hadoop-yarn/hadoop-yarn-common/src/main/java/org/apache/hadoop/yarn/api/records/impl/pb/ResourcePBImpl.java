@@ -92,25 +92,5 @@ public class ResourcePBImpl extends Resource {
     }
     return diff;
   }
-
-@Override
-public void setCpuSetCores(Set<Integer> cpuSetCores) {
-	maybeInitBuilder();
-	builder.clearCpusetCores();
-	builder.addAllCpusetCores(cpuSetCores);
-	this.cpuSetCores = cpuSetCores;	
-}
-
-@Override
-public Set<Integer> getCpuSetCores() {
-	if(this.cpuSetCores != null){
-		return this.cpuSetCores;
-	}
-	ResourceProtoOrBuilder p = viaProto ? proto : builder;
-	this.cpuSetCores = new HashSet<Integer>();
-	this.cpuSetCores.addAll(p.getCpusetCoresList());
-	return null;
-}
-  
   
 }  

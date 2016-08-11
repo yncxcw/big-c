@@ -35,9 +35,11 @@ import org.apache.hadoop.yarn.proto.YarnProtos.ApplicationIdProto;
 import org.apache.hadoop.yarn.proto.YarnProtos.ContainerIdProto;
 import org.apache.hadoop.yarn.proto.YarnServerCommonProtos.MasterKeyProto;
 import org.apache.hadoop.yarn.proto.YarnServerCommonProtos.NodeActionProto;
+import org.apache.hadoop.yarn.proto.YarnServerCommonServiceProtos.NodeContainerUpdateProto;
 import org.apache.hadoop.yarn.proto.YarnServerCommonServiceProtos.NodeHeartbeatResponseProto;
 import org.apache.hadoop.yarn.proto.YarnServerCommonServiceProtos.NodeHeartbeatResponseProtoOrBuilder;
 import org.apache.hadoop.yarn.proto.YarnServerCommonServiceProtos.SystemCredentialsForAppsProto;
+import org.apache.hadoop.yarn.server.api.protocolrecords.NodeContainerUpdate;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NodeHeartbeatResponse;
 import org.apache.hadoop.yarn.server.api.records.MasterKey;
 import org.apache.hadoop.yarn.server.api.records.NodeAction;
@@ -54,6 +56,7 @@ public class NodeHeartbeatResponsePBImpl extends
   private List<ContainerId> containersToCleanup = null;
   private List<ContainerId> containersToBeRemovedFromNM = null;
   private List<ApplicationId> applicationsToCleanup = null;
+  private List<NodeContainerUpdate> containersToUpdate = null; 
   private Map<ApplicationId, ByteBuffer> systemCredentials = null;
 
   private MasterKey containerTokenMasterKey = null;
@@ -78,6 +81,10 @@ public class NodeHeartbeatResponsePBImpl extends
   private void mergeLocalToBuilder() {
     if (this.containersToCleanup != null) {
       addContainersToCleanupToProto();
+    }
+    
+    if(this.containersToUpdate != null){
+       addContainersToUpdateToProto();
     }
     if (this.applicationsToCleanup != null) {
       addApplicationsToCleanupToProto();
@@ -344,6 +351,72 @@ public class NodeHeartbeatResponsePBImpl extends
     };
     builder.addAllContainersToBeRemovedFromNm(iterable);
   }
+  
+  @Override
+  public List<NodeContainerUpdate> getContainersToUpdate() {
+	  initContainersToUpdate();
+	  return this.containersToUpdate;
+  }
+  
+  private void initContainersToUpdate(){
+	  if(this.containersToUpdate != null) {
+		  return;
+	  }
+	  NodeHeartbeatResponseProtoOrBuilder p = viaProto ? proto : builder;
+	  List<NodeContainerUpdateProto> list = p.getContainersToUpdateList();
+	  this.containersToUpdate = new ArrayList<NodeContainerUpdate>();
+	  
+	  for(NodeContainerUpdateProto c : list){
+		  this.containersToUpdate.add(convertFromProtoFormat(c));
+	  }
+  }
+  
+  @Override
+  public void addNodeContainersToUpdate(List<NodeContainerUpdate> contaienrUpdates) {
+  	if (contaienrUpdates == null)
+  		 return;
+  	initContainersToUpdate();
+  	this.containersToUpdate.addAll(contaienrUpdates);
+  	
+  }
+  
+  private void addContainersToUpdateToProto() {
+	  
+	    maybeInitBuilder();
+	    builder.clearContainersToUpdate();
+	    if (this.containersToUpdate == null)
+	      return;
+	    Iterable<NodeContainerUpdateProto> iterable = new Iterable<NodeContainerUpdateProto>() {
+
+	      @Override
+	      public Iterator<NodeContainerUpdateProto> iterator() {
+	        return new Iterator<NodeContainerUpdateProto>() {
+
+	          Iterator<NodeContainerUpdate> iter = containersToUpdate.iterator();
+
+	          @Override
+	          public boolean hasNext() {
+	            return iter.hasNext();
+	          }
+
+	          @Override
+	          public NodeContainerUpdateProto next() {
+	            return convertToProtoFormat(iter.next());
+	          }
+
+	          @Override
+	          public void remove() {
+	            throw new UnsupportedOperationException();
+
+	          }
+	        };
+
+	      }
+	    };
+	    builder.addAllContainersToUpdate(iterable);
+  }
+  
+  
 
   @Override
   public List<ApplicationId> getApplicationsToCleanup() {
@@ -463,6 +536,16 @@ public class NodeHeartbeatResponsePBImpl extends
   private ApplicationIdPBImpl convertFromProtoFormat(ApplicationIdProto p) {
     return new ApplicationIdPBImpl(p);
   }
+  
+  private NodeContainerUpdatePBImpl convertFromProtoFormat(NodeContainerUpdateProto p){
+	 
+	  return new NodeContainerUpdatePBImpl(p);
+  }
+  
+  private NodeContainerUpdateProto convertToProtoFormat(NodeContainerUpdate t){
+	  
+	  return ((NodeContainerUpdatePBImpl) t).getProto();
+  }
 
   private ApplicationIdProto convertToProtoFormat(ApplicationId t) {
     return ((ApplicationIdPBImpl) t).getProto();
@@ -483,5 +566,9 @@ public class NodeHeartbeatResponsePBImpl extends
   private MasterKeyProto convertToProtoFormat(MasterKey t) {
     return ((MasterKeyPBImpl) t).getProto();
   }
+
+
+
+
 }
 

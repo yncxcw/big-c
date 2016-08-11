@@ -61,18 +61,6 @@ public class Resources {
       return diff;
     }
 
-	@Override
-	public void setCpuSetCores(Set<Integer> cpuSetCores) {
-		throw new RuntimeException("NONE cannot be modified!");
-		
-	}
-
-	@Override
-	public Set<Integer> getCpuSetCores() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-    
   };
   
   private static final Resource UNBOUNDED = new Resource() {
@@ -106,18 +94,6 @@ public class Resources {
       return diff;
     }
 
-	@Override
-	public void setCpuSetCores(Set<Integer> cpuSetCores) {
-	  throw new RuntimeException("NONE cannot be modified!");
-		
-	}
-
-	@Override
-	public Set<Integer> getCpuSetCores() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-    
   };
 
   public static Resource createResource(int memory) {

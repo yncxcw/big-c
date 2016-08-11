@@ -816,7 +816,7 @@ public class ResourceManager extends CompositeService implements Recoverable {
         scheduler.killContainer(container);
         break;
       case SUSPEND_CONTAINER:
-    	 scheduler.suspendContianer(container);
+    	 scheduler.suspendContianer(container,event.getToPreempt());
     	 break;
       }
     }

@@ -33,6 +33,7 @@ public interface NodeHeartbeatResponse {
 
   List<ContainerId> getContainersToCleanup();
   List<ContainerId> getContainersToBeRemovedFromNM();
+  List<NodeContainerUpdate> getContainersToUpdate();
 
   List<ApplicationId> getApplicationsToCleanup();
 
@@ -46,6 +47,8 @@ public interface NodeHeartbeatResponse {
   void setNMTokenMasterKey(MasterKey secretKey);
 
   void addAllContainersToCleanup(List<ContainerId> containers);
+  
+  void addNodeContainersToUpdate(List<NodeContainerUpdate> contaienrUpdates);
 
   // This tells NM to remove finished containers from its context. Currently, NM
   // will remove finished containers from its context only after AM has actually

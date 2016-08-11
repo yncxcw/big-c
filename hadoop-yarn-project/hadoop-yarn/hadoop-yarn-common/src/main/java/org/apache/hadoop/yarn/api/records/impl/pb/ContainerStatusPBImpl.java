@@ -19,6 +19,9 @@
 package org.apache.hadoop.yarn.api.records.impl.pb;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
 import org.apache.hadoop.yarn.api.records.ContainerId;
@@ -39,6 +42,7 @@ public class ContainerStatusPBImpl extends ContainerStatus {
   boolean viaProto = false;
   
   private ContainerId containerId = null;
+  private Set<Integer> cpuCores   = null;
   
   
   public ContainerStatusPBImpl() {
@@ -87,6 +91,11 @@ public class ContainerStatusPBImpl extends ContainerStatus {
   private void mergeLocalToBuilder() {
     if (containerId != null) {
       builder.setContainerId(convertToProtoFormat(this.containerId));
+    }
+    
+    if(cpuCores != null){
+       builder.clearCpucores();
+       builder.addAllCpucores(cpuCores);
     }
   }
 
@@ -183,6 +192,31 @@ public class ContainerStatusPBImpl extends ContainerStatus {
   private ContainerIdProto convertToProtoFormat(ContainerId t) {
     return ((ContainerIdPBImpl)t).getProto();
   }
+
+@Override
+public Set<Integer> getCpuCores() {
+	ContainerStatusProtoOrBuilder p = viaProto ? proto : builder;
+    if (this.cpuCores != null) {
+	      return this.cpuCores;
+	}
+    
+    if(p.getCpucoresList()==null){
+    	
+    	return null;
+    }
+    this.cpuCores = new HashSet<Integer>();
+    this.cpuCores.addAll(p.getCpucoresList());
+	return this.cpuCores;
+}
+
+@Override
+public void setCpuCores(Set<Integer> cpuCores) {
+	maybeInitBuilder();
+	if (cpuCores == null) 
+	      builder.clearCpucores();
+	this.cpuCores = cpuCores;
+	
+}
 
 
 

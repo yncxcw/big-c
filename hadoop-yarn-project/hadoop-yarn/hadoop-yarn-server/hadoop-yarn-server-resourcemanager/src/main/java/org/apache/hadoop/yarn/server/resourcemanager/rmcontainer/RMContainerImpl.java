@@ -53,6 +53,7 @@ import org.apache.hadoop.yarn.state.SingleArcTransition;
 import org.apache.hadoop.yarn.state.StateMachine;
 import org.apache.hadoop.yarn.state.StateMachineFactory;
 import org.apache.hadoop.yarn.util.ConverterUtils;
+import org.apache.hadoop.yarn.util.resource.Resources;
 import org.apache.hadoop.yarn.webapp.util.WebAppUtils;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -169,11 +170,15 @@ public class RMContainerImpl implements RMContainer {
   private final ContainerAllocationExpirer containerAllocationExpirer;
   private final String user;
 
+  //preempted Resource
+  private Resource preempted;
   private Resource reservedResource;
   private NodeId reservedNode;
   private Priority reservedPriority;
   private long creationTime;
   private long finishTime;
+  
+  private boolean isSuspending = false;
   
   //record suspend time(may preempt for many times)
   private List<Long> suspendTime;
@@ -222,6 +227,19 @@ public class RMContainerImpl implements RMContainer {
         this, this.creationTime);
   }
 
+  //in case of suspending a container 
+  public Resource getCurrentUsedResource(){
+	  if(isSuspending){
+		  return Resources.subtract(container.getResource(), preempted);
+	  }else{
+		  return container.getResource();
+	  }
+  }
+  
+  public boolean isSuspending(){
+	  
+	  return this.isSuspending;
+  }
   
   public List<Long> getSuspendTime(){
 	  
@@ -266,6 +284,7 @@ public class RMContainerImpl implements RMContainer {
 
   @Override
   public Resource getReservedResource() {
+	  
     return reservedResource;
   }
 
@@ -487,8 +506,9 @@ public class RMContainerImpl implements RMContainer {
 		  RMContainerFinishedEvent finishedEvent = (RMContainerFinishedEvent) event;
 		  //add the suspend time
 		  container.suspendTime.add(System.currentTimeMillis());
-		  Resource resource = container.getContainer().getResource();  
+		  Resource resource = container.getPreemptedResource();  
 		  container.finishedStatus = finishedEvent.getRemoteContainerStatus();
+		  container.isSuspending   = true;
 		  
 		  //update preempt metrics
 		  RMAppAttempt rmAttempt = container.rmContext.getRMApps()
@@ -509,6 +529,7 @@ public class RMContainerImpl implements RMContainer {
 	  @Override
 	    public void transition(RMContainerImpl container, RMContainerEvent event) {
 		 //add the resume time
+		 container.isSuspending = false;
 		 container.resumeTime.add(System.currentTimeMillis());
 	  }	  
   }
@@ -695,4 +716,27 @@ public class RMContainerImpl implements RMContainer {
       readLock.unlock();
     }
   }
+
+@Override
+public void setPreemptedResource(Resource resource) {
+	try{
+		readLock.lock();
+		this.preempted = resource;
+	}finally{
+		readLock.unlock();
+	}
+	
+	
+}
+
+@Override
+public Resource getPreemptedResource() {
+	try{
+	   readLock.lock(); 	
+	   return this.preempted;
+	}finally{
+		readLock.unlock();
+	}	
+}
+
 }

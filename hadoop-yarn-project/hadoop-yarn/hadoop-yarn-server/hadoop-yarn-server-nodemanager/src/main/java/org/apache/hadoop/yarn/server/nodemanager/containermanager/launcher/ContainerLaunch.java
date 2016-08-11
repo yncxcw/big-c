@@ -218,10 +218,7 @@ public class ContainerLaunch implements Callable<Integer> {
               getContainerPrivateDir(appIdStr, containerIdStr));
       DataOutputStream containerScriptOutStream = null;
       DataOutputStream tokensOutStream = null;
-      
-      LOG.info("nmPrivateContainerScriptPth:    "+nmPrivateContainerScriptPath.toString());
-      LOG.info("nmPrivateTokensPath:            "+nmPrivateTokensPath);
-      LOG.info("nmPrivateClasspathJarDir:       "+nmPrivateClasspathJarDir);
+   
 
       // Select the working directory for the container
       Path containerWorkDir =
@@ -239,9 +236,7 @@ public class ContainerLaunch implements Callable<Integer> {
       List<String> localDirs = dirsHandler.getLocalDirs();
       List<String> logDirs = dirsHandler.getLogDirs();
 
-      LOG.info("pidFilePath:    "+pidFilePath.toString());
-      
-      
+           
       List<String> containerLogDirs = new ArrayList<String>();
       for( String logDir : logDirs) {
         containerLogDirs.add(logDir + Path.SEPARATOR + relativeContainerLogDir);

@@ -111,16 +111,6 @@ public abstract class Resource implements Comparable<Resource> {
    * Set Cpu set on the machine
    * @param cpuSetCores
    */
-  @Public
-  @Evolving
-  public abstract void setCpuSetCores(Set<Integer> cpuSetCores);
-  
-  /**
-   * get Cpu set on the machine
-   */
-  @Public
-  @Evolving
-  public abstract Set<Integer> getCpuSetCores();
   
   @Override
   public int hashCode() {

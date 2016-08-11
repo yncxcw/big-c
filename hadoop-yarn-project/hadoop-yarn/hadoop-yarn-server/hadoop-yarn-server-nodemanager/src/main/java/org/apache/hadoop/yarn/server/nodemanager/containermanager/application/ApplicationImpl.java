@@ -344,6 +344,9 @@ public class ApplicationImpl implements Application {
         LOG.warn("Removing unknown " + containerEvent.getContainerID() +
             " from application " + app.toString());
       } else {
+    	//TODO add logo to test
+    	LOG.info("release cpu set here");
+    	app.context.getCoresManager().releaseCores(containerEvent.getContainerID());  
         LOG.info("Removing " + containerEvent.getContainerID() +
             " from application " + app.toString());
       }

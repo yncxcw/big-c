@@ -261,16 +261,16 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
           LOG.info("get container "+container.getContainerId()+" to suspend");
           if(scheduler.isDockerMonitorEnabled()){
           dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
-                ContainerPreemptEventType.SUSPEND_CONTAINER));
+                ContainerPreemptEventType.SUSPEND_CONTAINER,container.getContainer().getResource()));
           }else{
         	  dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
-                ContainerPreemptEventType.KILL_CONTAINER)); 
+                ContainerPreemptEventType.KILL_CONTAINER,container.getContainer().getResource())); 
           }
           preempted.remove(container);
         } else {
           //otherwise just send preemption events
           dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
-                ContainerPreemptEventType.PREEMPT_CONTAINER));
+                ContainerPreemptEventType.PREEMPT_CONTAINER,container.getContainer().getResource()));
           if (preempted.get(container) == null) {
             preempted.put(container, clock.getTime());
           }

@@ -196,6 +196,7 @@ public class NodeManager implements ContainerManagementProtocol {
       ContainerStatus containerStatus =
           BuilderUtils.newContainerStatus(container.getId(),
             ContainerState.NEW, "", -1000);
+      
       applicationContainers.add(container);
       containerStatusMap.put(container, containerStatus);
       Resources.subtractFrom(available, tokenId.getResource());

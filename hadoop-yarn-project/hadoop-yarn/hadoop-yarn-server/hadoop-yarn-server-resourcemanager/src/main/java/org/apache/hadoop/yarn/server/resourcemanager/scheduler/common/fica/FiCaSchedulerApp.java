@@ -140,6 +140,7 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
 
 	  Container container = rmContainer.getContainer();
 	  ContainerId containerId = container.getId();
+	  
 
 	  // Inform the container
 	  
@@ -149,17 +150,17 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
 	            containerStatus, 
 	            event)
 	  );
-	  LOG.info("app suspend container: " + rmContainer.getContainerId() + 
-		        " in state: " + rmContainer.getState() + " event:" + event);
-	  
 	  //add to suspended set
 	  containersSuspended.add(containerId);
 	  
 	  // Update usage metrics,we release resource here 
-	  Resource containerResource = rmContainer.getContainer().getResource();
-	  queue.getMetrics().releaseResources(getUser(), 1, containerResource);
-	  Resources.subtractFrom(currentConsumption, containerResource);
+	  Resource toPreempted = rmContainer.getPreemptedResource();
+	  queue.getMetrics().releaseResources(getUser(), 1, toPreempted);
+	  Resources.subtractFrom(currentConsumption, toPreempted);
 
+	  LOG.info("app suspend container: " + rmContainer.getContainerId() + 
+		        " in state: " + rmContainer.getState() + " resource:" + toPreempted);
+	  
 	  // Clear resource utilization metrics cache.
 	  lastMemoryAggregateAllocationUpdateTime = -1;
 	  
@@ -180,14 +181,11 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
     Container container = rmContainer.getContainer();
     ContainerId containerId = container.getId();
     
-    boolean suspended = false;
+   
     
     //we are trying to complete a suspeded container
-    if(containersSuspended.contains(containerId)){
-    	suspended = true;
-    	containersSuspended.remove(containerId);
-    }
-
+    containersSuspended.remove(containerId);
+    
     // Inform the container
     rmContainer.handle(
         new RMContainerFinishedEvent(
@@ -204,13 +202,10 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
         AuditConstants.RELEASE_CONTAINER, "SchedulerApp", 
         getApplicationId(), containerId);
     
-    // Update usage metrics, for suspended containers we do not update its resource consumption
-    if(!suspended){
-    Resource containerResource = rmContainer.getContainer().getResource();
+    Resource containerResource = rmContainer.getCurrentUsedResource();
     queue.getMetrics().releaseResources(getUser(), 1, containerResource);
     Resources.subtractFrom(currentConsumption, containerResource);
     
-    }
     // Clear resource utilization metrics cache.
     lastMemoryAggregateAllocationUpdateTime = -1;
 
@@ -238,11 +233,11 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
 	  //delete contaienr from containersSuspended
 	  this.containersSuspended.remove(containerId);
 	  //update resource usage
-	  Resource containerResource = rmContainer.getContainer().getResource();
-	  queue.getMetrics().allocateResources(getUser(), 1, containerResource, true);
+	  Resource toResume = rmContainer.getPreemptedResource();
+	  queue.getMetrics().allocateResources(getUser(), 1, toResume, true);
 	  //inform RMContainer
 	  rmContainer.handle(
-			          new RMContainerEvent(containerId,RMContainerEventType.RESUME)  
+			              new RMContainerEvent(containerId,RMContainerEventType.RESUME)  
 			            );
 	  
 	  if(this.containersSuspended.size() == 0){

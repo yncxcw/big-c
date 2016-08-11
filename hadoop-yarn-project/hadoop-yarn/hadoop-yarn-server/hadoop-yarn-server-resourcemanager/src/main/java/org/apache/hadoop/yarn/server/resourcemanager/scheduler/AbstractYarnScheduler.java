@@ -219,8 +219,9 @@ protected final static List<Container> EMPTY_CONTAINER_LIST =
   }
 
   protected synchronized void containerLaunchedOnNode(
-      ContainerId containerId, SchedulerNode node) {
+      ContainerStatus containerStatus, SchedulerNode node) {
     // Get the application for the finished container
+	ContainerId containerId = containerStatus.getContainerId();
     SchedulerApplicationAttempt application = getCurrentAttemptForContainer
         (containerId);
     if (application == null) {
@@ -232,6 +233,8 @@ protected final static List<Container> EMPTY_CONTAINER_LIST =
       return;
     }
 
+    Set<Integer> cpuCores = containerStatus.getCpuCores();
+    node.registerCoresToContainer(containerId, cpuCores);
     application.containerLaunchedOnNode(containerId, node.getNodeID());
   }
 

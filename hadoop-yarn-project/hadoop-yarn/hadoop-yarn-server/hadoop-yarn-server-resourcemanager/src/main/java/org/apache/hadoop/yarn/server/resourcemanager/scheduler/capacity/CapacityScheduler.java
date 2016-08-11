@@ -990,7 +990,7 @@ public class CapacityScheduler extends
     
     // Processing the newly launched containers
     for (ContainerStatus launchedContainer : newlyLaunchedContainers) {
-      containerLaunchedOnNode(launchedContainer.getContainerId(), node);
+      containerLaunchedOnNode(launchedContainer, node);
       LOG.info("Container LAUNCHED:"+launchedContainer.getContainerId());
     }
 
@@ -1433,7 +1433,7 @@ public class CapacityScheduler extends
   }
   
   @Override
-  public void suspendContianer(RMContainer cont) {
+  public void suspendContianer(RMContainer cont, Resource toPreempt) {
   	// TODO Auto-generated method stub
 	if (LOG.isDebugEnabled()) {
 	      LOG.debug("SUSPEND_CONTAINER: container" + cont.toString());
@@ -1444,11 +1444,27 @@ public class CapacityScheduler extends
 		LOG.info("we can only suspend container which is running"+cont.getContainerId());
 		return;
 	}
+	
+	if(toPreempt == null){
+	    	
+	    LOG.info("preempted resource can not be null");
+	    return;
+	 }
+	    
+	 if(Resources.greaterThanOrEqual(getResourceCalculator(), clusterResource, 
+			                        toPreempt,Resources.none())){
+	     LOG.info("preempted resource is none");
+	     return;
+	  }
+	    
+	
+	//TODO send this event to ResourceManager
 	if(dockerMonitorEnabled){
    //we do not recover requests here,incontrast we just need to suspend a container
-	if(dockerMonitor.DehydrateContainer(cont.getContainerId())){	
-    
-		LOG.info("ss container: "+cont.getContainerId());
+	if(dockerMonitor.DehydrateContainer(cont.getContainerId())){
+        //set preempted resource
+        cont.setPreemptedResource(toPreempt);
+        //mark this container to be preempted
 		completedContainer(cont, SchedulerUtils.createPreemptedContainerStatus(
 		      cont.getContainerId(), SchedulerUtils.PREEMPTED_CONTAINER),
 		      RMContainerEventType.SUSPEND);

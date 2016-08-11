@@ -127,9 +127,10 @@ public class NodeManager extends CompositeService
   protected NMContext createNMContext(
       NMContainerTokenSecretManager containerTokenSecretManager,
       NMTokenSecretManagerInNM nmTokenSecretManager,
-      NMStateStoreService stateStore) {
+      NMStateStoreService stateStore,
+      CoresManager coresManager) {
     return new NMContext(containerTokenSecretManager, nmTokenSecretManager,
-        dirsHandler, aclsManager, stateStore);
+        dirsHandler, aclsManager, stateStore,coresManager);
   }
 
   protected void doSecureLogin() throws IOException {
@@ -222,13 +223,15 @@ public class NodeManager extends CompositeService
 
     // NodeManager level dispatcher
     this.dispatcher = new AsyncDispatcher();
-
+    
+    CoresManager coresManager = new CoresManagerImpl();
+    
     nodeHealthChecker = new NodeHealthCheckerService();
     addService(nodeHealthChecker);
     dirsHandler = nodeHealthChecker.getDiskHandler();
 
     this.context = createNMContext(containerTokenSecretManager,
-        nmTokenSecretManager, nmStore);
+        nmTokenSecretManager, nmStore, coresManager);
     
     nodeStatusUpdater =
         createNodeStatusUpdater(context, dispatcher, nodeHealthChecker);
@@ -346,6 +349,7 @@ public class NodeManager extends CompositeService
 
     private final NMContainerTokenSecretManager containerTokenSecretManager;
     private final NMTokenSecretManagerInNM nmTokenSecretManager;
+    private final CoresManager coresManager;
     private ContainerManagementProtocol containerManager;
     private final LocalDirsHandlerService dirsHandler;
     private final ApplicationACLsManager aclsManager;
@@ -358,7 +362,7 @@ public class NodeManager extends CompositeService
     public NMContext(NMContainerTokenSecretManager containerTokenSecretManager,
         NMTokenSecretManagerInNM nmTokenSecretManager,
         LocalDirsHandlerService dirsHandler, ApplicationACLsManager aclsManager,
-        NMStateStoreService stateStore) {
+        NMStateStoreService stateStore, CoresManager coresManager) {
       this.containerTokenSecretManager = containerTokenSecretManager;
       this.nmTokenSecretManager = nmTokenSecretManager;
       this.dirsHandler = dirsHandler;
@@ -367,6 +371,7 @@ public class NodeManager extends CompositeService
       this.nodeHealthStatus.setHealthReport("Healthy");
       this.nodeHealthStatus.setLastHealthReportTime(System.currentTimeMillis());
       this.stateStore = stateStore;
+      this.coresManager = coresManager;
     }
 
     /**
@@ -453,11 +458,18 @@ public class NodeManager extends CompositeService
     public Map<ApplicationId, Credentials> getSystemCredentialsForApps() {
       return systemCredentials;
     }
+    
+    
 
     public void setSystemCrendentialsForApps(
         Map<ApplicationId, Credentials> systemCredentials) {
       this.systemCredentials = systemCredentials;
     }
+
+	@Override
+	public CoresManager getCoresManager() {
+		return this.coresManager;
+	}
   }
 
 

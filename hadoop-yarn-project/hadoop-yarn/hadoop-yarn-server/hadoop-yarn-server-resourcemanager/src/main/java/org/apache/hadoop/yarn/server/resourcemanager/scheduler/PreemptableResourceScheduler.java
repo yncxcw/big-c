@@ -18,6 +18,7 @@
 package org.apache.hadoop.yarn.server.resourcemanager.scheduler;
 
 import org.apache.hadoop.yarn.api.records.ApplicationAttemptId;
+import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.server.resourcemanager.rmcontainer.RMContainer;
 
 /**
@@ -51,6 +52,6 @@ public interface PreemptableResourceScheduler extends ResourceScheduler {
    * Aas the scheduler to forcibly suspend the container
    */
   
-  void suspendContianer(RMContainer container);
+  void suspendContianer(RMContainer container,Resource toPreempt);
 
 }

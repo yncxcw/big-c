@@ -55,6 +55,7 @@ public abstract class SchedulerNode {
 
   private Resource availableResource = Resource.newInstance(0, 0);
   private Resource usedResource = Resource.newInstance(0, 0);
+  private Map<ContainerId,Set<Integer>> containersToCores= new HashMap<ContainerId,Set<Integer>>();
   private Resource totalResourceCapability;
   private RMContainer reservedContainer;
 
@@ -198,8 +199,13 @@ private final RMNode rmNode;
     return false;
   }
 
-  private synchronized void updateResource(Container container) {
-    addAvailableResource(container.getResource());
+  private synchronized void updateResource(Resource resource) {
+    addAvailableResource(resource);
+  }
+  
+  
+  public synchronized void registerCoresToContainer(ContainerId containerId, Set<Integer> cpuCores){
+	  this.containersToCores.put(containerId, cpuCores);
   }
 
   /**
@@ -208,21 +214,21 @@ private final RMNode rmNode;
    * @param container
    *          container to be released
    */
-  public synchronized void releaseContainer(Container container) {
+  public synchronized void releaseContainer(Container container, Resource toRelease) {
     if (!isValidContainer(container.getId())) {
       LOG.error("Invalid container released " + container);
       return;
     }
-
     /* remove the containers from the nodemanger */
     if (null != launchedContainers.remove(container.getId())) {
     	/*if this container is suspended, we also remove it*/
-        if(suspendedContainers.contains(container.getId())){
-        	suspendedContainers.remove(container.getId());	
-        }
-        updateResource(container);
+        suspendedContainers.remove(container.getId());	
+        updateResource(toRelease);
+        /* we also remove its cores usage */
+        containersToCores.remove(container.getId());
     }
-    
+    //remove cores that this container used.
+   
     LOG.info("Released container " + container.getId() + " of capacity "
         + container.getResource() + " on host " + rmNode.getNodeAddress()
         + ", which currently has " + launchedContainers.size() + " containers, "
@@ -235,7 +241,7 @@ private final RMNode rmNode;
    * @param container
    *          container to be released
    */
-  public synchronized void suspendContainer(Container container) {
+  public synchronized void suspendContainer(Container container, Resource toSuspended) {
     if (!isValidContainer(container.getId())) {
       LOG.error("Invalid container released " + container);
       return;
@@ -243,7 +249,7 @@ private final RMNode rmNode;
 
     /* add the containers to suspend containers */
     if (null != launchedContainers.get(container.getId())) {
-      updateResource(container);
+      updateResource(toSuspended);
       suspendedContainers.add(container.getId());
     }
 
@@ -254,7 +260,7 @@ private final RMNode rmNode;
         + " available" + ", release resources=" + true);
   }
   
-  public synchronized void resumeContainer(Container container){
+  public synchronized void resumeContainer(Container container, Resource toResume){
 	  if (!isValidContainer(container.getId())) {
 	      LOG.error("Invalid container released " + container);
 	      return;
@@ -265,7 +271,7 @@ private final RMNode rmNode;
 	  }
 	  //drop container from suspended list and update resource
 	  if(suspendedContainers.contains(container.getId())){
-		  deductAvailableResource(container.getResource());
+		  deductAvailableResource(toResume);
 		  suspendedContainers.remove(container.getId());
 	  }
 

@@ -571,15 +571,24 @@ public class ParentQueue extends AbstractCSQueue {
       // Careful! Locking order is important!
       // Book keeping
       synchronized (this) {
-        super.releaseResource(clusterResource, rmContainer.getContainer()
-            .getResource(), node.getLabels());
+    	Resource toRelease;
+    	
+    	if(event == RMContainerEventType.SUSPEND){
+    		LOG.info("suspend resource");
+    		toRelease = rmContainer.getPreemptedResource();
+    	}else{
+    		LOG.info("release resource");
+    		toRelease = rmContainer.getCurrentUsedResource(); 
+    	}
+    	
+        super.releaseResource(clusterResource, toRelease ,node.getLabels());
 
         LOG.info("completedContainer/suspend" +
             " queue=" + getQueueName() + 
             " usedCapacity=" + getUsedCapacity() +
             " absoluteUsedCapacity=" + getAbsoluteUsedCapacity() +
             " used=" + queueUsage.getUsed() + 
-            " cluster=" + clusterResource);
+            " cluster=" + clusterResource+"released resource: "+toRelease);
 
         // Note that this is using an iterator on the childQueues so this can't
         // be called if already within an iterator for the childQueues. Like

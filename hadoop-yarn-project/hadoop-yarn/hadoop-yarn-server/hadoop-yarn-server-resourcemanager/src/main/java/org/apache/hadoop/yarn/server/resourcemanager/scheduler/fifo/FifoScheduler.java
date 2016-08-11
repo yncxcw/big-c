@@ -708,7 +708,7 @@ public class FifoScheduler extends
     }
     // Processing the newly launched containers
     for (ContainerStatus launchedContainer : newlyLaunchedContainers) {
-      containerLaunchedOnNode(launchedContainer.getContainerId(), node);
+      containerLaunchedOnNode(launchedContainer, node);
     }
 
     // Process completed containers
@@ -873,7 +873,7 @@ public class FifoScheduler extends
     application.containerCompleted(rmContainer, containerStatus, event);
 
     // Inform the node
-    node.releaseContainer(container);
+    node.releaseContainer(container,container.getResource());
     
     // Update total usage
     Resources.subtractFrom(usedResource, container.getResource());

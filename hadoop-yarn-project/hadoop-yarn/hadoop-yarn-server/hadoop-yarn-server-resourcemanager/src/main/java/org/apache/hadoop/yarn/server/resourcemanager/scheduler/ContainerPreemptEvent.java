@@ -19,6 +19,7 @@
 package org.apache.hadoop.yarn.server.resourcemanager.scheduler;
 
 import org.apache.hadoop.yarn.api.records.ApplicationAttemptId;
+import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.event.AbstractEvent;
 import org.apache.hadoop.yarn.server.resourcemanager.rmcontainer.RMContainer;
 
@@ -30,12 +31,14 @@ public class ContainerPreemptEvent
 
   private final ApplicationAttemptId aid;
   private final RMContainer container;
+  private final Resource toPreempt;
 
   public ContainerPreemptEvent(ApplicationAttemptId aid, RMContainer container,
-      ContainerPreemptEventType type) {
+      ContainerPreemptEventType type, Resource toPreempt) {
     super(type);
     this.aid = aid;
     this.container = container;
+    this.toPreempt = toPreempt;
   }
 
   public RMContainer getContainer(){
@@ -46,11 +49,17 @@ public class ContainerPreemptEvent
     return aid;
   }
 
+  public Resource getToPreempt(){
+	  
+	  return toPreempt;
+  }
+  
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder(super.toString());
     sb.append(" ").append(getAppId());
     sb.append(" ").append(getContainer().getContainerId());
+    sb.append(" ").append(getToPreempt());
     return sb.toString();
   }
 

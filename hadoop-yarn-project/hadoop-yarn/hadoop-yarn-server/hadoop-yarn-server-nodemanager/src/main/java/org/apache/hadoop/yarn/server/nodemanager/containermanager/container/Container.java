@@ -20,6 +20,7 @@ package org.apache.hadoop.yarn.server.nodemanager.containermanager.container;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.security.Credentials;
@@ -54,5 +55,7 @@ public interface Container extends EventHandler<ContainerEvent> {
   NMContainerStatus getNMContainerStatus();
 
   String toString();
+  
+  Set<Integer> getCpuCores();
 
 }

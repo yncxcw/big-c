@@ -56,7 +56,6 @@ message ContainerIdProto {
 message ResourceProto {
   optional int32 memory = 1;
   optional int32 virtual_cores = 2;
-  repeated int32 cpuset_cores = 3;
 }
 
 message ResourceOptionProto {
@@ -413,6 +412,7 @@ message ContainerStatusProto {
   optional ContainerStateProto state = 2;
   optional string diagnostics = 3 [default = "N/A"];
   optional int32 exit_status = 4 [default = -1000];
+  repeated int32 cpucores = 5;
 }
 
 enum ContainerExitStatusProto {

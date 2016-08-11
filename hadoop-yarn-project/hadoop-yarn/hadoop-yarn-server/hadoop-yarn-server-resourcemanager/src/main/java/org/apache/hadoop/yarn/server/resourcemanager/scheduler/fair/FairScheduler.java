@@ -819,7 +819,7 @@ public class FairScheduler extends
       application.unreserve(rmContainer.getReservedPriority(), node);
     } else {
       application.containerCompleted(rmContainer, containerStatus, event);
-      node.releaseContainer(container);
+      node.releaseContainer(container,container.getResource());
       updateRootQueueMetrics();
     }
 
@@ -965,7 +965,7 @@ public class FairScheduler extends
     } 
     // Processing the newly launched containers
     for (ContainerStatus launchedContainer : newlyLaunchedContainers) {
-      containerLaunchedOnNode(launchedContainer.getContainerId(), node);
+      containerLaunchedOnNode(launchedContainer, node);
     }
 
     // Process completed containers

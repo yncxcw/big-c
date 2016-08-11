@@ -73,6 +73,8 @@ public interface Context {
   ApplicationACLsManager getApplicationACLsManager();
 
   NMStateStoreService getNMStateStore();
+  
+  CoresManager getCoresManager();
 
   boolean getDecommissioned();
 

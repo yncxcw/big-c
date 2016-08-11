@@ -800,7 +800,7 @@ public class LeafQueue extends AbstractCSQueue {
     		//we get its resource to try if we can resume this container
     		RMContainer rmContainer=app.getLiveContainersMap().get(cntId);
     		Container container    =  rmContainer.getContainer();
-    		Resource required      = container.getResource();
+    		Resource required      =  rmContainer.getPreemptedResource();
     		if(node.getSuspendedContainers().contains(cntId)){
     		//if we can not allocate container due to insufficiency of resource ,we just give up continuing 
     		//allocating resource 
@@ -1508,7 +1508,7 @@ public class LeafQueue extends AbstractCSQueue {
   private CSAssignment resumeContainer(Resource clusterResource, FiCaSchedulerNode node, FiCaSchedulerApp application,
 		  RMContainer rmContainer){
 	  
-	    Resource capability = rmContainer.getContainer().getResource();
+	    Resource capability = rmContainer.getPreemptedResource();
 	    Resource available = node.getAvailableResource();
 	    Resource totalResource = node.getTotalResource();
 
@@ -1544,7 +1544,7 @@ public class LeafQueue extends AbstractCSQueue {
 	        	 this.suspendedApps.remove(application.getApplicationAttemptId());
 	         }
 	    	// Inform the node
-	    	node.resumeContainer(rmContainer.getContainer());
+	    	node.resumeContainer(rmContainer.getContainer(),capability);
 
 	        LOG.info("Resume Container" +
 	            " application attempt=" + application.getApplicationAttemptId() +
@@ -1748,6 +1748,8 @@ public class LeafQueue extends AbstractCSQueue {
       synchronized (this) {
 
         Container container = rmContainer.getContainer();
+        
+        Resource toRelease = null;
 
         // Inform the application & the node
         // Note: It's safe to assume that all state changes to RMContainer
@@ -1767,19 +1769,22 @@ public class LeafQueue extends AbstractCSQueue {
             	suspendedApps.add(application.getApplicationAttemptId());
             }
             //we suspend the container on this node
-        	node.suspendContainer(container);
+        	node.suspendContainer(container,rmContainer.getPreemptedResource());
+        	toRelease = rmContainer.getPreemptedResource();
           }else{
-        	  removed =
+        	toRelease = rmContainer.getCurrentUsedResource();
+        	removed =
         	            application.containerCompleted(rmContainer, containerStatus, event);
-        	            node.releaseContainer(container);
+        	            node.releaseContainer(container,toRelease);
         	          //for container suspend event
+        	 //in case of completing a suspended container 
           }
         }
         // Book-keeping
         if (removed) {
            //更新资源试用情况
           releaseResource(clusterResource, application,
-              container.getResource(), node.getLabels());
+        		  toRelease, node.getLabels());
           LOG.info("completedContainer" +
               " container=" + container +
               " queue=" + this +

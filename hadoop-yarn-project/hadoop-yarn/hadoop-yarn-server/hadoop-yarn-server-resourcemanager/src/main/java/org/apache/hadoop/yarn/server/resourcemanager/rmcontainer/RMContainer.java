@@ -80,4 +80,12 @@ public interface RMContainer extends EventHandler<RMContainerEvent> {
   List<ResourceRequest> getResourceRequests();
 
   String getNodeHttpAddress();
+  
+  void setPreemptedResource(Resource resource);
+  
+  Resource getPreemptedResource();
+  
+  Resource getCurrentUsedResource();
+  
+  boolean isSuspending();
 }

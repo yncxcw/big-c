@@ -313,13 +313,17 @@ public class ContainerManagerImpl extends CompositeService implements
 
     LOG.info("Recovering " + containerId + " in state " + rcs.getStatus()
         + " with exit code " + rcs.getExitCode());
-
+    
+    Set<Integer> cores= this.context.getCoresManager().getAvailableCores(containerId, 
+    		                          token.getResource().getVirtualCores());
+    
     if (context.getApplications().containsKey(appId)) {
       Credentials credentials = parseCredentials(launchContext);
       Container container = new ContainerImpl(getConfig(), dispatcher,
           context.getNMStateStore(), req.getContainerLaunchContext(),
           credentials, metrics, token, rcs.getStatus(), rcs.getExitCode(),
-          rcs.getDiagnostics(), rcs.getKilled());
+          rcs.getDiagnostics(), rcs.getKilled(),cores);
+      
       context.getContainers().put(containerId, container);
       dispatcher.getEventHandler().handle(
           new ApplicationContainerInitEvent(container));
@@ -832,18 +836,15 @@ public class ContainerManagerImpl extends CompositeService implements
     }
 
     Credentials credentials = parseCredentials(launchContext);
-
-    Resource resource = containerTokenIdentifier.getResource();
-    LOG.info("internal get resource:"+resource);
-    if(resource.getCpuSetCores() == null){
-      LOG.info("internal cpuset null");	
-    }else{
-      LOG.info("internal cpuset:"+containerTokenIdentifier.getResource().getCpuSetCores().size());
-    }
+    
+    LOG.info("allocate cpuset");
+    Set<Integer> cores = this.context.getCoresManager().getAvailableCores(containerId,
+    		                            containerTokenIdentifier.getResource().getVirtualCores());
+    
     Container container =
         new ContainerImpl(getConfig(), this.dispatcher,
             context.getNMStateStore(), launchContext,
-          credentials, metrics, containerTokenIdentifier);
+          credentials, metrics, containerTokenIdentifier,cores);
     ApplicationId applicationID =
         containerId.getApplicationAttemptId().getApplicationId();
     if (context.getContainers().putIfAbsent(containerId, container) != null) {
