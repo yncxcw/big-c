@@ -25,6 +25,7 @@ import org.apache.hadoop.yarn.api.records.ContainerId;
 import org.apache.hadoop.yarn.api.records.SerializedException;
 import org.apache.hadoop.yarn.factories.RecordFactory;
 import org.apache.hadoop.yarn.factory.providers.RecordFactoryProvider;
+import org.apache.hadoop.yarn.server.api.protocolrecords.NodeContainerUpdate;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NodeHeartbeatResponse;
 import org.apache.hadoop.yarn.server.api.records.MasterKey;
 import org.apache.hadoop.yarn.server.api.records.NodeAction;
@@ -41,7 +42,7 @@ public class YarnServerBuilderUtils {
 
   public static NodeHeartbeatResponse newNodeHeartbeatResponse(int responseId,
       NodeAction action, List<ContainerId> containersToCleanUp,
-      List<ApplicationId> applicationsToCleanUp,
+      List<ApplicationId> applicationsToCleanUp,List<NodeContainerUpdate> listNodeContainerUpdate,
       MasterKey containerTokenMasterKey, MasterKey nmTokenMasterKey,
       long nextHeartbeatInterval) {
     NodeHeartbeatResponse response = recordFactory
@@ -51,11 +52,15 @@ public class YarnServerBuilderUtils {
     response.setContainerTokenMasterKey(containerTokenMasterKey);
     response.setNMTokenMasterKey(nmTokenMasterKey);
     response.setNextHeartBeatInterval(nextHeartbeatInterval);
+    
     if(containersToCleanUp != null) {
       response.addAllContainersToCleanup(containersToCleanUp);
     }
     if(applicationsToCleanUp != null) {
       response.addAllApplicationsToCleanup(applicationsToCleanUp);
+    }
+    if(listNodeContainerUpdate != null){
+      response.addNodeContainersToUpdate(listNodeContainerUpdate);	
     }
     return response;
   }

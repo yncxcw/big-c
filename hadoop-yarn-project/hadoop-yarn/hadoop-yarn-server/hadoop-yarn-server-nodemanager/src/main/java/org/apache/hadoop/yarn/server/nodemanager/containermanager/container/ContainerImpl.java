@@ -80,6 +80,7 @@ import org.apache.hadoop.yarn.state.StateMachineFactory;
 import org.apache.hadoop.yarn.util.Clock;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.hadoop.yarn.util.SystemClock;
+import org.apache.hadoop.yarn.server.api.protocolrecords.NodeContainerUpdate;
 
 public class ContainerImpl implements Container {
 
@@ -241,6 +242,9 @@ public class ContainerImpl implements Container {
         ContainerState.EXITED_WITH_SUCCESS,
         ContainerEventType.CONTAINER_EXITED_WITH_SUCCESS,
         new ExitedWithSuccessTransition(true))
+    .addTransition(ContainerState.RUNNING,
+        ContainerState.RUNNING, ContainerEventType.RESOURCE_UPDATE,
+         new ResourceUpdateTransition())
     .addTransition(ContainerState.RUNNING,
         ContainerState.EXITED_WITH_FAILURE,
         ContainerEventType.CONTAINER_EXITED_WITH_FAILURE,
@@ -774,7 +778,32 @@ public class ContainerImpl implements Container {
       }
     }
   }
-
+  
+  /**
+   * Transition from RUNNINH state to RUNNING state upon receiving a 
+   * RESOURCE_UPDATE
+   */
+  static class ResourceUpdateTransition extends ContainerTransition {
+	    @SuppressWarnings("unchecked")
+	    @Override
+	    public void transition(ContainerImpl container, ContainerEvent event) {
+	    	
+	    	ContainerResourceUpdate updateEvent = (ContainerResourceUpdate) event;
+	    	LOG.info("container"+event.getContainerID()+"receive resource update event"
+	    	    	+"memory"+updateEvent.getNodeContainerUpdate().getMemory()
+	    	    	+"cores"+updateEvent.getNodeContainerUpdate().getCores()
+	    	    	+"suspend"+updateEvent.getNodeContainerUpdate().getSuspend()
+	    	    	+"resume"+updateEvent.getNodeContainerUpdate().getResume());
+	    	container.ProcessResourceUpdate(updateEvent.getNodeContainerUpdate());
+	    }
+	  }
+  
+  
+  private void ProcessResourceUpdate(NodeContainerUpdate nodeContainerUpdate){
+	  
+  }
+  
+  
   /**
    * Transition from RUNNING or KILLING state to EXITED_WITH_SUCCESS state
    * upon EXITED_WITH_SUCCESS message.
@@ -1164,4 +1193,11 @@ public class ContainerImpl implements Container {
       LocalResourceRequest resource) {
     return container.resourcesUploadPolicies.get(resource);
   }
+
+@Override
+public Set<Integer> getCpuCores() {
+	// TODO Auto-generated method stub
+	return this.cpuCores;
+}
+
 }

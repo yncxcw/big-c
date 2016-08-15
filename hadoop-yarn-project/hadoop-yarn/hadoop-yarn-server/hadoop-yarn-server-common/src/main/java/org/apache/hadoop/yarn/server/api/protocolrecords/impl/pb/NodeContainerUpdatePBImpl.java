@@ -6,14 +6,10 @@ import java.util.Set;
 import org.apache.hadoop.yarn.api.records.ContainerId;
 import org.apache.hadoop.yarn.api.records.impl.pb.ContainerIdPBImpl;
 import org.apache.hadoop.yarn.proto.YarnProtos.ContainerIdProto;
-import org.apache.hadoop.yarn.proto.YarnProtos.ContainerStatusProtoOrBuilder;
-import org.apache.hadoop.yarn.proto.YarnServerCommonProtos.NodeStatusProto;
 import org.apache.hadoop.yarn.proto.YarnServerCommonServiceProtos.NodeContainerUpdateProto;
 import org.apache.hadoop.yarn.proto.YarnServerCommonServiceProtos.NodeContainerUpdateProtoOrBuilder;
-import org.apache.hadoop.yarn.proto.YarnServerCommonServiceProtos.NodeHeartbeatRequestProto;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NodeContainerUpdate;
-import org.apache.hadoop.yarn.server.api.records.NodeStatus;
-import org.apache.hadoop.yarn.server.api.records.impl.pb.NodeStatusPBImpl;
+
 
 public class NodeContainerUpdatePBImpl extends  NodeContainerUpdate{
 
@@ -23,7 +19,7 @@ public class NodeContainerUpdatePBImpl extends  NodeContainerUpdate{
 	
 	 private ContainerId containerId;
 	 
-	 private Set<Integer> cpuCores;
+	 
 	 
 	 public NodeContainerUpdatePBImpl() {
 		    builder = NodeContainerUpdateProto.newBuilder();
@@ -60,14 +56,8 @@ public class NodeContainerUpdatePBImpl extends  NodeContainerUpdate{
 	  private void mergeLocalToBuilder() {
 		 if(this.containerId != null) {
 		      builder.setContainerId(
-		    	 convertToProtoFormat(this.containerId));
-		 }
-		 
-		 if(this.cpuCores !=null){
-			 builder.clearCpuCores();
-			 builder.addAllCpuCores(cpuCores);
-		 }
-		 
+		      convertToProtoFormat(this.containerId));
+		 }	 
 	 }
 	  
 	@Override
@@ -104,27 +94,16 @@ public class NodeContainerUpdatePBImpl extends  NodeContainerUpdate{
 	}
 
 	@Override
-	public void setcpuCores(Set<Integer> cpuCores) {
+	public void setCores(int cores) {
 		maybeInitBuilder();
-		if (cpuCores == null) 
-		      builder.clearCpuCores();
-		this.cpuCores = cpuCores;
+		builder.setCpuCores(cores);
+		
 	}
 
 	@Override
-	public Set<Integer> getCpuCores() {
+	public int getCores() {
 		NodeContainerUpdateProtoOrBuilder p = viaProto ? proto : builder;
-	    if (this.cpuCores != null) {
-		      return this.cpuCores;
-		}
-	    
-	    if(p.getCpuCoresList()==null){
-	    	
-	    	return null;
-	    }
-	    this.cpuCores = new HashSet<Integer>();
-	    this.cpuCores.addAll(p.getCpuCoresList());
-		return this.cpuCores;
+		return p.getCpuCores();
 	}
 	
     private ContainerIdPBImpl convertFromProtoFormat(ContainerIdProto p) {
@@ -133,6 +112,30 @@ public class NodeContainerUpdatePBImpl extends  NodeContainerUpdate{
 
     private ContainerIdProto convertToProtoFormat(ContainerId t) {
 		    return ((ContainerIdPBImpl)t).getProto();
+	}
+
+	@Override
+	public void setSuspend(boolean suspend) {
+		maybeInitBuilder();
+		builder.setSuspend(suspend);
+	}
+
+	@Override
+	public boolean getSuspend() {
+		NodeContainerUpdateProtoOrBuilder p = viaProto ? proto : builder;
+		return p.getSuspend();
+	}
+
+	@Override
+	public void setResume(boolean resume) {
+		maybeInitBuilder();
+		builder.setResume(resume);
+	}
+
+	@Override
+	public boolean getResume() {
+		NodeContainerUpdateProtoOrBuilder p = viaProto ? proto : builder;
+		return p.getResume();
 	}
 
 }

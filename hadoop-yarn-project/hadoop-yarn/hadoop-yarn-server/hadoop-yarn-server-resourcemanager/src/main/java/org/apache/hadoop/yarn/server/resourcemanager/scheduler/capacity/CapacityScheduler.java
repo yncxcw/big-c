@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -66,6 +67,7 @@ import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.exceptions.YarnRuntimeException;
 import org.apache.hadoop.yarn.proto.YarnServiceProtos.SchedulerResourceTypes;
 import org.apache.hadoop.yarn.security.YarnAuthorizationProvider;
+import org.apache.hadoop.yarn.server.api.protocolrecords.NodeContainerUpdate;
 import org.apache.hadoop.yarn.server.resourcemanager.RMContext;
 import org.apache.hadoop.yarn.server.resourcemanager.nodelabels.RMNodeLabelsManager;
 import org.apache.hadoop.yarn.server.resourcemanager.recovery.RMStateStore.RMState;
@@ -127,6 +129,8 @@ public class CapacityScheduler extends
 
   private static final Log LOG = LogFactory.getLog(CapacityScheduler.class);
   private YarnAuthorizationProvider authorizer;
+  
+  private Map<NodeId, ConcurrentLinkedQueue<NodeContainerUpdate>> nodeContainerUpdateMap;
  
   private CSQueue root;
   // timeout to join when we stop this service
@@ -301,6 +305,9 @@ public class CapacityScheduler extends
     initMaximumResourceCapability(this.conf.getMaximumAllocation());
     this.calculator = this.conf.getResourceCalculator();
     this.usePortForNodeName = this.conf.getUsePortForNodeName();
+    
+    this.nodeContainerUpdateMap = new HashMap<NodeId, ConcurrentLinkedQueue<NodeContainerUpdate>>();
+   
     this.applications =
         new ConcurrentHashMap<ApplicationId,
             SchedulerApplication<FiCaSchedulerApp>>();
@@ -899,12 +906,7 @@ public class CapacityScheduler extends
         getMinimumResourceCapability(), getMaximumResourceCapability());
 
     // Release containers
-    
-    if(release.size() > 0){
-     LOG.info("Capacity release container in allocate");
-    }else{
-     LOG.info("Capacity release size is 0"); 	
-    }
+ 
     releaseContainers(release, application);
 
     synchronized (application) {
@@ -1411,25 +1413,27 @@ public class CapacityScheduler extends
 	  if (LOG.isDebugEnabled()) {
 	      LOG.debug("RESUME_CONTAINER: container" + cont.toString());
 	  }
-	  
 	  //TODO we will not do this check here, actually it's dangerous to do so
-	  /*
 	  if(cont.getState() != RMContainerState.DEHYDRATED){
 		LOG.info("we can only resume container which is dehydrated"+cont.getContainerId());
 		return;
 	  }
-	  */
-	  
-	  if(dockerMonitorEnabled){
-		if(dockerMonitor.ResumeContainer(cont.getContainerId())){
-			
-			LOG.info("sr container: "+cont.getContainerId());
-		}else{
-			LOG.info("we get error when we are trying to resume container  "+cont.getContainerId()+"please check your log");	
-		}  
-	 }else{ 
-		LOG.info("suspend container is not supported, please check your configuration"); 
-	 }
+	  //send this resource update info to NodeManager
+	  NodeId nodeId = cont.getContainer().getNodeId();
+	  ContainerId containerId = cont.getContainerId();
+	  //get current resource after preemption
+	  Resource currentResource = cont.getCurrentUsedResource();
+	  NodeContainerUpdate nodeContainerUpdate= NodeContainerUpdate.newInstance(containerId, 
+				                                  currentResource.getMemory(), currentResource.getVirtualCores(),false,true);
+		 
+	  //check if the resource is right
+	  if(nodeContainerUpdateMap.get(nodeId) == null){
+		  ConcurrentLinkedQueue<NodeContainerUpdate> listNodeContainerUpdate = new  ConcurrentLinkedQueue<NodeContainerUpdate>();
+		  listNodeContainerUpdate.add(nodeContainerUpdate);
+		  nodeContainerUpdateMap.put(nodeId, listNodeContainerUpdate);
+	  }else{
+		  nodeContainerUpdateMap.get(nodeId).add(nodeContainerUpdate);
+	  }
   }
   
   @Override
@@ -1437,47 +1441,42 @@ public class CapacityScheduler extends
   	// TODO Auto-generated method stub
 	if (LOG.isDebugEnabled()) {
 	      LOG.debug("SUSPEND_CONTAINER: container" + cont.toString());
-	    }
-	
+	}
 	//we only suspend container in running state
 	if(cont.getState() != RMContainerState.RUNNING){
 		LOG.info("we can only suspend container which is running"+cont.getContainerId());
 		return;
 	}
-	
 	if(toPreempt == null){
-	    	
 	    LOG.info("preempted resource can not be null");
 	    return;
 	 }
-	    
 	 if(Resources.greaterThanOrEqual(getResourceCalculator(), clusterResource, 
 			                        toPreempt,Resources.none())){
 	     LOG.info("preempted resource is none");
 	     return;
-	  }
-	    
-	
-	//TODO send this event to ResourceManager
-	if(dockerMonitorEnabled){
-   //we do not recover requests here,incontrast we just need to suspend a container
-	if(dockerMonitor.DehydrateContainer(cont.getContainerId())){
-        //set preempted resource
-        cont.setPreemptedResource(toPreempt);
-        //mark this container to be preempted
-		completedContainer(cont, SchedulerUtils.createPreemptedContainerStatus(
+	 }
+    //set preempted resource
+     cont.setPreemptedResource(toPreempt);
+    //mark this container to be preempted
+	 completedContainer(cont, SchedulerUtils.createPreemptedContainerStatus(
 		      cont.getContainerId(), SchedulerUtils.PREEMPTED_CONTAINER),
 		      RMContainerEventType.SUSPEND);
-	}else{
-	   	
-	    LOG.info("we get error when we are trying to suspend container  "+cont.getContainerId()+"please check your log");	
-	}
-	
-	}else{
-		
-	LOG.info("suspend container is not supported, please check your configuration"); 		
-	
-	}
+	 //send this resource update info to NodeManager
+	 NodeId nodeId = cont.getContainer().getNodeId();
+	 ContainerId containerId = cont.getContainerId();
+	 //get current resource after preemption
+	 Resource currentResource = cont.getCurrentUsedResource();
+	 NodeContainerUpdate nodeContainerUpdate= NodeContainerUpdate.newInstance(containerId, 
+			                                  currentResource.getMemory(), currentResource.getVirtualCores(),true,false);
+	 
+	 if(nodeContainerUpdateMap.get(nodeId) == null){
+		 ConcurrentLinkedQueue<NodeContainerUpdate> listNodeContainerUpdate = new  ConcurrentLinkedQueue<NodeContainerUpdate>();
+		 listNodeContainerUpdate.add(nodeContainerUpdate);
+		 nodeContainerUpdateMap.put(nodeId, listNodeContainerUpdate);
+	 }else{
+		 nodeContainerUpdateMap.get(nodeId).add(nodeContainerUpdate);
+	 }
   }
 
   @Override
@@ -1748,6 +1747,18 @@ public class CapacityScheduler extends
     }
     return ret;
   }
+
+ 
+@Override
+public List<NodeContainerUpdate> pullNodeContainerUpdate(NodeId node) {
+	
+	List<NodeContainerUpdate> listNodeContainerUpdate= new ArrayList<NodeContainerUpdate>();
+	NodeContainerUpdate nodeContainerUpdate;
+	while((nodeContainerUpdate = nodeContainerUpdateMap.get(node).poll()) != null){
+		listNodeContainerUpdate.add(nodeContainerUpdate);
+	}
+	return listNodeContainerUpdate;
+}
 
 
 }

@@ -53,6 +53,7 @@ import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnRuntimeException;
 import org.apache.hadoop.yarn.factories.RecordFactory;
 import org.apache.hadoop.yarn.factory.providers.RecordFactoryProvider;
+import org.apache.hadoop.yarn.server.api.protocolrecords.NodeContainerUpdate;
 import org.apache.hadoop.yarn.server.resourcemanager.RMContext;
 import org.apache.hadoop.yarn.server.resourcemanager.recovery.RMStateStore.RMState;
 import org.apache.hadoop.yarn.server.resourcemanager.rmapp.RMAppEvent;
@@ -973,4 +974,10 @@ public class FifoScheduler extends
   public Resource getUsedResource() {
     return usedResource;
   }
+
+@Override
+public List<NodeContainerUpdate> pullNodeContainerUpdate(NodeId node) {
+	// TODO Auto-generated method stub
+	return null;
+}
 }

@@ -52,7 +52,10 @@ message NodeHeartbeatRequestProto {
 message NodeContainerUpdateProto{
   optional ContainerIdProto container_id = 1;
   optional int32 memory=2;
-  repeated int32 cpu_cores=3;
+  optional int32 cpu_cores=3;
+  optional bool  suspend=4;
+  optional bool  resume=5;
+
 
 }
 
