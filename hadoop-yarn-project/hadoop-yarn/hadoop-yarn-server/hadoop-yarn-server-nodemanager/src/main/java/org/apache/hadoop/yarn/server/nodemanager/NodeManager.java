@@ -226,7 +226,7 @@ public class NodeManager extends CompositeService
     this.dispatcher = new AsyncDispatcher();
     
     this.coresManager = new CoresManagerImpl();
-    this.containerManager.init(conf);
+    this.coresManager.init(conf);
     
     nodeHealthChecker = new NodeHealthCheckerService();
     addService(nodeHealthChecker);
