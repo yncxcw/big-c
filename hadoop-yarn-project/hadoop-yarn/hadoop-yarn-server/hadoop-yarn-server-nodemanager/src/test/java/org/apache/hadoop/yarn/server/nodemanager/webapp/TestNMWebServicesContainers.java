@@ -91,7 +91,6 @@ public class TestNMWebServicesContainers extends JerseyTestBase {
       TestNMWebServicesContainers.class.getSimpleName() + "LogDir");
 
   private Injector injector = Guice.createInjector(new ServletModule() {
-    @Override
     protected void configureServlets() {
       resourceView = new ResourceView() {
         @Override
@@ -128,7 +127,7 @@ public class TestNMWebServicesContainers extends JerseyTestBase {
       dirsHandler = healthChecker.getDiskHandler();
       aclsManager = new ApplicationACLsManager(conf);
       nmContext = new NodeManager.NMContext(null, null, dirsHandler,
-          aclsManager, null) {
+          aclsManager, null, null) {
         public NodeId getNodeId() {
           return NodeId.newInstance("testhost.foo.com", 8042);
         };

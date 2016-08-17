@@ -192,7 +192,7 @@ public class TestAuxServices {
         ContainerId.newContainerId(attemptId, 1), "", "",
         Resource.newInstance(1, 1), 0,0,0, Priority.newInstance(0), 0);
     Container container = new ContainerImpl(null, null, null, null, null,
-        null, cti);
+        null, null, cti, null, 0, null, false, null);
     ContainerId containerId = container.getContainerId();
     Resource resource = container.getResource();
     event = new AuxServicesEvent(AuxServicesEventType.CONTAINER_INIT,container);

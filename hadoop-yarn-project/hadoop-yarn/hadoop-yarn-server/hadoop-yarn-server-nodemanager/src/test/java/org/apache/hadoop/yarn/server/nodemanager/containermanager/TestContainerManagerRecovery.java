@@ -90,7 +90,7 @@ public class TestContainerManagerRecovery {
     stateStore.start();
     Context context = new NMContext(new NMContainerTokenSecretManager(
         conf), new NMTokenSecretManagerInNM(), null,
-        new ApplicationACLsManager(conf), stateStore);
+        new ApplicationACLsManager(conf), stateStore, null);
     ContainerManagerImpl cm = createContainerManager(context);
     cm.init(conf);
     cm.start();
@@ -157,7 +157,7 @@ public class TestContainerManagerRecovery {
     cm.stop();
     context = new NMContext(new NMContainerTokenSecretManager(
         conf), new NMTokenSecretManagerInNM(), null,
-        new ApplicationACLsManager(conf), stateStore);
+        new ApplicationACLsManager(conf), stateStore, null);
     cm = createContainerManager(context);
     cm.init(conf);
     cm.start();
@@ -203,7 +203,7 @@ public class TestContainerManagerRecovery {
     cm.stop();
     context = new NMContext(new NMContainerTokenSecretManager(
         conf), new NMTokenSecretManagerInNM(), null,
-        new ApplicationACLsManager(conf), stateStore);
+        new ApplicationACLsManager(conf), stateStore, null);
     cm = createContainerManager(context);
     cm.init(conf);
     cm.start();
@@ -235,7 +235,7 @@ public class TestContainerManagerRecovery {
     cm.stop();
     context = new NMContext(new NMContainerTokenSecretManager(
         conf), new NMTokenSecretManagerInNM(), null,
-        new ApplicationACLsManager(conf), stateStore);
+        new ApplicationACLsManager(conf), stateStore, null);
     cm = createContainerManager(context);
     cm.init(conf);
     cm.start();

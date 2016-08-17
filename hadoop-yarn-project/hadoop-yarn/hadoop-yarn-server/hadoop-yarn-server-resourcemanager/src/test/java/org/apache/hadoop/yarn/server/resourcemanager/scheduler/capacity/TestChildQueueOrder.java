@@ -158,7 +158,7 @@ public class TestChildQueueOrder {
     }).
     when(queue).assignContainers(eq(clusterResource), eq(node), 
         any(ResourceLimits.class));
-    doNothing().when(node).releaseContainer(any(Container.class));
+  //  doNothing().when(node).releaseContainer(any(Container.class));
   }
 
 
@@ -229,7 +229,7 @@ public class TestChildQueueOrder {
 
     FiCaSchedulerNode node_0 = 
       TestUtils.getMockNode("host_0", DEFAULT_RACK, 0, memoryPerNode*GB);
-    doNothing().when(node_0).releaseContainer(any(Container.class));
+    //doNothing().when(node_0).releaseContainer(any(Container.class));
     
     final Resource clusterResource = 
       Resources.createResource(numNodes * (memoryPerNode*GB), 

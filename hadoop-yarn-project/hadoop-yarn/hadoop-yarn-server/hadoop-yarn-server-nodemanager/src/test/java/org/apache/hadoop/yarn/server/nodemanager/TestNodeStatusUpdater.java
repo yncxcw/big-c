@@ -242,8 +242,8 @@ public class TestNodeStatusUpdater {
                 firstContainerID, InetAddress.getByName("localhost")
                     .getCanonicalHostName(), 1234, user, resource,
                 currentTime + 10000, 123, "password".getBytes(), currentTime));
-        Container container = new ContainerImpl(conf, mockDispatcher,
-            stateStore, launchContext, null, mockMetrics, containerToken);
+        Container container = new ContainerImpl(null,conf, mockDispatcher,
+            stateStore, launchContext, null, mockMetrics, containerToken,null);
         this.context.getContainers().put(firstContainerID, container);
       } else if (heartBeatID == 2) {
         // Checks on the RM end
@@ -272,8 +272,8 @@ public class TestNodeStatusUpdater {
                 secondContainerID, InetAddress.getByName("localhost")
                     .getCanonicalHostName(), 1234, user, resource,
                 currentTime + 10000, 123, "password".getBytes(), currentTime));
-        Container container = new ContainerImpl(conf, mockDispatcher,
-            stateStore, launchContext, null, mockMetrics, containerToken);
+        Container container = new ContainerImpl(null,conf, mockDispatcher,
+            stateStore, launchContext, null, mockMetrics, containerToken,null);
         this.context.getContainers().put(secondContainerID, container);
       } else if (heartBeatID == 3) {
         // Checks on the RM end
@@ -292,7 +292,7 @@ public class TestNodeStatusUpdater {
 
       NodeHeartbeatResponse nhResponse = YarnServerBuilderUtils.
           newNodeHeartbeatResponse(heartBeatID, null, null, null, null, null,
-            1000L);
+            null, 1000L);
       return nhResponse;
     }
   }
@@ -511,7 +511,7 @@ public class TestNodeStatusUpdater {
 
       NodeHeartbeatResponse nhResponse = YarnServerBuilderUtils.
           newNodeHeartbeatResponse(heartBeatID, heartBeatNodeAction, null,
-              null, null, null, 1000L);
+              null, null, null, null, 1000L);
       nhResponse.setDiagnosticsMessage(shutDownMessage);
       return nhResponse;
     }
@@ -550,7 +550,7 @@ public class TestNodeStatusUpdater {
       nodeStatus.setResponseId(heartBeatID++);
       NodeHeartbeatResponse nhResponse = YarnServerBuilderUtils.
           newNodeHeartbeatResponse(heartBeatID, heartBeatNodeAction, null,
-              null, null, null, 1000L);
+              null, null, null, null, 1000L);
 
       if (nodeStatus.getKeepAliveApplications() != null
           && nodeStatus.getKeepAliveApplications().size() > 0) {
@@ -726,7 +726,7 @@ public class TestNodeStatusUpdater {
       nodeStatus.setResponseId(heartBeatID);
       NodeHeartbeatResponse nhResponse =
           YarnServerBuilderUtils.newNodeHeartbeatResponse(heartBeatID,
-            heartBeatNodeAction, null, null, null, null, 1000L);
+            heartBeatNodeAction, null, null, null, null, null, 1000L);
       nhResponse.addContainersToBeRemovedFromNM(finishedContainersPulledByAM);
       Map<ApplicationId, ByteBuffer> appCredentials =
           new HashMap<ApplicationId, ByteBuffer>();
@@ -817,7 +817,7 @@ public class TestNodeStatusUpdater {
 
       NodeHeartbeatResponse nhResponse = YarnServerBuilderUtils.
           newNodeHeartbeatResponse(heartBeatID, NodeAction.NORMAL, null,
-              null, null, null, 1000L);
+              null, null, null, null, 1000L);
       return nhResponse;
     }
   }
@@ -888,9 +888,9 @@ public class TestNodeStatusUpdater {
         BuilderUtils.newContainerToken(cId, "anyHost", 1234, "anyUser",
             BuilderUtils.newResource(1024, 1), 0, 123,
             "password".getBytes(), 0);
-    Container anyCompletedContainer = new ContainerImpl(conf, null,
+    Container anyCompletedContainer = new ContainerImpl(null, conf, null,
         null, null, null, null,
-        BuilderUtils.newContainerTokenIdentifier(containerToken)) {
+        BuilderUtils.newContainerTokenIdentifier(containerToken), null, heartBeatID, null, triggered, null) {
 
       @Override
       public ContainerState getCurrentState() {
@@ -910,8 +910,8 @@ public class TestNodeStatusUpdater {
           1234, "anyUser", BuilderUtils.newResource(1024, 1), 0, 123,
           "password".getBytes(), 0);
     Container runningContainer =
-        new ContainerImpl(conf, null, null, null, null, null,
-          BuilderUtils.newContainerTokenIdentifier(runningContainerToken)) {
+        new ContainerImpl(null, conf, null, null, null, null, null,
+          BuilderUtils.newContainerTokenIdentifier(runningContainerToken), null, heartBeatID, null, triggered, null) {
           @Override
           public ContainerState getCurrentState() {
             return ContainerState.RUNNING;
@@ -970,9 +970,9 @@ public class TestNodeStatusUpdater {
         BuilderUtils.newContainerToken(cId, "anyHost", 1234, "anyUser",
             BuilderUtils.newResource(1024, 1), 0, 123,
             "password".getBytes(), 0);
-    Container anyCompletedContainer = new ContainerImpl(conf, null,
+    Container anyCompletedContainer = new ContainerImpl(null, conf, null,
         null, null, null, null,
-        BuilderUtils.newContainerTokenIdentifier(containerToken)) {
+        BuilderUtils.newContainerTokenIdentifier(containerToken), null, heartBeatID, null, triggered, null) {
 
       @Override
       public ContainerState getCurrentState() {
@@ -1356,7 +1356,7 @@ public class TestNodeStatusUpdater {
         return myNodeStatusUpdater;
       }
 
-      @Override
+      //@Override
       protected NMContext createNMContext(
           NMContainerTokenSecretManager containerTokenSecretManager,
           NMTokenSecretManagerInNM nmTokenSecretManager,
@@ -1494,7 +1494,7 @@ public class TestNodeStatusUpdater {
             try {
               for (int i = 0; i < 100 && !stop.get(); i++) {
                 NodeHeartbeatResponse nodeHeartBeatResponse =
-                    newNodeHeartbeatResponse(0, NodeAction.NORMAL,
+                    newNodeHeartbeatResponse(0, NodeAction.NORMAL,null,
                         null, null, null, null, 0);
                 nodeHeartBeatResponse.setSystemCredentialsForApps(
                     testCredentials);
@@ -1533,7 +1533,7 @@ public class TestNodeStatusUpdater {
         NMContainerTokenSecretManager containerTokenSecretManager,
         NMTokenSecretManagerInNM nmTokenSecretManager) {
       super(containerTokenSecretManager, nmTokenSecretManager, null, null,
-          new NMNullStateStoreService());
+          new NMNullStateStoreService(), null);
     }
 
     @Override

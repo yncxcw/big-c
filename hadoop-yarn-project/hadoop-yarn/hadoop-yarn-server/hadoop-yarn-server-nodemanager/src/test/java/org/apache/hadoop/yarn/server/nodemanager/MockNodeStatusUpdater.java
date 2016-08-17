@@ -97,7 +97,7 @@ public class MockNodeStatusUpdater extends NodeStatusUpdaterImpl {
 
       NodeHeartbeatResponse nhResponse = YarnServerBuilderUtils
           .newNodeHeartbeatResponse(heartBeatID, null, null,
-              null, null, null, 1000L);
+              null, null, null, null, 1000L);
       return nhResponse;
     }
   }

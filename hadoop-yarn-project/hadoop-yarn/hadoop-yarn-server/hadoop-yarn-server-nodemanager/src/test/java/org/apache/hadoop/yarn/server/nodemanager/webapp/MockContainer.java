@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -140,4 +141,10 @@ public class MockContainer implements Container {
   public NMContainerStatus getNMContainerStatus() {
     return null;
   }
+
+@Override
+public Set<Integer> getCpuCores() {
+	// TODO Auto-generated method stub
+	return null;
+}
 }

@@ -807,8 +807,8 @@ public class TestContainer {
       }
       when(ctxt.getServiceData()).thenReturn(serviceData);
 
-      c = new ContainerImpl(conf, dispatcher, new NMNullStateStoreService(),
-          ctxt, null, metrics, identifier);
+      c = new ContainerImpl(null,conf, dispatcher, new NMNullStateStoreService(),
+          ctxt, null, metrics, identifier,null);
       dispatcher.register(ContainerEventType.class,
           new EventHandler<ContainerEvent>() {
             @Override

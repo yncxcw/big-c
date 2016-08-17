@@ -287,7 +287,7 @@ public class TestNodeManagerResync {
 
                 // notify RESYNC on first heartbeat.
                 return YarnServerBuilderUtils.newNodeHeartbeatResponse(1,
-                  NodeAction.RESYNC, null, null, null, null, 1000L);
+                  NodeAction.RESYNC, null, null, null, null, null, 1000L);
               }
             };
           }

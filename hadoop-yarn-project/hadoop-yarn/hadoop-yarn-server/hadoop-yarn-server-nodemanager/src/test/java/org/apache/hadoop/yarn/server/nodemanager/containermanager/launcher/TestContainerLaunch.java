@@ -109,7 +109,7 @@ public class TestContainerLaunch extends BaseContainerManagerTest {
 
   protected Context distContext = new NMContext(new NMContainerTokenSecretManager(
     conf), new NMTokenSecretManagerInNM(), null,
-    new ApplicationACLsManager(conf), new NMNullStateStoreService()) {
+    new ApplicationACLsManager(conf), new NMNullStateStoreService(), null) {
     public int getHttpPort() {
       return HTTP_PORT;
     };
