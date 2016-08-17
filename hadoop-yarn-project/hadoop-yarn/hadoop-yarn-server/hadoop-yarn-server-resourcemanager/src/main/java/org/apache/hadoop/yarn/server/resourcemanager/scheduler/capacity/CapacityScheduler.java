@@ -1754,8 +1754,10 @@ public List<NodeContainerUpdate> pullNodeContainerUpdate(NodeId node) {
 	
 	List<NodeContainerUpdate> listNodeContainerUpdate= new ArrayList<NodeContainerUpdate>();
 	NodeContainerUpdate nodeContainerUpdate;
-	while((nodeContainerUpdate = nodeContainerUpdateMap.get(node).poll()) != null){
-		listNodeContainerUpdate.add(nodeContainerUpdate);
+	if(nodeContainerUpdateMap.get(node) != null){
+	  while((nodeContainerUpdate = nodeContainerUpdateMap.get(node).poll()) != null){
+		  listNodeContainerUpdate.add(nodeContainerUpdate);
+	   }
 	}
 	return listNodeContainerUpdate;
 }
