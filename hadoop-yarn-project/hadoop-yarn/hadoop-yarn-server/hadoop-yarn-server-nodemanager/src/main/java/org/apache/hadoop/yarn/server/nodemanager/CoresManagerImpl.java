@@ -32,6 +32,8 @@ public class CoresManagerImpl implements CoresManager {
 		for(int i=0;i<virtualCores;i++){
 			totalCores.add(i);
 			unUsedCores.add(i);
+			Set<ContainerId> cntIdSet = new HashSet<ContainerId>();
+			coresToContainer.put(i, cntIdSet);
 		}
 	}
 
@@ -80,9 +82,7 @@ public class CoresManagerImpl implements CoresManager {
 	
 	private void allcoateCoresforContainer(Set<Integer> cores,ContainerId cntId){
 		for(Integer core : cores){
-			if(coresToContainer.get(core) == null ){
-		    	coresToContainer.get(core).add(cntId);
-		    }
+		    coresToContainer.get(core).add(cntId);
 		}
 		containerToCores.put(cntId, cores);	
 	}
