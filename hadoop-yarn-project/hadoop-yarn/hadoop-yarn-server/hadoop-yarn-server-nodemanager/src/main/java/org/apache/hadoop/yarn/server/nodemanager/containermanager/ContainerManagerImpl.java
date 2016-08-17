@@ -319,7 +319,7 @@ public class ContainerManagerImpl extends CompositeService implements
     
     Set<Integer> cores= this.context.getCoresManager().allocateCores(containerId, 
     		                          token.getResource().getVirtualCores());
-    
+    LOG.info("allocate cpuset"+cores);
     if (context.getApplications().containsKey(appId)) {
       Credentials credentials = parseCredentials(launchContext);
       Container container = new ContainerImpl(this.context,getConfig(), dispatcher,
@@ -840,9 +840,10 @@ public class ContainerManagerImpl extends CompositeService implements
 
     Credentials credentials = parseCredentials(launchContext);
     
-    LOG.info("allocate cpuset");
+    
     Set<Integer> cores = this.context.getCoresManager().allocateCores(containerId,
     		                            containerTokenIdentifier.getResource().getVirtualCores());
+    LOG.info("allocate cpuset"+cores);
     
     Container container =
         new ContainerImpl(this.context,getConfig(), this.dispatcher,
