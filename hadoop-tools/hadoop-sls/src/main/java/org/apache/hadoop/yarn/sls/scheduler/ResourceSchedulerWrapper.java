@@ -58,6 +58,7 @@ import org.apache.hadoop.yarn.api.records.QueueUserACLInfo;
 import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.api.records.ResourceRequest;
 import org.apache.hadoop.yarn.exceptions.YarnException;
+import org.apache.hadoop.yarn.server.api.protocolrecords.NodeContainerUpdate;
 import org.apache.hadoop.yarn.server.resourcemanager.RMContext;
 import org.apache.hadoop.yarn.server.resourcemanager.recovery.RMStateStore;
 import org.apache.hadoop.yarn.server.resourcemanager.rmcontainer.RMContainer;
@@ -947,5 +948,11 @@ public class ResourceSchedulerWrapper
       ContainerStatus containerStatus, RMContainerEventType event) {
     // do nothing
   }
+
+@Override
+public List<NodeContainerUpdate> pullNodeContainerUpdate(NodeId node) {
+	// TODO Auto-generated method stub
+	return null;
+}
 }
 

@@ -189,7 +189,18 @@ public class DockerContainerExecutor extends ContainerExecutor {
     Path tokenDst =
         new Path(containerWorkDir, ContainerLaunch.FINAL_CONTAINER_TOKENS_FILE);
     lfs.util().copy(nmPrivateTokensPath, tokenDst);
-
+    //cpu set strings
+    String cpuSetString =new String();
+    int index = 0;
+    for(Integer core : container.getCpuCores()){
+    	cpuSetString = cpuSetString + core.toString();
+    	index++;
+    	if(index < container.getCpuCores().size()){
+    		cpuSetString=cpuSetString+",";
+    	}
+    	
+    }
+    LOG.info("container"+containerIdStr+"cpu: "+cpuSetString);
     String   memory      = Integer.toString(container.getResource().getMemory());
     String localDirMount = toMount(localDirs);
     String logDirMount = toMount(logDirs);
@@ -200,6 +211,10 @@ public class DockerContainerExecutor extends ContainerExecutor {
         .append("run")
         .append(" ")
         .append("--rm --net=host")
+        .append(" ")
+        .append("--cpuset-cpus")
+        .append(" ")
+        .append(cpuSetString)
         .append(" ")
         .append("--memory="+memory+"m")
         .append(" ")

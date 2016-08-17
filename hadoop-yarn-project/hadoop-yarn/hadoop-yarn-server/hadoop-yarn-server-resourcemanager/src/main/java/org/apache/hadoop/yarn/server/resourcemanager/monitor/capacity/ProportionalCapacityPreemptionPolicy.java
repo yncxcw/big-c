@@ -663,7 +663,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       }
       if (!observeOnly) {
         dispatcher.handle(new ContainerPreemptEvent(appId, c,
-            ContainerPreemptEventType.DROP_RESERVATION));
+            ContainerPreemptEventType.DROP_RESERVATION, c.getContainer().getResource()));
       }
       Resources.subtractFrom(rsrcPreempt, c.getContainer().getResource());
     }

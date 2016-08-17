@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.yarn.server.nodemanager.containermanager.container;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
@@ -51,7 +52,10 @@ import org.apache.hadoop.yarn.event.Dispatcher;
 import org.apache.hadoop.yarn.event.EventHandler;
 import org.apache.hadoop.yarn.security.ContainerTokenIdentifier;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NMContainerStatus;
+import org.apache.hadoop.yarn.server.nodemanager.ContainerExecutor;
+import org.apache.hadoop.yarn.server.nodemanager.Context;
 import org.apache.hadoop.yarn.server.nodemanager.NMAuditLogger;
+import org.apache.hadoop.yarn.server.nodemanager.ContainerExecutor.ExitCode;
 import org.apache.hadoop.yarn.server.nodemanager.NMAuditLogger.AuditConstants;
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.AuxServicesEvent;
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.AuxServicesEventType;
@@ -81,6 +85,9 @@ import org.apache.hadoop.yarn.util.Clock;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.hadoop.yarn.util.SystemClock;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NodeContainerUpdate;
+import org.apache.hadoop.util.Shell;
+import org.apache.hadoop.util.StringUtils;
+import org.apache.hadoop.util.Shell.ShellCommandExecutor;
 
 public class ContainerImpl implements Container {
 
@@ -94,11 +101,13 @@ public class ContainerImpl implements Container {
   private final ContainerTokenIdentifier containerTokenIdentifier;
   private final ContainerId containerId;
   private final Resource resource;
+  private Resource currentResource;
   private final String user;
   private int exitCode = ContainerExitStatus.INVALID;
   private final StringBuilder diagnostics;
   private boolean wasLaunched;
   private long containerLaunchStartTime;
+  private final Context context;
   private static Clock clock = new SystemClock();
 
   /** The NM-wide configuration - not specific to this container */
@@ -128,7 +137,7 @@ public class ContainerImpl implements Container {
   // whether container was marked as killed after recovery
   private boolean recoveredAsKilled = false;
 
-  public ContainerImpl(Configuration conf, Dispatcher dispatcher,
+  public ContainerImpl(Context context,Configuration conf, Dispatcher dispatcher,
       NMStateStoreService stateStore, ContainerLaunchContext launchContext,
       Credentials creds, NodeManagerMetrics metrics,
       ContainerTokenIdentifier containerTokenIdentifier,Set<Integer> cpuCores) {
@@ -139,6 +148,7 @@ public class ContainerImpl implements Container {
     this.containerTokenIdentifier = containerTokenIdentifier;
     this.containerId = containerTokenIdentifier.getContainerID();
     this.resource = containerTokenIdentifier.getResource();
+    this.currentResource = resource;
     this.diagnostics = new StringBuilder();
     this.credentials = creds;
     this.metrics = metrics;
@@ -147,18 +157,19 @@ public class ContainerImpl implements Container {
     this.readLock = readWriteLock.readLock();
     this.writeLock = readWriteLock.writeLock();
     this.cpuCores  = cpuCores;
+    this.context = context;
 
     stateMachine = stateMachineFactory.make(this);
   }
 
   // constructor for a recovered container
-  public ContainerImpl(Configuration conf, Dispatcher dispatcher,
+  public ContainerImpl(Context context,Configuration conf, Dispatcher dispatcher,
       NMStateStoreService stateStore, ContainerLaunchContext launchContext,
       Credentials creds, NodeManagerMetrics metrics,
       ContainerTokenIdentifier containerTokenIdentifier,
       RecoveredContainerStatus recoveredStatus, int exitCode,
       String diagnostics, boolean wasKilled, Set<Integer> cpuCores) {
-    this(conf, dispatcher, stateStore, launchContext, creds, metrics,
+    this(context,conf, dispatcher, stateStore, launchContext, creds, metrics,
         containerTokenIdentifier,cpuCores);
     this.recoveredStatus = recoveredStatus;
     this.exitCode = exitCode;
@@ -799,9 +810,159 @@ public class ContainerImpl implements Container {
 	  }
   
   
-  private void ProcessResourceUpdate(NodeContainerUpdate nodeContainerUpdate){
+  /**
+   * TO launch thread to process contaienr udpate event
+   * @param nodeContainerUpdate
+   */
+  
+  
+  private class DockerCommandRunnable implements Runnable{
+	  
+  NodeContainerUpdate nodeContainerUpdate;
+	  
+  public DockerCommandRunnable(NodeContainerUpdate nodeContainerUpdate){
+		  this.nodeContainerUpdate = nodeContainerUpdate;
+  }
+  
+  private void DockerCommandCpuQuota(Integer quota){
+	  List<String> commandPrefix = new ArrayList<String>();
+	  commandPrefix.add("docker");
+	  commandPrefix.add("update");
+	  List<String> commandQuota = new ArrayList<String>();
+	  commandQuota.addAll(commandPrefix);
+	  commandQuota.add("--cpu-quota");
+	  commandQuota.add(quota.toString());
+	  commandQuota.add(containerId.toString());
+	  String[] commandArrayQuota = commandQuota.toArray(new String[commandQuota.size()]);
+	  this.runDockerUpdateCommand(commandArrayQuota);
 	  
   }
+  
+  private void DockerCommandCpuSet(Set<Integer> cores){
+	  List<String> commandPrefix = new ArrayList<String>();
+	  commandPrefix.add("docker");
+	  commandPrefix.add("update");
+	  List<String> commandCores = new ArrayList<String>();
+	  commandCores.addAll(commandPrefix);
+	  commandCores.add("--cpuset-cpus");
+	  
+	  int index = 0;
+	  for(Integer core : cores){
+		  commandCores.add(core.toString());
+		  index++;
+		  if(index < cores.size()){
+			  commandCores.add(",");
+		  }
+	  }
+	  commandCores.add(containerId.toString());
+	  String[] commandArrayCores = commandCores.toArray(new String[commandCores.size()]);
+	  this.runDockerUpdateCommand(commandArrayCores);
+	  
+	  
+  }
+  
+  private void DockerCommandMeory(Integer memory){
+	  List<String> commandPrefix = new ArrayList<String>();
+	  commandPrefix.add("docker");
+	  commandPrefix.add("update");
+	  List<String> commandMemory = new ArrayList<String>();
+	  commandMemory.addAll(commandPrefix);
+	  commandMemory.add("--memory");
+	  commandMemory.add(memory.toString());
+	  commandMemory.add(containerId.toString());
+	  String[] commandArrayMemory = commandMemory.toArray(new String[commandMemory.size()]);
+	  this.runDockerUpdateCommand(commandArrayMemory);
+	  
+	  
+   }
+  
+  private int runDockerUpdateCommand(String[] command){
+	 ShellCommandExecutor shExec = null; 
+	 int count = 10;
+	 CharSequence str_device = "device";
+	 CharSequence str_busy   = "busy";
+	 while(count > 0){
+	 //we try 10 times if fails due to device busy 
+     try { 
+    	
+		  shExec = new ShellCommandExecutor(command);
+		  shExec.execute();
+		  
+		  if(!shExec.getOutput().contains(str_device) && !shExec.getOutput().contains(str_busy)){
+	      //success if we get here
+			  break;
+		  }
+		  
+	    } catch (IOException e) {
+	      if (null == shExec) {
+	        return -1;
+	      }
+	      int exitCode = shExec.getExitCode();
+	      if (exitCode != ExitCode.FORCE_KILLED.getExitCode()
+	          && exitCode != ExitCode.TERMINATED.getExitCode()) {
+	        LOG.warn("Exception from Docker update with container ID: "
+	            + containerId + " and exit code: " + exitCode, e); 
+	      }
+	      return exitCode;
+	    } finally {
+	      if (shExec != null) {
+	        shExec.close();
+	      }
+	    }
+	 }
+	 return 0;
+   }
+
+@Override
+public void run() {
+	//first we update CPU quota	  
+	  Integer quota = -1;
+	  if(nodeContainerUpdate.getSuspend()){
+		 quota = 1000;
+		  
+	  }else if(nodeContainerUpdate.getResume()){
+		 quota = -1;
+	  }
+	  this.DockerCommandCpuQuota(quota);
+	  Integer targetCores = nodeContainerUpdate.getCores();
+	  //then we update resource requirement, first we update cpuset
+	  Set<Integer> cores = context.getCoresManager().resetCores(containerId,targetCores);
+	  this.DockerCommandCpuSet(cores);
+	  //we then update memory usage
+	  List<String> commandMemory;
+	  Integer currentMemory = currentResource.getMemory();
+	  Integer targetMemory  = nodeContainerUpdate.getMemory();
+	  
+	  if(targetMemory < currentMemory){
+		  
+		  while(currentMemory > targetMemory){	  
+			  if(currentMemory > 1024){
+				  
+				  currentMemory -= 1024;
+			  }else{
+				  
+				  currentMemory /=2;
+			  }
+			 this.DockerCommandMeory(currentMemory);
+		  }
+		 this.DockerCommandMeory(targetMemory);
+		  
+	  }else{
+		this.DockerCommandMeory(targetMemory); 
+	  }
+	  currentResource = Resource.newInstance(targetMemory, targetCores);
+	
+}
+  }
+  private void ProcessResourceUpdate(NodeContainerUpdate nodeContainerUpdate){
+	  //initialize update thread
+	  Thread dockerUpdateThread = new Thread(new DockerCommandRunnable(nodeContainerUpdate));
+	  //start update thread
+	  dockerUpdateThread.start();
+	  
+  }
+  
+
   
   
   /**

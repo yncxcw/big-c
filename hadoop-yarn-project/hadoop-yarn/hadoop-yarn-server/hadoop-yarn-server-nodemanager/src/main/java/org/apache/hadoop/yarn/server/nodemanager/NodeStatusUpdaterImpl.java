@@ -57,6 +57,7 @@ import org.apache.hadoop.yarn.server.api.ResourceManagerConstants;
 import org.apache.hadoop.yarn.server.api.ResourceTracker;
 import org.apache.hadoop.yarn.server.api.ServerRMProxy;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NMContainerStatus;
+import org.apache.hadoop.yarn.server.api.protocolrecords.NodeContainerUpdate;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NodeHeartbeatRequest;
 import org.apache.hadoop.yarn.server.api.protocolrecords.NodeHeartbeatResponse;
 import org.apache.hadoop.yarn.server.api.protocolrecords.RegisterNodeManagerRequest;
@@ -649,6 +650,15 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
                       CMgrCompletedAppsEvent.Reason.BY_RESOURCEMANAGER));
             }
 
+            //udpate contaienr resource
+            List<NodeContainerUpdate> nodeContainerUpdates = response.getContainersToUpdate();
+            //send this event to ContainerManagerImpl
+            if(nodeContainerUpdates != null && !nodeContainerUpdates.isEmpty()){
+              dispatcher.getEventHandler().handle(
+            	  new CMgrUpdateContainersEvent(nodeContainerUpdates));	
+            }
+            
+            
             Map<ApplicationId, ByteBuffer> systemCredentials =
                 response.getSystemCredentialsForApps();
             if (systemCredentials != null && !systemCredentials.isEmpty()) {

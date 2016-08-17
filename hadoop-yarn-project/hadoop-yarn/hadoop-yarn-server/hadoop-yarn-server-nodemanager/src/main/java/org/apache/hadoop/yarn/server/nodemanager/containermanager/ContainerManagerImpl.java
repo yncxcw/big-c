@@ -93,8 +93,10 @@ import org.apache.hadoop.yarn.proto.YarnProtos.ApplicationACLMapProto;
 import org.apache.hadoop.yarn.proto.YarnServerNodemanagerRecoveryProtos.ContainerManagerApplicationProto;
 import org.apache.hadoop.yarn.security.ContainerTokenIdentifier;
 import org.apache.hadoop.yarn.security.NMTokenIdentifier;
+import org.apache.hadoop.yarn.server.api.protocolrecords.NodeContainerUpdate;
 import org.apache.hadoop.yarn.server.nodemanager.CMgrCompletedAppsEvent;
 import org.apache.hadoop.yarn.server.nodemanager.CMgrCompletedContainersEvent;
+import org.apache.hadoop.yarn.server.nodemanager.CMgrUpdateContainersEvent;
 import org.apache.hadoop.yarn.server.nodemanager.ContainerExecutor;
 import org.apache.hadoop.yarn.server.nodemanager.ContainerManagerEvent;
 import org.apache.hadoop.yarn.server.nodemanager.Context;
@@ -116,6 +118,7 @@ import org.apache.hadoop.yarn.server.nodemanager.containermanager.container.Cont
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.container.ContainerEventType;
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.container.ContainerImpl;
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.container.ContainerKillEvent;
+import org.apache.hadoop.yarn.server.nodemanager.containermanager.container.ContainerResourceUpdate;
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.launcher.ContainersLauncher;
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.launcher.ContainersLauncherEventType;
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.localizer.ResourceLocalizationService;
@@ -314,12 +317,12 @@ public class ContainerManagerImpl extends CompositeService implements
     LOG.info("Recovering " + containerId + " in state " + rcs.getStatus()
         + " with exit code " + rcs.getExitCode());
     
-    Set<Integer> cores= this.context.getCoresManager().getAvailableCores(containerId, 
+    Set<Integer> cores= this.context.getCoresManager().allocateCores(containerId, 
     		                          token.getResource().getVirtualCores());
     
     if (context.getApplications().containsKey(appId)) {
       Credentials credentials = parseCredentials(launchContext);
-      Container container = new ContainerImpl(getConfig(), dispatcher,
+      Container container = new ContainerImpl(this.context,getConfig(), dispatcher,
           context.getNMStateStore(), req.getContainerLaunchContext(),
           credentials, metrics, token, rcs.getStatus(), rcs.getExitCode(),
           rcs.getDiagnostics(), rcs.getKilled(),cores);
@@ -838,11 +841,11 @@ public class ContainerManagerImpl extends CompositeService implements
     Credentials credentials = parseCredentials(launchContext);
     
     LOG.info("allocate cpuset");
-    Set<Integer> cores = this.context.getCoresManager().getAvailableCores(containerId,
+    Set<Integer> cores = this.context.getCoresManager().allocateCores(containerId,
     		                            containerTokenIdentifier.getResource().getVirtualCores());
     
     Container container =
-        new ContainerImpl(getConfig(), this.dispatcher,
+        new ContainerImpl(this.context,getConfig(), this.dispatcher,
             context.getNMStateStore(), launchContext,
           credentials, metrics, containerTokenIdentifier,cores);
     ApplicationId applicationID =
@@ -1144,6 +1147,15 @@ public class ContainerManagerImpl extends CompositeService implements
                   "Container Killed by ResourceManager"));
       }
       break;
+    case UPDATE_CONTAINERS:
+    	LOG.info("get containerUpdateEvents");
+    	CMgrUpdateContainersEvent containerUpdateEvents =
+    			(CMgrUpdateContainersEvent) event;
+    	for(NodeContainerUpdate containerUpdate : containerUpdateEvents.getNodeContainerUpdate()){
+    		this.dispatcher.getEventHandler().handle(
+    			new ContainerResourceUpdate(containerUpdate.getContainerId(),containerUpdate));
+    	}
+    	break;
     default:
         throw new YarnRuntimeException(
             "Got an unknown ContainerManagerEvent type: " + event.getType());

@@ -82,6 +82,7 @@ public class NodeManager extends CompositeService
   private NodeHealthCheckerService nodeHealthChecker;
   private LocalDirsHandlerService dirsHandler;
   private Context context;
+  private CoresManager coresManager;
   private AsyncDispatcher dispatcher;
   private ContainerManagerImpl containerManager;
   private NodeStatusUpdater nodeStatusUpdater;
@@ -224,7 +225,8 @@ public class NodeManager extends CompositeService
     // NodeManager level dispatcher
     this.dispatcher = new AsyncDispatcher();
     
-    CoresManager coresManager = new CoresManagerImpl();
+    this.coresManager = new CoresManagerImpl();
+    this.containerManager.init(conf);
     
     nodeHealthChecker = new NodeHealthCheckerService();
     addService(nodeHealthChecker);

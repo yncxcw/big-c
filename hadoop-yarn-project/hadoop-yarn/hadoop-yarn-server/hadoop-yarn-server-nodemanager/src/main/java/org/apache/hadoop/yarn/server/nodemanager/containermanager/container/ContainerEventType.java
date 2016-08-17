@@ -25,6 +25,7 @@ public enum ContainerEventType {
   KILL_CONTAINER,
   UPDATE_DIAGNOSTICS_MSG,
   CONTAINER_DONE,
+  RESOURCE_UPDATE,
 
   // DownloadManager
   CONTAINER_INITED,
