@@ -1625,7 +1625,7 @@ public class LeafQueue extends AbstractCSQueue {
     boolean needToUnreserve = Resources.greaterThan(resourceCalculator,clusterResource,
         currentResoureLimits.getAmountNeededUnreserve(), Resources.none());
     
-    LOG.info("limie unReserved:"+currentResoureLimits.getAmountNeededUnreserve());
+    LOG.info("limited unReserved:"+currentResoureLimits.getAmountNeededUnreserve());
 
     if (availableContainers > 0) {
       // Allocate...
@@ -1766,6 +1766,7 @@ public class LeafQueue extends AbstractCSQueue {
         if (rmContainer.getState() == RMContainerState.RESERVED) {
           removed = unreserve(application, rmContainer.getReservedPriority(),
               node, rmContainer);
+          toRelease = container.getResource();
         } else {
           //for container suspend event	       
           if (event == RMContainerEventType.SUSPEND){
