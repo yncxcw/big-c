@@ -417,6 +417,7 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
         NodeId nodeId = entry.getKey();
         Resource containerResource = entry.getValue().getContainer().getResource();
         
+        LOG.info("find unreserved node:"+entry.getKey()+"container:"+entry.getValue().getContainerId());
         // make sure we unreserve one with at least the same amount of
         // resources, otherwise could affect capacity limits
         if (Resources.lessThanOrEqual(rc, clusterResource,

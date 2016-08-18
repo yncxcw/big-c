@@ -1347,6 +1347,8 @@ public class LeafQueue extends AbstractCSQueue {
     NodeId idToUnreserve =
         application.getNodeIdToUnreserve(priority, minimumUnreservedResource,
             resourceCalculator, clusterResource);
+    LOG.info("unreserve node id:"+idToUnreserve.toString());
+    
     if (idToUnreserve == null) {
       if (LOG.isDebugEnabled()) {
         LOG.debug("checked to see if could unreserve for app but nothing "
@@ -1359,8 +1361,9 @@ public class LeafQueue extends AbstractCSQueue {
       LOG.error("node to unreserve doesn't exist, nodeid: " + idToUnreserve);
       return false;
     }
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("unreserving for app: " + application.getApplicationId()
+    
+   {
+      LOG.info("unreserving for app: " + application.getApplicationId()
         + " on nodeId: " + idToUnreserve
         + " in order to replace reserved application and place it on node: "
         + node.getNodeID() + " needing: " + minimumUnreservedResource);
@@ -1618,6 +1621,8 @@ public class LeafQueue extends AbstractCSQueue {
 
     boolean needToUnreserve = Resources.greaterThan(resourceCalculator,clusterResource,
         currentResoureLimits.getAmountNeededUnreserve(), Resources.none());
+    
+    LOG.info("limie unReserved:"+currentResoureLimits.getAmountNeededUnreserve());
 
     if (availableContainers > 0) {
       // Allocate...
