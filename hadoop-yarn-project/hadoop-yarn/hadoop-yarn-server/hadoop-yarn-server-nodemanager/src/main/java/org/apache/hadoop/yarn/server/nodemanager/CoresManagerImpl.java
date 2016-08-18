@@ -86,6 +86,7 @@ public class CoresManagerImpl implements CoresManager {
 		LogOverlapWarning();
 		Set<Integer> returnedResults = this.getAvailableCores(num);
 		this.allcoateCoresforContainer(returnedResults, cntId);
+		
 		return returnedResults;
 	}
 	
@@ -94,6 +95,7 @@ public class CoresManagerImpl implements CoresManager {
 		    coresToContainer.get(core).add(cntId);
 		}
 		containerToCores.put(cntId, cores);	
+		LOG.info("allocate cpuset "+cores);
 	}
 
 	@Override
@@ -110,7 +112,8 @@ public class CoresManagerImpl implements CoresManager {
 				unUsedCores.add(core);
 			}
 		}
-		containerToCores.remove(cntId);		
+		containerToCores.remove(cntId);
+		LOG.info("release cpuset "+cores);
 	}
 	
   @Override
