@@ -131,6 +131,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
   private double naturalTerminationFactor;
   private boolean observeOnly;
   private Map<NodeId, Set<String>> labels;
+  private boolean isSuspended = true;
 
   public ProportionalCapacityPreemptionPolicy() {
     clock = new SystemClock();
@@ -259,7 +260,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
             preempted.get(container) + maxWaitTime < clock.getTime()) {
           // suspend it
           LOG.info("get container "+container.getContainerId()+" to suspend");
-          if(scheduler.isDockerMonitorEnabled()){
+          
+          if(this.isSuspended){
           dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
                 ContainerPreemptEventType.SUSPEND_CONTAINER,container.getContainer().getResource()));
           }else{

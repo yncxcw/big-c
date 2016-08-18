@@ -1350,7 +1350,7 @@ public class LeafQueue extends AbstractCSQueue {
     NodeId idToUnreserve =
         application.getNodeIdToUnreserve(priority, minimumUnreservedResource,
             resourceCalculator, clusterResource);
-    LOG.info("unreserve node id:"+idToUnreserve.toString());
+    
     
     if (idToUnreserve == null) {
       if (LOG.isDebugEnabled()) {
@@ -1625,8 +1625,6 @@ public class LeafQueue extends AbstractCSQueue {
     boolean needToUnreserve = Resources.greaterThan(resourceCalculator,clusterResource,
         currentResoureLimits.getAmountNeededUnreserve(), Resources.none());
     
-    LOG.info("limited unReserved:"+currentResoureLimits.getAmountNeededUnreserve());
-
     if (availableContainers > 0) {
       // Allocate...
 
