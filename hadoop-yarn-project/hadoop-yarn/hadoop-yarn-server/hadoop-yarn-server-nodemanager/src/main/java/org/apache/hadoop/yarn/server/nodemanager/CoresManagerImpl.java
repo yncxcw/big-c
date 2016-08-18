@@ -9,8 +9,13 @@ import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.yarn.api.records.ContainerId;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class CoresManagerImpl implements CoresManager {
+	
+	 private static final Log LOG = LogFactory
+		      .getLog(CoresManagerImpl.class);
 	
 	private Set<Integer> totalCores = new HashSet<Integer>();
 	
@@ -78,6 +83,7 @@ public class CoresManagerImpl implements CoresManager {
 	
 	@Override
 	public Set<Integer> allocateCores(ContainerId cntId, int num){
+		LogOverlapWarning();
 		Set<Integer> returnedResults = this.getAvailableCores(num);
 		this.allcoateCoresforContainer(returnedResults, cntId);
 		return returnedResults;
@@ -92,6 +98,7 @@ public class CoresManagerImpl implements CoresManager {
 
 	@Override
 	public void releaseCores(ContainerId cntId) {
+		LogOverlapWarning();
 		Set<Integer> cores= containerToCores.get(cntId);
 		this.releaseCoresforContainer(cntId, cores);
 	}
@@ -151,5 +158,15 @@ public class CoresManagerImpl implements CoresManager {
 	
 	return returnedCores;
 }
+ 
+  private void LogOverlapWarning(){
+	  LOG.info("cpuset warning");
+	  for(Integer core : this.coresToContainer.keySet()){
+		  if(this.coresToContainer.get(core).size() > 1){
+			  LOG.info("cpuset overlap warning on core"+core+"size:"+this.coresToContainer.get(core).size());
+		  }
+	  }
+	  
+  }
 
 }
