@@ -843,6 +843,8 @@ public class ContainerManagerImpl extends CompositeService implements
     
     Set<Integer> cores = this.context.getCoresManager().allocateCores(containerId,
     		                            containerTokenIdentifier.getResource().getVirtualCores());
+    
+    LOG.info("allocate resource"+containerTokenIdentifier.getResource());
     LOG.info("allocate cpuset"+cores);
     
     Container container =

@@ -41,11 +41,14 @@ public class CoresManagerImpl implements CoresManager {
 	private Set<Integer> getAvailableCores(int num) {
 		Set<Integer> returnedResults = new HashSet<Integer>();
 		int index = 0;
-		
+		assert(num <= totalCores.size());
 		if(unUsedCores.size() > 0){
 			for(Integer core : unUsedCores){
 				returnedResults.add(core);
 				index++;
+				if(index >= num){
+					break;
+				}
 			}
 			
 			for(Integer core : returnedResults){
