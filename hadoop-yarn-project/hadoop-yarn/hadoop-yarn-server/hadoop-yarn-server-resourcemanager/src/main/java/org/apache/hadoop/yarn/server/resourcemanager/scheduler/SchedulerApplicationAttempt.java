@@ -337,13 +337,13 @@ public class SchedulerApplicationAttempt {
     }
     reservedContainers.put(node.getNodeID(), rmContainer);
 
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Application attempt " + getApplicationAttemptId()
+    //if (LOG.isDebugEnabled()) {
+      LOG.info("Application attempt " + getApplicationAttemptId()
           + " reserved container " + rmContainer + " on node " + node
           + ". This attempt currently has " + reservedContainers.size()
           + " reserved containers at priority " + priority
           + "; currentReservation " + currentReservation.getMemory());
-    }
+    //}
 
     return rmContainer;
   }

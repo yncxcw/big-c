@@ -1251,6 +1251,9 @@ public class LeafQueue extends AbstractCSQueue {
             " starvation=" + starvation);
       }
     }
+    LOG.info("required:"+requiredContainers);
+    LOG.info("reserved:"+reservedContainers);
+    LOG.info("starvation:"+starvation);
     return (((starvation + requiredContainers) - reservedContainers) > 0);
   }
 
