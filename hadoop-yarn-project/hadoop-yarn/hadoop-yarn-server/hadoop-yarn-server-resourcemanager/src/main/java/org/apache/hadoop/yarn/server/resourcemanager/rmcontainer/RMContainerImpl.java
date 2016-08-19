@@ -174,7 +174,7 @@ public class RMContainerImpl implements RMContainer {
   private final String user;
 
   //preempted Resource
-  private Resource preempted = Resources.none();
+  private Resource preempted = Resource.newInstance(0, 0);
   private Resource lastPreempted;
   private Resource lastResumed;
   private Resource reservedResource;
