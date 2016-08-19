@@ -120,7 +120,7 @@ public class CoresManagerImpl implements CoresManager {
   public Set<Integer> resetCores(ContainerId cntId, int num) {
 		Set<Integer> cores = this.containerToCores.get(cntId);
 		Set<Integer> returnedCores = new HashSet<Integer>();
-	if(num < cores.size()){
+	   if(num < cores.size()){
 		//find the core that is used least
 		for(int i=0; i<num; i++){
 			int min = Integer.MAX_VALUE;

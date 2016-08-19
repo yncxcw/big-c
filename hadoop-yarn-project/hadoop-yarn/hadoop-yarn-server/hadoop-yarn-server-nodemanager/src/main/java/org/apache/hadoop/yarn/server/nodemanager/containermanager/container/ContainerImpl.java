@@ -917,23 +917,31 @@ public class ContainerImpl implements Container {
 @Override
 public void run() {
 	 LOG.info("process resource update: container"+getContainerId()+" thread start");
-	//first we update CPU quota	  
+	//first we update CPU quota	to avoid busy device  
 	  Integer quota = -1;
-	  if(nodeContainerUpdate.getSuspend()){
-		 quota = 1000;
-		  
-	  }else if(nodeContainerUpdate.getResume()){
-		 quota = -1;
-	  }
+      quota = 1000;
+      boolean quotaRecover = true;
 	  this.DockerCommandCpuQuota(quota);
 	  Integer targetCores = nodeContainerUpdate.getCores();
 	  //then we update resource requirement, first we update cpuset
 	  Set<Integer> cores = context.getCoresManager().resetCores(containerId,targetCores);
+	  //all cores are preempted
+	  if(cores.size() == 0){
+	  //in this case, we run the docker on core 0
+		  cores.add(0);
+	   //we will not resume its all capacity
+		  quotaRecover = false;
+	  }
 	  this.DockerCommandCpuSet(cores);
 	  //we then update memory usage
 	  List<String> commandMemory;
 	  Integer currentMemory = currentResource.getMemory();
 	  Integer targetMemory  = nodeContainerUpdate.getMemory();
+	  
+	  //the minimum memory for a container
+	  if(targetMemory < 128){
+		  targetMemory = 128;
+	  }
 	  
 	  if(targetMemory < currentMemory){
 		  
@@ -953,6 +961,11 @@ public void run() {
 		this.DockerCommandMeory(targetMemory); 
 	  }
 	  currentResource = Resource.newInstance(targetMemory, targetCores);
+	  
+	  if(quotaRecover){
+		  quota = -1;
+		  this.DockerCommandCpuQuota(quota);
+	  }
 	
 }
   }
