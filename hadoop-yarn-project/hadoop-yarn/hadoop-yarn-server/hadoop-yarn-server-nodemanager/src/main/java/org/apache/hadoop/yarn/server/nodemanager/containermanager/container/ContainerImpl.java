@@ -880,25 +880,17 @@ public class ContainerImpl implements Container {
 	 String commandString=new String();
 	 for(String c : command){
 		 commandString += c;
+		 commandString += " ";
 	 }
 	 LOG.info("run docker commands:"+commandString);
-	 
 	 ShellCommandExecutor shExec = null; 
 	 int count = 10;
-	 CharSequence str_device = "device";
-	 CharSequence str_busy   = "busy";
 	 while(count > 0){
 	 //we try 10 times if fails due to device busy 
      try { 
-    	
 		  shExec = new ShellCommandExecutor(command);
 		  shExec.execute();
-		  
-		  if(!shExec.getOutput().contains(str_device) && !shExec.getOutput().contains(str_busy)){
-	      //success if we get here
-			  break;
-		  }
-		  
+		 
 	    } catch (IOException e) {
 	      if (null == shExec) {
 	        return -1;
@@ -909,12 +901,16 @@ public class ContainerImpl implements Container {
 	        LOG.warn("Exception from Docker update with container ID: "
 	            + containerId + " and exit code: " + exitCode, e); 
 	      }
-	      return exitCode;
+	      continue;
+	      
 	    } finally {
 	      if (shExec != null) {
 	        shExec.close();
 	      }
 	    }
+        LOG.info("command execution successfully");
+        break;
+       
 	 }
 	 return 0;
    }
