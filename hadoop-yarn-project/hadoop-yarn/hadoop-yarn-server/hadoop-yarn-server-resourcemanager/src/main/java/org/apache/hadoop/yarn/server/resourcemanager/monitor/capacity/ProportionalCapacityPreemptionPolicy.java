@@ -259,7 +259,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         if (preempted.get(container) != null &&
             preempted.get(container) + maxWaitTime < clock.getTime()) {
           // suspend it
-          LOG.info("get container "+container.getContainerId()+" to suspend");
+          LOG.info("get container "+container.getContainerId()+" to suspend resource is "
+                 +container.getContainer().getResource());
           
           if(this.isSuspended){
           dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
