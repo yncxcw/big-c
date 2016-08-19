@@ -877,6 +877,7 @@ public class ContainerImpl implements Container {
    }
   
   private int runDockerUpdateCommand(String[] command){
+	 LOG.info("run docker commands:"+command);
 	 ShellCommandExecutor shExec = null; 
 	 int count = 10;
 	 CharSequence str_device = "device";
