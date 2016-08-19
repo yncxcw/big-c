@@ -915,6 +915,7 @@ public class ContainerImpl implements Container {
 
 @Override
 public void run() {
+	 LOG.info("process resource update: container"+getContainerId()+" thread start");
 	//first we update CPU quota	  
 	  Integer quota = -1;
 	  if(nodeContainerUpdate.getSuspend()){
@@ -955,6 +956,8 @@ public void run() {
 }
   }
   private void ProcessResourceUpdate(NodeContainerUpdate nodeContainerUpdate){
+	  LOG.info("process resource update: container"+this.getContainerId()+"cores "+nodeContainerUpdate.getCores()
+			  +"memory "+nodeContainerUpdate.getMemory());
 	  //initialize update thread
 	  Thread dockerUpdateThread = new Thread(new DockerCommandRunnable(nodeContainerUpdate));
 	  //start update thread

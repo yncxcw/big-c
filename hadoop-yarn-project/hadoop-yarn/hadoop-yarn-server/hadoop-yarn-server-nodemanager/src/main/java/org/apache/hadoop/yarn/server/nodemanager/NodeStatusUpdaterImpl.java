@@ -654,6 +654,7 @@ public class NodeStatusUpdaterImpl extends AbstractService implements
             List<NodeContainerUpdate> nodeContainerUpdates = response.getContainersToUpdate();
             //send this event to ContainerManagerImpl
             if(nodeContainerUpdates != null && !nodeContainerUpdates.isEmpty()){
+              LOG.info("receive Node Container Update");
               dispatcher.getEventHandler().handle(
             	  new CMgrUpdateContainersEvent(nodeContainerUpdates));	
             }
