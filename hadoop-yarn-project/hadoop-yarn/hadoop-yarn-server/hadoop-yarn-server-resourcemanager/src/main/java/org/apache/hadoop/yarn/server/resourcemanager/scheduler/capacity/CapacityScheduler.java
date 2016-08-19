@@ -1452,7 +1452,7 @@ public class CapacityScheduler extends
 	    LOG.info("preempted resource can not be null");
 	    return;
 	 }
-	 if(Resources.greaterThanOrEqual(getResourceCalculator(), clusterResource, 
+	 if(!Resources.greaterThan(getResourceCalculator(), clusterResource, 
 			                        toPreempt,Resources.none())){
 	     LOG.info("preempted resource is none");
 	     return;
