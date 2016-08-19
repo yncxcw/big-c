@@ -868,7 +868,7 @@ public class ContainerImpl implements Container {
 	  List<String> commandMemory = new ArrayList<String>();
 	  commandMemory.addAll(commandPrefix);
 	  commandMemory.add("--memory");
-	  commandMemory.add(memory.toString());
+	  commandMemory.add(memory.toString()+"m");
 	  commandMemory.add(containerId.toString());
 	  String[] commandArrayMemory = commandMemory.toArray(new String[commandMemory.size()]);
 	  this.runDockerUpdateCommand(commandArrayMemory);
@@ -877,7 +877,12 @@ public class ContainerImpl implements Container {
    }
   
   private int runDockerUpdateCommand(String[] command){
-	 LOG.info("run docker commands:"+command);
+	 String commandString=new String();
+	 for(String c : command){
+		 commandString += c;
+	 }
+	 LOG.info("run docker commands:"+commandString);
+	 
 	 ShellCommandExecutor shExec = null; 
 	 int count = 10;
 	 CharSequence str_device = "device";
