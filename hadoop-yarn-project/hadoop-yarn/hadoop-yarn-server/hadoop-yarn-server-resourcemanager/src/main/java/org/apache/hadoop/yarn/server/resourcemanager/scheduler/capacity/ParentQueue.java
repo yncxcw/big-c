@@ -575,7 +575,7 @@ public class ParentQueue extends AbstractCSQueue {
     	
     	if(event == RMContainerEventType.SUSPEND){
     		LOG.info("suspend resource");
-    		toRelease = rmContainer.getPreemptedResource();
+    		toRelease = rmContainer.getLastPreemptedResource();
     	}else{
     		LOG.info("release resource");
     		toRelease = rmContainer.getCurrentUsedResource(); 

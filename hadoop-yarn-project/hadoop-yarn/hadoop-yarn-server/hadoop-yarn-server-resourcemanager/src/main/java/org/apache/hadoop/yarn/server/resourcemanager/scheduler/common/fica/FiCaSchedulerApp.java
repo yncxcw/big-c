@@ -127,7 +127,7 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
 	  //we try to find it from live container list
 	  LOG.info("app suspend "+rmContainer.getContainerId());
 	  if (!liveContainers.keySet().contains(rmContainer.getContainerId())){
-		  LOG.info("app suspend comes here");
+		  LOG.info("container not found "+rmContainer.getContainerId());
 		  return false;
 	  }
 	  
@@ -152,9 +152,8 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
 	  );
 	  //add to suspended set
 	  containersSuspended.add(containerId);
-	  
-	  // Update usage metrics,we release resource here 
-	  Resource toPreempted = rmContainer.getPreemptedResource();
+	  // Update usage metrics,we release resource here,to support increamental suspension  
+	  Resource toPreempted = rmContainer.getLastPreemptedResource();
 	  queue.getMetrics().releaseResources(getUser(), 1, toPreempted);
 	  Resources.subtractFrom(currentConsumption, toPreempted);
 
@@ -213,7 +212,7 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
   }
 
   //resume a container from suspended state
-  synchronized public boolean containerResume(RMContainer rmContainer){
+  synchronized public boolean containerResume(RMContainer rmContainer,Resource toResume){
 	  
 	  ContainerId containerId = rmContainer.getContainerId();
 	  
@@ -228,22 +227,23 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
 	  if(!containersSuspended.contains(containerId)){
 		  return false;
 	  }
-	  
-	  
+	  //add resumed resource
+	  rmContainer.addResumedResource(toResume);
+	  //we try to update its resource consumption
+	  rmContainer.handle(
+              new RMContainerEvent(containerId,RMContainerEventType.RESUME)  
+       );
+	  //if all of its resource has been resumed
+	  if(!rmContainer.isSuspending()){
 	  //delete contaienr from containersSuspended
 	  this.containersSuspended.remove(containerId);
+	  }  
 	  //update resource usage
-	  Resource toResume = rmContainer.getPreemptedResource();
 	  queue.getMetrics().allocateResources(getUser(), 1, toResume, true);
 	  //inform RMContainer
-	  rmContainer.handle(
-			              new RMContainerEvent(containerId,RMContainerEventType.RESUME)  
-			            );
-	  
-	  if(this.containersSuspended.size() == 0){
-		  
+	  if(this.containersSuspended.size() == 0){  
 		  isSuspending = false;
-		  
+		  LOG.info("application "+this.getApplicationId()+"has been out of the suspended list");
 	  }
 
 	    if (LOG.isDebugEnabled()) {

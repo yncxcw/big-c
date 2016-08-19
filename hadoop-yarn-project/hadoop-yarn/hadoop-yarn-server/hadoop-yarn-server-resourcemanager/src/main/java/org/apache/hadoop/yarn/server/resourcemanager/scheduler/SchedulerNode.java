@@ -261,19 +261,19 @@ private final RMNode rmNode;
         + " available" + ", release resources=" + true);
   }
   
-  public synchronized void resumeContainer(Container container, Resource toResume){
+  public synchronized void resumeContainer(Container container, Resource toResume, boolean toRemove){
+	  
 	  if (!isValidContainer(container.getId())) {
 	      LOG.error("Invalid container released " + container);
 	      return;
-	    }
-	  //I know this impossible, just in case
-	  if(!this.launchedContainers.containsKey(container.getId())){
-		  return;
 	  }
 	  //drop container from suspended list and update resource
 	  if(suspendedContainers.contains(container.getId())){
 		  deductAvailableResource(toResume);
-		  suspendedContainers.remove(container.getId());
+		  //if this container is fully resumed
+		  if(toRemove){
+		    suspendedContainers.remove(container.getId());
+		  }
 	  }
 
 	    LOG.info("Resume container " + container.getId() + " of capacity "

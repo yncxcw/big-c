@@ -122,8 +122,11 @@ public class RMContainerImpl implements RMContainer {
         RMContainerEventType.EXPIRE)
     
      //Transition from DEHYDRATED state
-     .addTransition(RMContainerState.DEHYDRATED, RMContainerState.RUNNING, 
+     .addTransition(RMContainerState.DEHYDRATED, EnumSet.of(RMContainerState.RUNNING, 
+    		 RMContainerState.COMPLETED), 
     		 RMContainerEventType.RESUME,new ContainerResumeTransition())
+      .addTransition(RMContainerState.DEHYDRATED, RMContainerState.DEHYDRATED,
+    		RMContainerEventType.SUSPEND,new ContainerSuspendTransition())
       .addTransition(RMContainerState.DEHYDRATED, RMContainerState.COMPLETED,
     		RMContainerEventType.FINISHED, new FinishedTransition())
       .addTransition(RMContainerState.DEHYDRATED, RMContainerState.KILLED,
@@ -171,7 +174,9 @@ public class RMContainerImpl implements RMContainer {
   private final String user;
 
   //preempted Resource
-  private Resource preempted;
+  private Resource preempted = Resources.none();
+  private Resource lastPreempted;
+  private Resource lastResumed;
   private Resource reservedResource;
   private NodeId reservedNode;
   private Priority reservedPriority;
@@ -499,6 +504,24 @@ public class RMContainerImpl implements RMContainer {
     }
   }
   
+  
+  private static final class ContainerResumeTransition implements
+  MultipleArcTransition<RMContainerImpl, RMContainerEvent, RMContainerState> {
+	    @Override
+	    public RMContainerState transition(RMContainerImpl container,
+	        RMContainerEvent event) {
+	     container.resumeTime.add(System.currentTimeMillis());
+		 if(Resources.equals(container.getPreemptedResource(),Resources.none())){
+			//if all the preempted resource has been resumed  
+		    container.isSuspending = false;
+		    return RMContainerState.RUNNING;
+	     }else{
+	    	return RMContainerState.DEHYDRATED;
+	     }
+		 
+	  }	  
+  }
+  
   private static final class ContainerSuspendTransition extends
   BaseTransition{
 	  @Override
@@ -506,7 +529,7 @@ public class RMContainerImpl implements RMContainer {
 		  RMContainerFinishedEvent finishedEvent = (RMContainerFinishedEvent) event;
 		  //add the suspend time
 		  container.suspendTime.add(System.currentTimeMillis());
-		  Resource resource = container.getPreemptedResource();  
+		  Resource resource = container.getLastPreemptedResource();  
 		  container.finishedStatus = finishedEvent.getRemoteContainerStatus();
 		  container.isSuspending   = true;
 		  
@@ -515,24 +538,13 @@ public class RMContainerImpl implements RMContainer {
 		          .get(container.getApplicationAttemptId().getApplicationId())
 		          .getCurrentAppAttempt();
 		  
-		      if (ContainerExitStatus.PREEMPTED == container.finishedStatus
-		        .getExitStatus()) {
-		        rmAttempt.getRMAppAttemptMetrics().updatePreemptionInfo(resource,
-		          container);
-		   
+		  if (ContainerExitStatus.PREEMPTED == container.finishedStatus.getExitStatus()) {
+		        rmAttempt.getRMAppAttemptMetrics().updatePreemptionInfo(resource,container);
 		      }
 	  }	  
   }
   
-  private static final class ContainerResumeTransition extends
-  BaseTransition{
-	  @Override
-	    public void transition(RMContainerImpl container, RMContainerEvent event) {
-		 //add the resume time
-		 container.isSuspending = false;
-		 container.resumeTime.add(System.currentTimeMillis());
-	  }	  
-  }
+
 
   private static final class ContainerReservedTransition extends
   BaseTransition {
@@ -718,10 +730,11 @@ public class RMContainerImpl implements RMContainer {
   }
 
 @Override
-public void setPreemptedResource(Resource resource) {
+public void addPreemptedResource(Resource resource) {
 	try{
 		readLock.lock();
-		this.preempted = resource;
+		this.lastPreempted = resource;
+		Resources.addTo(preempted, resource);
 	}finally{
 		readLock.unlock();
 	}
@@ -738,5 +751,41 @@ public Resource getPreemptedResource() {
 		readLock.unlock();
 	}	
 }
+
+@Override 
+public Resource getLastPreemptedResource(){
+   try{
+		readLock.lock(); 	
+		return this.lastPreempted;
+	}finally{
+			readLock.unlock();
+	}
+	
+}
+
+@Override
+public Resource getLastResumeResource() {
+    try{
+		  readLock.lock(); 	
+		return this.lastResumed;
+	}finally{
+		readLock.unlock();
+	}
+}
+
+@Override
+public void addResumedResource(Resource resource) {
+	try{
+		readLock.lock();
+		this.lastResumed = resource;
+		Resources.subtractFrom(preempted, resource);
+	}finally{
+		readLock.unlock();
+	}
+	
+	
+}
+
+
 
 }

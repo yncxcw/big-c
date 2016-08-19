@@ -821,7 +821,6 @@ public class LeafQueue extends AbstractCSQueue {
     				LOG.info("resume contiaers:insufficienct resource for user"+app.getUser()+", return here");
     				 return NULL_ASSIGNMENT;
     			  }
-    			 
     			  //try to resume this container
     			  CSAssignment assignment = this.resumeContainer(clusterResource, node, app, rmContainer);
     			  Resource assigned = assignment.getResource();
@@ -1514,15 +1513,16 @@ public class LeafQueue extends AbstractCSQueue {
   private CSAssignment resumeContainer(Resource clusterResource, FiCaSchedulerNode node, FiCaSchedulerApp application,
 		  RMContainer rmContainer){
 	  
-	    Resource capability = rmContainer.getPreemptedResource();
-	    Resource available = node.getAvailableResource();
+	    //we should make capability here tunable
+	    Resource toResume      = rmContainer.getPreemptedResource();
+	    Resource available     = node.getAvailableResource();
 	    Resource totalResource = node.getTotalResource();
 
 	    //节点资源不够的情况，
 	    if (!Resources.lessThanOrEqual(resourceCalculator, clusterResource,
-	        capability, totalResource)) {
+	    	toResume, totalResource)) {
 	      LOG.info("Node : " + node.getNodeID()
-	          + " does not have sufficient resource for request : " + capability
+	          + " does not have sufficient resource for request : " + toResume
 	          + " node total capability : " + node.getTotalResource());
 	      return NULL_ASSIGNMENT;
 	    }
@@ -1531,27 +1531,29 @@ public class LeafQueue extends AbstractCSQueue {
 	    assert Resources.greaterThan(
 	        resourceCalculator, clusterResource, available, Resources.none());
 	    
-	   // Can we allocate a container on this node? we do not consider reserve container in current version
+	   //Can we allocate a container on this node? we do not consider reserve container in current version
 	    int availableContainers = 
-	        resourceCalculator.computeAvailableContainers(available, capability);
+	        resourceCalculator.computeAvailableContainers(available, toResume);
 	    
 	    if (availableContainers > 0) {
 	    	
 	    	 boolean resumeContainer = 
-	    	          application.containerResume(rmContainer);
-             // Does the application need this resource?
+	    	          application.containerResume(rmContainer,toResume);
+             //Does the application need this resource?
 	         if (!resumeContainer) {
 	    	        return NULL_ASSIGNMENT;
 	    	 }
 	         
-	         // if we come here, container has been resumed
+	         //if we come here, container has been resumed
 	         if(!application.isSuspending()){
 	        	 LOG.info(application.getApplicationAttemptId()+"out suspending list");
 	        	 this.suspendedApps.remove(application.getApplicationAttemptId());
 	         }
-	    	// Inform the node
-	    	node.resumeContainer(rmContainer.getContainer(),capability);
-
+	    	//Inform the node
+	        boolean suspending  = rmContainer.isSuspending(); 
+	        //we remvoe the container from node suspending list if it is not suspending
+	    	node.resumeContainer(rmContainer.getContainer(),toResume, !suspending);
+	    	
 	        LOG.info("Resume Container" +
 	            " application attempt=" + application.getApplicationAttemptId() +
 	            " container=" + rmContainer.getContainerId() + 
@@ -1559,7 +1561,7 @@ public class LeafQueue extends AbstractCSQueue {
 	            " clusterResource=" + clusterResource);
 	    	
 	    	//if everything goes fine, return true here
-	    	return new CSAssignment(capability,NodeType.NODE_LOCAL,rmContainer);     	
+	    	return new CSAssignment(toResume,NodeType.NODE_LOCAL,rmContainer);     	
 	    }
 	  return NULL_ASSIGNMENT;
   }
@@ -1776,8 +1778,9 @@ public class LeafQueue extends AbstractCSQueue {
             	suspendedApps.add(application.getApplicationAttemptId());
             }
             //we suspend the container on this node
-        	node.suspendContainer(container,rmContainer.getPreemptedResource());
-        	toRelease = rmContainer.getPreemptedResource();
+        	node.suspendContainer(container,rmContainer.getLastPreemptedResource());
+        	toRelease = rmContainer.getLastPreemptedResource();
+        	
           }else{
         	toRelease = rmContainer.getCurrentUsedResource();
         	removed =

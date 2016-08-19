@@ -1425,7 +1425,8 @@ public class CapacityScheduler extends
 	  Resource currentResource = cont.getCurrentUsedResource();
 	  NodeContainerUpdate nodeContainerUpdate= NodeContainerUpdate.newInstance(containerId, 
 				                                  currentResource.getMemory(), currentResource.getVirtualCores(),false,true);
-		 
+	  
+	  LOG.info("get container   "+containerId+"to resume "+"resource:   "+currentResource);
 	  //check if the resource is right
 	  if(nodeContainerUpdateMap.get(nodeId) == null){
 		  ConcurrentLinkedQueue<NodeContainerUpdate> listNodeContainerUpdate = new  ConcurrentLinkedQueue<NodeContainerUpdate>();
@@ -1457,7 +1458,7 @@ public class CapacityScheduler extends
 	     return;
 	 }
     //set preempted resource
-     cont.setPreemptedResource(toPreempt);
+     cont.addPreemptedResource(toPreempt);
     //mark this container to be preempted
 	 completedContainer(cont, SchedulerUtils.createPreemptedContainerStatus(
 		      cont.getContainerId(), SchedulerUtils.PREEMPTED_CONTAINER),
@@ -1470,6 +1471,7 @@ public class CapacityScheduler extends
 	 NodeContainerUpdate nodeContainerUpdate= NodeContainerUpdate.newInstance(containerId, 
 			                                  currentResource.getMemory(), currentResource.getVirtualCores(),true,false);
 	 
+	 LOG.info("get container   "+containerId+"to suspend"+"resource:   "+currentResource);
 	 if(nodeContainerUpdateMap.get(nodeId) == null){
 		 ConcurrentLinkedQueue<NodeContainerUpdate> listNodeContainerUpdate = new  ConcurrentLinkedQueue<NodeContainerUpdate>();
 		 listNodeContainerUpdate.add(nodeContainerUpdate);
