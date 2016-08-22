@@ -364,6 +364,8 @@ public class ResourceTrackerService extends AbstractService implements
      */
 
     NodeId nodeId = remoteNodeStatus.getNodeId();
+    
+    LOG.info("receive node hearbeat from host: "+nodeId.getHost());
 
     // 1. Check if it's a valid (i.e. not excluded) node
     if (!this.nodesListManager.isValidNode(nodeId.getHost())) {

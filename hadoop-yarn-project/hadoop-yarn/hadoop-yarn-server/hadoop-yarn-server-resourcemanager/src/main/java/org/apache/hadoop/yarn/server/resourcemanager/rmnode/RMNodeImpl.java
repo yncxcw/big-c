@@ -860,6 +860,8 @@ public class RMNodeImpl implements RMNode, EventHandler<RMNodeEvent> {
   }
 
   private void handleContainerStatus(List<ContainerStatus> containerStatuses) {
+	  
+	LOG.info("RMNode hearbeat host"+this.getHostName());
     // Filter the map to only obtain just launched containers and finished
     // containers.
     List<ContainerStatus> newlyLaunchedContainers =
