@@ -110,7 +110,7 @@ public class ContainerImpl implements Container {
   private boolean wasLaunched;
   private long containerLaunchStartTime;
   private final Context context;
-  private DockerCommandThread dockerUpdateThread;
+  private DockerCommandThread dockerUpdateThread = new DockerCommandThread();
   private static Clock clock = new SystemClock();
 
   /** The NM-wide configuration - not specific to this container */
