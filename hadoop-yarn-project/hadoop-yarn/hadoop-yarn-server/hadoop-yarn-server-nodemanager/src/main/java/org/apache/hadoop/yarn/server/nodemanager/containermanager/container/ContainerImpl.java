@@ -901,6 +901,7 @@ public class ContainerImpl implements Container {
 	        LOG.warn("Exception from Docker update with container ID: "
 	            + containerId + " and exit code: " + exitCode, e); 
 	      }
+	      count--;
 	      continue;
 	      
 	    } finally {
@@ -911,6 +912,14 @@ public class ContainerImpl implements Container {
         LOG.info("command execution successfully");
         break;
        
+	 }
+	 
+	 if(count > 0){
+		 
+		  LOG.info("command execution successfully and commands updates for"+count+" times");
+	 }else{
+		 
+		  LOG.info("command execution fails");
 	 }
 	 return 0;
    }

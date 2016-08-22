@@ -251,20 +251,20 @@ public class DockerContainerExecutor extends ContainerExecutor {
       String[] command = getRunCommand(sb.getWrapperScriptPath().toString(),
         containerIdStr, userName, pidFile, this.getConf());
       
-      LOG.info("wrappedScript:"+sb.getWrapperScriptPath().toString());
-      LOG.info("userName:"+userName);
-      LOG.info("pidFile:"+pidFile);
+      //LOG.info("wrappedScript:"+sb.getWrapperScriptPath().toString());
+      //LOG.info("userName:"+userName);
+      //LOG.info("pidFile:"+pidFile);
       
-      if(command.length > 0){
-      for(String str : command)
-      {
-        LOG.info("dockerlaunchContainer: " + str);
-      }
+      //if(command.length > 0){
+      //for(String str : command)
+      //{
+      // LOG.info("dockerlaunchContainer: " + str);
+     // }
       
-      }else{
+      //}else{
     	  
-    	LOG.info("dockerlaunchContainer length < 0");  
-      }
+    	//LOG.info("dockerlaunchContainer length < 0");  
+    //  }
       
       shExec = new ShellCommandExecutor(
           command,
@@ -313,7 +313,7 @@ public class DockerContainerExecutor extends ContainerExecutor {
   public void writeLaunchEnv(OutputStream out, Map<String, String> environment, Map<Path, List<String>> resources, List<String> command) throws IOException {
     ContainerLaunch.ShellScriptBuilder sb = ContainerLaunch.ShellScriptBuilder.create();
 
-    LOG.info("write launch Env:");
+    //LOG.info("write launch Env:");
     
     Set<String> exclusionSet = new HashSet<String>();
     exclusionSet.add(YarnConfiguration.NM_DOCKER_CONTAINER_EXECUTOR_IMAGE_NAME);
@@ -352,7 +352,7 @@ public class DockerContainerExecutor extends ContainerExecutor {
       for (Map.Entry<Path,List<String>> entry : resources.entrySet()) {
         for (String linkName : entry.getValue()) {
           sb.symlink(entry.getKey(), new Path(linkName));
-          LOG.info("key:"+entry.getKey().toString()+"value:"+entry.getValue().toString());
+         // LOG.info("key:"+entry.getKey().toString()+"value:"+entry.getValue().toString());
         }
       }
     }
@@ -558,12 +558,12 @@ public class DockerContainerExecutor extends ContainerExecutor {
         pout.println("#!/usr/bin/env bash");
         pout.println();
         pout.println("echo "+ dockerPidScript +" > " + pidFile.toString() + ".tmp");
-        LOG.info("dockerPidScrips  :  "+"echo "+ dockerPidScript +" > " + pidFile.toString() + ".tmp");
+        //LOG.info("dockerPidScrips  :  "+"echo "+ dockerPidScript +" > " + pidFile.toString() + ".tmp");
         pout.println("/bin/mv -f " + pidFile.toString() + ".tmp " + pidFile);
         pout.println(dockerCommand + " bash \"" +
           launchDst.toUri().getPath().toString() + "\"");
-        LOG.info("dockerCommand  : "+dockerCommand + " bash \"" +
-                launchDst.toUri().getPath().toString() + "\"");
+        //LOG.info("dockerCommand  : "+dockerCommand + " bash \"" +
+       //         launchDst.toUri().getPath().toString() + "\"");
       } finally {
         IOUtils.cleanup(LOG, pout, out);
       }
@@ -617,7 +617,7 @@ public class DockerContainerExecutor extends ContainerExecutor {
    */
   void createUserCacheDirs(List<String> localDirs, String user)
     throws IOException {
-    LOG.info("Initializing user " + user);
+    // LOG.info("Initializing user " + user);
 
     boolean appcacheDirStatus = false;
     boolean distributedCacheDirStatus = false;

@@ -545,7 +545,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         if (LOG.isDebugEnabled()) {
           if (Resources.greaterThan(rc, clusterResource,
               qT.toBePreempted, Resource.newInstance(0, 0))) {
-            LOG.debug("Tried to preempt the following "
+            LOG.info("Tried to preempt the following "
                       + "resources from non-preemptable queue: "
                       + qT.queueName + " - Resources: " + qT.toBePreempted);
           }
