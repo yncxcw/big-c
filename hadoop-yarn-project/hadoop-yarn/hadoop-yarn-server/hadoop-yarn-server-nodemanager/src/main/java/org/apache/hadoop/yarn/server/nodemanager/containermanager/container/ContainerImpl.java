@@ -27,8 +27,10 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -108,6 +110,7 @@ public class ContainerImpl implements Container {
   private boolean wasLaunched;
   private long containerLaunchStartTime;
   private final Context context;
+  private DockerCommandThread dockerUpdateThread;
   private static Clock clock = new SystemClock();
 
   /** The NM-wide configuration - not specific to this container */
@@ -778,6 +781,8 @@ public class ContainerImpl implements Container {
       container.wasLaunched  = true;
       long duration = clock.getTime() - container.containerLaunchStartTime;
       container.metrics.addContainerLaunchDuration(duration);
+      //we start docker container update thread here
+      container.dockerUpdateThread.start();
 
       if (container.recoveredAsKilled) {
         LOG.info("Killing " + container.containerId
@@ -816,12 +821,15 @@ public class ContainerImpl implements Container {
    */
   
   
-  private class DockerCommandRunnable implements Runnable{
+  private class DockerCommandThread extends Thread{
+	   
+  Queue<Integer> memoryUpdateActorList   = new LinkedList<Integer>();
+  Queue<Integer> quotaUpdateActorList    = new LinkedList<Integer>();
+  Queue<Set<Integer>> cpuUpdateActorList = new LinkedList<Set<Integer>>();
+
+  public DockerCommandThread(){
 	  
-  NodeContainerUpdate nodeContainerUpdate;
 	  
-  public DockerCommandRunnable(NodeContainerUpdate nodeContainerUpdate){
-		  this.nodeContainerUpdate = nodeContainerUpdate;
   }
   
   private void DockerCommandCpuQuota(Integer quota){
@@ -910,10 +918,8 @@ public class ContainerImpl implements Container {
 	      }
 	    }
         LOG.info("command execution successfully");
-        break;
-       
+        break; 
 	 }
-	 
 	 if(count > 0){
 		 
 		  LOG.info("command execution successfully and commands updates for"+count+" times");
@@ -925,26 +931,79 @@ public class ContainerImpl implements Container {
    }
 
 @Override
-public void run() {
-	 LOG.info("process resource update: container"+getContainerId()+" thread start");
-	//first we update CPU quota	to avoid busy device  
-	  Integer quota = -1;
-      quota = 1000;
-      boolean quotaRecover = true;
-	  this.DockerCommandCpuQuota(quota);
+public void run(){
+	LOG.info("docker update thread for container "+getContainerId()+"current state is "+stateMachine.getCurrentState());
+	
+	while(stateMachine.getCurrentState() != ContainerState.RUNNING){
+	
+	  synchronized(quotaUpdateActorList){	
+	   //first check the quota list if it is empty
+	   if(quotaUpdateActorList.size() > 0){   
+		   int quota = quotaUpdateActorList.poll();
+		   DockerCommandCpuQuota(quota);
+		   continue;
+	    }
+	  }
+	  
+	  synchronized(cpuUpdateActorList){
+	   //then update cpuset
+	   if(cpuUpdateActorList.size( )> 0){
+		   Set<Integer> cpuSet = cpuUpdateActorList.poll();
+		   DockerCommandCpuSet(cpuSet);
+		   continue;
+	    }
+	  }
+	  
+	  synchronized(memoryUpdateActorList){
+	   //finally we update memory
+	   if(memoryUpdateActorList.size() > 0){
+		   int memory = memoryUpdateActorList.poll();
+		   DockerCommandMeory(memory);
+		   continue;
+	   }
+	 }
+	   //if we come here it means we need to sleep for 3s
+	   Thread.sleep(3000);
+	}	
+}  
+  
+
+public void ProcessNodeContainerUpdate(NodeContainerUpdate nodeContainerUpdate) {
+	  boolean quotaFreeze = false;
+	  //we fisrt update cpu cores
 	  Integer targetCores = nodeContainerUpdate.getCores();
-	  //then we update resource requirement, first we update cpuset
+	  //then we update resource requirement, first we update cpu set
 	  Set<Integer> cores = context.getCoresManager().resetCores(containerId,targetCores);
 	  //all cores are preempted
 	  if(cores.size() == 0){
-	  //in this case, we run the docker on core 0
+	      //in this case, we run the docker on core 0
 		  cores.add(0);
-	   //we will not resume its all capacity
-		  quotaRecover = false;
+	      //we will not resume its all capacity
+		  quotaFreeze = true;
 	  }
-	  this.DockerCommandCpuSet(cores);
+	  
+	  synchronized(cpuUpdateActorList){
+		   //then update cpuset
+		   if(cpuUpdateActorList.size( )> 0){
+			  cpuUpdateActorList.clear();
+		    }
+		   cpuUpdateActorList.add(cores);
+	   }
+	  
+	  //we then update cpuset, we only free container when all the resource has been deprived
+	  if(quotaFreeze){
+		 synchronized(quotaUpdateActorList){	
+			 //first check the quota list if it is empty
+			 if(quotaUpdateActorList.size() > 0){
+				 quotaUpdateActorList.clear();
+			  }
+			  quotaUpdateActorList.add(1000);
+		  }
+	  }
+	  
+	 
 	  //we then update memory usage
-	  List<String> commandMemory;
+	  List<Integer> toAdded = new ArrayList<Integer>();
 	  Integer currentMemory = currentResource.getMemory();
 	  Integer targetMemory  = nodeContainerUpdate.getMemory();
 	  
@@ -955,38 +1014,36 @@ public void run() {
 	  
 	  if(targetMemory < currentMemory){
 		  
-		  while(currentMemory > targetMemory){	  
-			  if(currentMemory > 1024){
-				  
+		  while(currentMemory > targetMemory){
+			  
+			  if(currentMemory > 1024){  
 				  currentMemory -= 1024;
 			  }else{
-				  
 				  currentMemory /=2;
 			  }
-			 this.DockerCommandMeory(currentMemory);
+			  
+			toAdded.add(currentMemory);
 		  }
-		 this.DockerCommandMeory(targetMemory);
+		 toAdded.add(targetMemory);
 		  
 	  }else{
-		this.DockerCommandMeory(targetMemory); 
+		toAdded.add(targetMemory);
 	  }
-	  currentResource = Resource.newInstance(targetMemory, targetCores);
 	  
-	  if(quotaRecover){
-		  quota = -1;
-		  this.DockerCommandCpuQuota(quota);
-	  }
-	
+   synchronized(memoryUpdateActorList){
+		   //finally we update memory
+        if(memoryUpdateActorList.size() > 0){
+		    memoryUpdateActorList.clear();
+		 }
+        memoryUpdateActorList.addAll(toAdded);
+   } 
 }
+
   }
   private void ProcessResourceUpdate(NodeContainerUpdate nodeContainerUpdate){
 	  LOG.info("process resource update: container"+this.getContainerId()+"cores "+nodeContainerUpdate.getCores()
 			  +"memory "+nodeContainerUpdate.getMemory());
-	  //initialize update thread
-	  Thread dockerUpdateThread = new Thread(new DockerCommandRunnable(nodeContainerUpdate));
-	  //start update thread
-	  dockerUpdateThread.start();
-	  
+	  dockerUpdateThread.ProcessNodeContainerUpdate(nodeContainerUpdate);;
   }
   
 
@@ -1005,6 +1062,7 @@ public void run() {
       this.clCleanupRequired = clCleanupRequired;
     }
 
+    
     @Override
     public void transition(ContainerImpl container, ContainerEvent event) {
       // Set exit code to 0 on success    	

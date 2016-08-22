@@ -180,8 +180,6 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
     Container container = rmContainer.getContainer();
     ContainerId containerId = container.getId();
     
-   
-    
     //we are trying to complete a suspeded container
     containersSuspended.remove(containerId);
     
@@ -192,6 +190,7 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
             containerStatus, 
             event)
         );
+    
     LOG.info("Completed container: " + rmContainer.getContainerId() + 
         " in state: " + rmContainer.getState() + " event:" + event);
 

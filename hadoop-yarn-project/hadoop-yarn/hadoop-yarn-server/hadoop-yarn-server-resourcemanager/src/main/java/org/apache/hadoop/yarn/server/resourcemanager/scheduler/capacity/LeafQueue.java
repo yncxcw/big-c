@@ -764,8 +764,9 @@ public class LeafQueue extends AbstractCSQueue {
       FiCaSchedulerNode node, ResourceLimits currentResourceLimits) {
     updateCurrentResourceLimits(currentResourceLimits, clusterResource);
     
-    if(LOG.isDebugEnabled()) {
-      LOG.debug("assignContainers: node=" + node.getNodeName()
+    //if(LOG.isDebugEnabled()) 
+    {
+      LOG.info("assignContainers: node=" + node.getNodeName()
         + " #applications=" + activeApplications.size());
     }
     
@@ -789,7 +790,7 @@ public class LeafQueue extends AbstractCSQueue {
     //try to resume containers which are suspended in fifo order
     for(ApplicationAttemptId appId: this.suspendedApps){
     	FiCaSchedulerApp app = this.applicationAttemptMap.get(appId);
-    	LOG.info("get app suspended "+app.getApplicationAttemptId());
+    	LOG.info("get app suspended "+app.getApplicationAttemptId()+" suspended size "+app.getContainersSuspended().size());
     	synchronized(app){
     	for(ContainerId cntId : app.getContainersSuspended()){
     		//if we find one container suspended on this node, we try to resume this container
