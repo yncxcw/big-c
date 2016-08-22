@@ -963,7 +963,11 @@ public void run(){
 	   }
 	 }
 	   //if we come here it means we need to sleep for 3s
-	   Thread.sleep(3000);
+	  try {
+		    Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		    e.printStackTrace();
+		}
 	}	
 }  
   
