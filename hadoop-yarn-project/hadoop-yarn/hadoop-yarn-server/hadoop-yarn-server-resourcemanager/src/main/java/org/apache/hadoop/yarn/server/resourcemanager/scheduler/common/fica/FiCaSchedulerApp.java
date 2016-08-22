@@ -240,11 +240,15 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
 	  }  
 	  //update resource usage
 	  queue.getMetrics().allocateResources(getUser(), 1, toResume, true);
+	  //update app resource usage
+	  Resources.addTo(currentConsumption,toResume);
 	  //inform RMContainer
 	  if(this.containersSuspended.size() == 0){  
 		  isSuspending = false;
 		  LOG.info("application "+this.getApplicationId()+"has been out of the suspended list");
 	  }
+	  
+	  LOG.info("app "+this.getApplicationAttemptId()+" consume resource"+currentConsumption);
 
 	    if (LOG.isDebugEnabled()) {
 	      LOG.debug("allocate: applicationAttemptId=" 

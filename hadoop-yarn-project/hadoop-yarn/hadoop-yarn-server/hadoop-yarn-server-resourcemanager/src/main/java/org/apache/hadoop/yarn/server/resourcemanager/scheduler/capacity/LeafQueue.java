@@ -1528,7 +1528,8 @@ public class LeafQueue extends AbstractCSQueue {
 	   //Can we allocate a container on this node? we do not consider reserve container in current version
 	    int availableContainers = 
 	        resourceCalculator.computeAvailableContainers(available, toResume);
-	    
+	  
+	    LOG.info("ndoe available resource "+available+" to resume "+toResume);  
 	    if (availableContainers > 0) {
 	    	
 	    	 boolean resumeContainer = 
@@ -1840,7 +1841,7 @@ public class LeafQueue extends AbstractCSQueue {
       
     LOG.info(getQueueName() +
         " used=" + queueUsage.getUsed() + " numContainers=" + numContainers +
-        " user=" + userName + " user-resources=" + user.getUsed());
+        " user=" + userName + " user-resources=" + user.getUsed()+"released resource "+resource);
   }
   
   private void updateAbsoluteCapacityResource(Resource clusterResource) {
