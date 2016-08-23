@@ -934,7 +934,7 @@ public class ContainerImpl implements Container {
 public void run(){
 	LOG.info("docker update thread for container "+getContainerId()+"current state is "+stateMachine.getCurrentState());
 	
-	while(stateMachine.getCurrentState() != ContainerState.RUNNING){
+	while(stateMachine.getCurrentState() == ContainerState.RUNNING){
 		
 	  LOG.info("enter docker update thread");
 	
