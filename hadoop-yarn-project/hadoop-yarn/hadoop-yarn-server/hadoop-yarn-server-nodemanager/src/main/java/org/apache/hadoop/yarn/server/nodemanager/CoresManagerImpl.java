@@ -108,7 +108,8 @@ public class CoresManagerImpl implements CoresManager {
 	@Override
 	public void releaseCores(ContainerId cntId) {
 		LogOverlapWarning();
-		Set<Integer> cores= containerToCores.get(cntId);
+		Set<Integer> cores= new HashSet<Integer>();
+		cores.addAll(containerToCores.get(cntId));
 		this.releaseCoresforContainer(cntId, cores);
 	}
 	

@@ -936,8 +936,6 @@ public void run(){
 	
 	while(stateMachine.getCurrentState() == ContainerState.RUNNING){
 		
-	  LOG.info("enter docker update thread");
-	
 	  synchronized(quotaUpdateActorList){	
 	   //first check the quota list if it is empty
 	   if(quotaUpdateActorList.size() > 0){  
