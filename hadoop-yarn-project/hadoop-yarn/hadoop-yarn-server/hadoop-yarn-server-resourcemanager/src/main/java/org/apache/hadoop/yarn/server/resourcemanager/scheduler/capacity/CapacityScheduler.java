@@ -1115,7 +1115,7 @@ public class CapacityScheduler extends
     if (node.getReservedContainer() == null) {
       if (calculator.computeAvailableContainers(node.getAvailableResource(),
         minimumAllocation) > 0) {
-        if (LOG.isDebugEnabled()) {
+        if (LOG.isDebugEnabled())
     	{
           LOG.info("Trying to schedule on node: " + node.getNodeName() +
               ", available: " + node.getAvailableResource());
@@ -1139,8 +1139,6 @@ public class CapacityScheduler extends
           node.getReservedContainer().getContainerId().getApplicationAttemptId()
           );
        }
-  
-    }
   }
   @Override
   public void handle(SchedulerEvent event) {

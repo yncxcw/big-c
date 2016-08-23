@@ -390,7 +390,7 @@ public class ParentQueue extends AbstractCSQueue {
     
     //每次分配一个container 给node节点上的应用，直到不能非配为止
     while (canAssign(clusterResource, node)) {
-      if (LOG.isDebugEnabled()) {
+      if (LOG.isDebugEnabled()) 
       {
         LOG.info("Trying to assign containers to child-queue of "
           + getQueueName());
@@ -456,8 +456,7 @@ public class ParentQueue extends AbstractCSQueue {
         }
         break;
       }
-    } 
-    
+     } 
     return assignment;
   }
 
