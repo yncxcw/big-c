@@ -1138,10 +1138,10 @@ public class CapacityScheduler extends
           " is reserved by application " + 
           node.getReservedContainer().getContainerId().getApplicationAttemptId()
           );
-    }
+       }
   
+    }
   }
-
   @Override
   public void handle(SchedulerEvent event) {
     switch(event.getType()) {
