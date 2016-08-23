@@ -561,7 +561,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         Resource resToObtain =
           Resources.multiply(qT.toBePreempted, naturalTerminationFactor);
         Resource skippedAMSize = Resource.newInstance(0, 0);
-
+        //
+        LOG.info("try to preempt "+resToObtian+" from"+qT.queueName);
         // lock the leafqueue while we scan applications and unreserve
         synchronized (qT.leafQueue) {
           //what is the descending order

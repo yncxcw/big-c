@@ -94,7 +94,14 @@ public class CoresManagerImpl implements CoresManager {
 		for(Integer core : cores){
 		    coresToContainer.get(core).add(cntId);
 		}
-		containerToCores.put(cntId, cores);	
+		
+		if(containerToCores.get(cntId) == null){
+		  //first allocated
+		  containerToCores.put(cntId, cores);	
+		}else{
+		  //newly allocated cores
+		   containerToCores.get(cntId).addAll(cores);
+		}
 		LOG.info("allocate cpuset "+cores);
 	}
 
@@ -112,7 +119,17 @@ public class CoresManagerImpl implements CoresManager {
 				unUsedCores.add(core);
 			}
 		}
-		containerToCores.remove(cntId);
+		
+		for(Integer core : cores){
+			//remove core one by one
+			containerToCores.get(cntId).remove(core);
+		}
+		
+		//if there are no cores on this map, remove the entry
+		if(containerToCores.get(cntId).size() == 0){
+		    containerToCores.remove(cntId);
+		}
+		
 		LOG.info("release cpuset "+cores);
 	}
 	
@@ -120,6 +137,9 @@ public class CoresManagerImpl implements CoresManager {
   public Set<Integer> resetCores(ContainerId cntId, int num) {
 		Set<Integer> cores = this.containerToCores.get(cntId);
 		Set<Integer> returnedCores = new HashSet<Integer>();
+		
+	   //for a partially preempted container, its cores are null
+	  if(cores != null){
 	   if(num < cores.size()){
 		//find the core that is used least
 		for(int i=0; i<num; i++){
@@ -157,7 +177,15 @@ public class CoresManagerImpl implements CoresManager {
 		   returnedCores.addAll(newAllocated);
 		   this.allcoateCoresforContainer(newAllocated, cntId);
 	   }
+	   
 	}
+ 
+ //for a fully preempted container
+ }else{
+	 Set<Integer> newAllocated = this.getAvailableCores(num);
+	 returnedCores.addAll(newAllocated);
+	 this.allcoateCoresforContainer(newAllocated, cntId);
+ }
 	
 	return returnedCores;
 }
