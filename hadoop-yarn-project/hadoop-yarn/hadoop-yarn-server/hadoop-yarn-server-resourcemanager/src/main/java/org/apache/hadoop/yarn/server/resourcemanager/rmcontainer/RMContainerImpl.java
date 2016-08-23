@@ -731,6 +731,7 @@ public class RMContainerImpl implements RMContainer {
 
 @Override
 public void addPreemptedResource(Resource resource) {
+	LOG.info("before resource: "+resource+" preempted"+preempted+" last preempted"+lastPreempted);
 	try{
 		readLock.lock();
 		this.lastPreempted = Resources.clone(resource);
@@ -738,8 +739,7 @@ public void addPreemptedResource(Resource resource) {
 	}finally{
 		readLock.unlock();
 	}
-	
-	
+	LOG.info("after resource: "+resource+" preempted"+preempted+" last preempted "+lastPreempted);
 }
 
 @Override

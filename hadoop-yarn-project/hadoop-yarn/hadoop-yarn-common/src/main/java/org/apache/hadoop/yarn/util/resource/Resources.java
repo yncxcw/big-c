@@ -139,7 +139,7 @@ public class Resources {
 	LOG.info("before rhs:"+rhs);
     lhs.setMemory(lhs.getMemory() - rhs.getMemory());
     lhs.setVirtualCores(lhs.getVirtualCores() - rhs.getVirtualCores());
-    LOG.info("before rhs:"+rhs);
+    LOG.info("after rhs:"+rhs);
     return lhs;
   }
 
