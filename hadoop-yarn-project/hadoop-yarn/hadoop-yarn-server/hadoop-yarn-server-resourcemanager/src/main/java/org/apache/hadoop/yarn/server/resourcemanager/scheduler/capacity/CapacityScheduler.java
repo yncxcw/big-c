@@ -1005,7 +1005,7 @@ public class CapacityScheduler extends
     }
     
     // Now node data structures are up to date and ready for scheduling.
-    //if(LOG.isDebugEnabled()) 
+    if(LOG.isDebugEnabled()) 
     {
       LOG.info("Node being looked for scheduling " + nm
         + " availableResource: " + node.getAvailableResource());
@@ -1116,7 +1116,8 @@ public class CapacityScheduler extends
       if (calculator.computeAvailableContainers(node.getAvailableResource(),
         minimumAllocation) > 0) {
         if (LOG.isDebugEnabled()) {
-          LOG.debug("Trying to schedule on node: " + node.getNodeName() +
+    	{
+          LOG.info("Trying to schedule on node: " + node.getNodeName() +
               ", available: " + node.getAvailableResource());
         }
         CSAssignment assignment =root.assignContainers(

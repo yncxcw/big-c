@@ -237,6 +237,8 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
 	  //delete contaienr from containersSuspended
 	  this.containersSuspended.remove(containerId);
 	  }  
+	  
+	  LOG.info("to resume: "+ toResume);
 	  //update resource usage
 	  queue.getMetrics().allocateResources(getUser(), 1, toResume, true);
 	  //update app resource usage

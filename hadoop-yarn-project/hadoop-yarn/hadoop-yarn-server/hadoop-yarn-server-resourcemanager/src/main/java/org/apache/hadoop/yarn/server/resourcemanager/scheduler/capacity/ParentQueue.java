@@ -391,7 +391,8 @@ public class ParentQueue extends AbstractCSQueue {
     //每次分配一个container 给node节点上的应用，直到不能非配为止
     while (canAssign(clusterResource, node)) {
       if (LOG.isDebugEnabled()) {
-        LOG.debug("Trying to assign containers to child-queue of "
+      {
+        LOG.info("Trying to assign containers to child-queue of "
           + getQueueName());
       }
       
@@ -402,6 +403,7 @@ public class ParentQueue extends AbstractCSQueue {
       if (!super.canAssignToThisQueue(clusterResource, nodeLabels, resourceLimits,
           minimumAllocation, Resources.createResource(getMetrics()
               .getReservedMB(), getMetrics().getReservedVirtualCores()))) {
+    	LOG.info("over maximum-capacity of this queue "+getQueueName());
         break;
       }
       
@@ -518,7 +520,7 @@ public class ParentQueue extends AbstractCSQueue {
       assignment = childQueue.assignContainers(cluster, node, childLimits);
       if(LOG.isDebugEnabled())
       {
-        LOG.debug("Assigned to queue: " + childQueue.getQueuePath() +
+        LOG.info("Assigned to queue: " + childQueue.getQueuePath() +
           " stats: " + childQueue + " --> " + 
           assignment.getResource() + ", " + assignment.getType());
       }
