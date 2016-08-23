@@ -204,6 +204,8 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
     queue.getMetrics().releaseResources(getUser(), 1, containerResource);
     Resources.subtractFrom(currentConsumption, containerResource);
     
+    LOG.info("Completed container: after substract resource is "+containerResource);
+    
     // Clear resource utilization metrics cache.
     lastMemoryAggregateAllocationUpdateTime = -1;
 
