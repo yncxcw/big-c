@@ -1419,7 +1419,8 @@ public class CapacityScheduler extends
 	  NodeId nodeId = cont.getContainer().getNodeId();
 	  ContainerId containerId = cont.getContainerId();
 	  //get current resource after preemption
-	  Resource currentResource = cont.getCurrentUsedResource()
+	  Resource currentResource = cont.getCurrentUsedResource();
+	  
 	  NodeContainerUpdate nodeContainerUpdate= NodeContainerUpdate.newInstance(containerId, 
 				                                  currentResource.getMemory(), currentResource.getVirtualCores(),false,true);
 	  
