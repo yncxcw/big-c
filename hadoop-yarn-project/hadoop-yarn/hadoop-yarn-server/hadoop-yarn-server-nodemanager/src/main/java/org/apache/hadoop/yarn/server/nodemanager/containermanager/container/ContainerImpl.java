@@ -935,10 +935,13 @@ public void run(){
 	LOG.info("docker update thread for container "+getContainerId()+"current state is "+stateMachine.getCurrentState());
 	
 	while(stateMachine.getCurrentState() != ContainerState.RUNNING){
+		
+	  LOG.info("enter docker update thread");
 	
 	  synchronized(quotaUpdateActorList){	
 	   //first check the quota list if it is empty
-	   if(quotaUpdateActorList.size() > 0){   
+	   if(quotaUpdateActorList.size() > 0){  
+		   LOG.info("quota size "+quotaUpdateActorList.size());
 		   int quota = quotaUpdateActorList.poll();
 		   DockerCommandCpuQuota(quota);
 		   continue;
@@ -948,6 +951,7 @@ public void run(){
 	  synchronized(cpuUpdateActorList){
 	   //then update cpuset
 	   if(cpuUpdateActorList.size( )> 0){
+		   LOG.info("cpu size "+cpuUpdateActorList.size());
 		   Set<Integer> cpuSet = cpuUpdateActorList.poll();
 		   DockerCommandCpuSet(cpuSet);
 		   continue;
@@ -957,6 +961,7 @@ public void run(){
 	  synchronized(memoryUpdateActorList){
 	   //finally we update memory
 	   if(memoryUpdateActorList.size() > 0){
+		   LOG.info("memory size "+memoryUpdateActorList.size());
 		   int memory = memoryUpdateActorList.poll();
 		   DockerCommandMeory(memory);
 		   continue;
