@@ -213,6 +213,8 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
   //resume a container from suspended state
   synchronized public boolean containerResume(RMContainer rmContainer,Resource toResume){
 	  
+	  LOG.info("to resume 1: "+ toResume);
+	  
 	  ContainerId containerId = rmContainer.getContainerId();
 	  
 	  if(isStopped){
@@ -238,7 +240,7 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
 	  this.containersSuspended.remove(containerId);
 	  }  
 	  
-	  LOG.info("to resume: "+ toResume);
+	  LOG.info("to resume 2: "+ toResume);
 	  //update resource usage
 	  queue.getMetrics().allocateResources(getUser(), 1, toResume, true);
 	  //update app resource usage
