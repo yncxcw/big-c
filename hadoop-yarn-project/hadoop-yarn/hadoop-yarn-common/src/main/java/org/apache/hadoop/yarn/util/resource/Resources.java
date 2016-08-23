@@ -23,11 +23,17 @@ import java.util.Set;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
 import org.apache.hadoop.yarn.api.records.Resource;
+//import org.apache.hadoop.yarn.server.resourcemanager.scheduler.Log;
+//import org.apache.hadoop.yarn.server.resourcemanager.scheduler.SchedulerNode;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.yarn.util.Records;
 
 @InterfaceAudience.LimitedPrivate({"YARN", "MapReduce"})
 @Unstable
 public class Resources {
+	
+  private static final Log LOG = LogFactory.getLog(Resources.class);
   
   // Java doesn't have const :(
   private static final Resource NONE = new Resource() {
@@ -130,8 +136,10 @@ public class Resources {
   }
 
   public static Resource subtractFrom(Resource lhs, Resource rhs) {
+	LOG.info("before rhs:"+rhs);
     lhs.setMemory(lhs.getMemory() - rhs.getMemory());
     lhs.setVirtualCores(lhs.getVirtualCores() - rhs.getVirtualCores());
+    LOG.info("before rhs:"+rhs);
     return lhs;
   }
 

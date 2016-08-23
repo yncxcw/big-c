@@ -733,7 +733,7 @@ public class RMContainerImpl implements RMContainer {
 public void addPreemptedResource(Resource resource) {
 	try{
 		readLock.lock();
-		this.lastPreempted = resource;
+		this.lastPreempted = Resources.clone(resource);
 		Resources.addTo(preempted, resource);
 	}finally{
 		readLock.unlock();
@@ -778,7 +778,7 @@ public void addResumedResource(Resource resource) {
 	LOG.info("before resource: "+resource+" preempted"+preempted+" last resumed"+lastResumed);
 	try{
 		readLock.lock();
-		this.lastResumed = resource;
+		this.lastResumed = Resources.clone(resource);
 		Resources.subtractFrom(preempted, resource);
 	}finally{
 		readLock.unlock();
