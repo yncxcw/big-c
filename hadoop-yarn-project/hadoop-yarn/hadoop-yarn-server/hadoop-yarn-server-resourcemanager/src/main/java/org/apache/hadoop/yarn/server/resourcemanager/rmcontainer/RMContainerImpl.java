@@ -783,8 +783,6 @@ public void addResumedResource(Resource resource) {
 	}finally{
 		readLock.unlock();
 	}
-	
-	resource = this.lastPreempted;
 	LOG.info("after resource: "+resource+" preempted"+preempted+" last resumed "+lastResumed);
 	
 }

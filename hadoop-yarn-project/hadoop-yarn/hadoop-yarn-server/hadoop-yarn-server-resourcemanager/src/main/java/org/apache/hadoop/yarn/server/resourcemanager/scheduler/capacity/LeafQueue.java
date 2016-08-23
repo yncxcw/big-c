@@ -1509,7 +1509,9 @@ public class LeafQueue extends AbstractCSQueue {
 		  RMContainer rmContainer){
 	  
 	    //we should make capability here tunable
-	    Resource toResume      = rmContainer.getPreemptedResource();
+	    Resource toResume      = Resource.newInstance(rmContainer.getPreemptedResource().getMemory(), 
+	    		                                      rmContainer.getPreemptedResource().getVirtualCores());
+	    
 	    Resource available     = node.getAvailableResource();
 	    Resource totalResource = node.getTotalResource();
 
