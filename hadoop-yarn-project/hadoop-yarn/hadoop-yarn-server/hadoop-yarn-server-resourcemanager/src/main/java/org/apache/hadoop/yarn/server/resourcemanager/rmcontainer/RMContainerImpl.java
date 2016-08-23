@@ -775,6 +775,7 @@ public Resource getLastResumeResource() {
 
 @Override
 public void addResumedResource(Resource resource) {
+	LOG.info("before resource: "+resource);
 	try{
 		readLock.lock();
 		this.lastResumed = Resources.clone(resource);
@@ -782,7 +783,7 @@ public void addResumedResource(Resource resource) {
 	}finally{
 		readLock.unlock();
 	}
-	
+	LOG.info("after resource: "+resource);
 	
 }
 

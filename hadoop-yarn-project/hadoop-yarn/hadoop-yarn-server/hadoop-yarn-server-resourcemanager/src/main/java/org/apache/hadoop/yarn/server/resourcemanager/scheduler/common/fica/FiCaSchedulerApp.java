@@ -230,17 +230,19 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
 	  }
 	  //add resumed resource
 	  rmContainer.addResumedResource(toResume);
+	  LOG.info("to resume 2: "+ toResume);
 	  //we try to update its resource consumption
 	  rmContainer.handle(
               new RMContainerEvent(containerId,RMContainerEventType.RESUME)  
        );
+	  LOG.info("to resume 3: "+ toResume);
 	  //if all of its resource has been resumed
 	  if(!rmContainer.isSuspending()){
 	  //delete contaienr from containersSuspended
 	  this.containersSuspended.remove(containerId);
 	  }  
 	  
-	  LOG.info("to resume 2: "+ toResume);
+	  LOG.info("to resume 4: "+ toResume);
 	  //update resource usage
 	  queue.getMetrics().allocateResources(getUser(), 1, toResume, true);
 	  //update app resource usage
