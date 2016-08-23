@@ -431,7 +431,8 @@ public class ParentQueue extends AbstractCSQueue {
             " usedCapacity=" + getUsedCapacity() +
             " absoluteUsedCapacity=" + getAbsoluteUsedCapacity() +
             " used=" + queueUsage.getUsed() + 
-            " cluster=" + clusterResource);
+            " cluster=" + clusterResource+
+            "  resume size="+assignment.getContainersToResume().size());
 
       } else {
         break;
@@ -518,11 +519,11 @@ public class ParentQueue extends AbstractCSQueue {
           getResourceLimitsOfChild(childQueue, cluster, limits);
       
       assignment = childQueue.assignContainers(cluster, node, childLimits);
-      if(LOG.isDebugEnabled())
+     // if(LOG.isDebugEnabled())
       {
         LOG.info("Assigned to queue: " + childQueue.getQueuePath() +
           " stats: " + childQueue + " --> " + 
-          assignment.getResource() + ", " + assignment.getType());
+          assignment.getResource() + ", " + assignment.getType()+"resume size"+assignment.getContainersToResume().size());
       }
 
       // If we do assign, remove the queue and re-insert in-order to re-sort
