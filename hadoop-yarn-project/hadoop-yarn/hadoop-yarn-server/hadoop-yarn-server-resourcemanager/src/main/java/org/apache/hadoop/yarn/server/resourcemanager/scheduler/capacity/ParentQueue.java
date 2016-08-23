@@ -518,7 +518,7 @@ public class ParentQueue extends AbstractCSQueue {
           getResourceLimitsOfChild(childQueue, cluster, limits);
       
       assignment = childQueue.assignContainers(cluster, node, childLimits);
-     // if(LOG.isDebugEnabled())
+     if(LOG.isDebugEnabled())
       {
         LOG.info("Assigned to queue: " + childQueue.getQueuePath() +
           " stats: " + childQueue + " --> " + 

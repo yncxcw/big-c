@@ -764,7 +764,7 @@ public class LeafQueue extends AbstractCSQueue {
       FiCaSchedulerNode node, ResourceLimits currentResourceLimits) {
     updateCurrentResourceLimits(currentResourceLimits, clusterResource);
     
-    //if(LOG.isDebugEnabled()) 
+    if(LOG.isDebugEnabled()) 
     {
       LOG.info("assignContainers: node=" + node.getNodeName()
         + " #applications=" + activeApplications.size());
@@ -1532,7 +1532,7 @@ public class LeafQueue extends AbstractCSQueue {
 	    int availableContainers = 
 	        resourceCalculator.computeAvailableContainers(available, toResume);
 	  
-	    LOG.info("ndoe available resource "+available+" to resume "+toResume);  
+	    //LOG.info("ndoe available resource "+available+" to resume "+toResume);  
 	    if (availableContainers > 0) {
 	    	
 	    	 boolean resumeContainer = 

@@ -1414,20 +1414,16 @@ public class CapacityScheduler extends
 	  if (LOG.isDebugEnabled()) {
 	      LOG.debug("RESUME_CONTAINER: container" + cont.toString());
 	  }
-	  //TODO we will not do this check here, actually it's dangerous to do so
-	  if(cont.getState() != RMContainerState.DEHYDRATED){
-		LOG.info("we can only resume container which is dehydrated"+cont.getContainerId());
-		return;
-	  }
+	
 	  //send this resource update info to NodeManager
 	  NodeId nodeId = cont.getContainer().getNodeId();
 	  ContainerId containerId = cont.getContainerId();
 	  //get current resource after preemption
-	  Resource currentResource = cont.getCurrentUsedResource();
+	  Resource currentResource = cont.getCurrentUsedResource()
 	  NodeContainerUpdate nodeContainerUpdate= NodeContainerUpdate.newInstance(containerId, 
 				                                  currentResource.getMemory(), currentResource.getVirtualCores(),false,true);
 	  
-	  LOG.info("get container   "+containerId+"to resume "+"resource:   "+currentResource);
+	  LOG.info("get container   "+containerId+"to resume "+"resource:   "+currentResource+"on host: "+cont.getAllocatedNode().getHost());
 	  //check if the resource is right
 	  if(nodeContainerUpdateMap.get(nodeId) == null){
 		  ConcurrentLinkedQueue<NodeContainerUpdate> listNodeContainerUpdate = new  ConcurrentLinkedQueue<NodeContainerUpdate>();
