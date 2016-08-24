@@ -976,11 +976,15 @@ public void run(){
   
 
 public void ProcessNodeContainerUpdate(NodeContainerUpdate nodeContainerUpdate) {
+	  //if this is a resumed container
+	  boolean resumed = nodeContainerUpdate.getResume();
 	  boolean quotaFreeze = false;
 	  //we fisrt update cpu cores
 	  Integer targetCores = nodeContainerUpdate.getCores();
 	  //then we update resource requirement, first we update cpu set
 	  Set<Integer> cores = context.getCoresManager().resetCores(containerId,targetCores);
+	  
+	  LOG.info("node container update cores"+cores);
 	  //all cores are preempted
 	  if(cores.size() == 0){
 	      //in this case, we run the docker on core 0
@@ -1006,6 +1010,13 @@ public void ProcessNodeContainerUpdate(NodeContainerUpdate nodeContainerUpdate) 
 			  }
 			  quotaUpdateActorList.add(1000);
 		  }
+	  }else if(resumed){
+		  synchronized(quotaUpdateActorList){	
+				 //first check the quota list if it is empty
+				 if(quotaUpdateActorList.size() > 0){
+					 quotaUpdateActorList.clear();
+		          }
+				  quotaUpdateActorList.add(-1);
 	  }
 	  
 	 
@@ -1032,9 +1043,11 @@ public void ProcessNodeContainerUpdate(NodeContainerUpdate nodeContainerUpdate) 
 			toAdded.add(currentMemory);
 		  }
 		 toAdded.add(targetMemory);
+		 LOG.info("node container update memory"+targetMemory);
 		  
 	  }else{
 		toAdded.add(targetMemory);
+		LOG.info("node container update memory"+targetMemory);
 	  }
 	  
    synchronized(memoryUpdateActorList){

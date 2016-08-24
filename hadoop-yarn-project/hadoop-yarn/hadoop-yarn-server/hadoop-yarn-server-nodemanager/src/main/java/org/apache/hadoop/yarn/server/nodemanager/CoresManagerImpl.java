@@ -188,6 +188,7 @@ public class CoresManagerImpl implements CoresManager {
 	 this.allcoateCoresforContainer(newAllocated, cntId);
  }
 	
+	LOG.info("get reset cores "+returnedCores);
 	return returnedCores;
 }
  
