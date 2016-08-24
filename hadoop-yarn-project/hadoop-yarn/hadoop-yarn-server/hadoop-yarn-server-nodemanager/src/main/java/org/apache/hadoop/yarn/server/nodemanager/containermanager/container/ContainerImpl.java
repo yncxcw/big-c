@@ -855,13 +855,16 @@ public class ContainerImpl implements Container {
 	  commandCores.add("--cpuset-cpus");
 	  
 	  int index = 0;
+	  String  coresStr=new String();
 	  for(Integer core : cores){
-		  commandCores.add(core.toString());
+		  coresStr=coresStr+core.toString();
 		  index++;
 		  if(index < cores.size()){
-			  commandCores.add(",");
+			  coresStr=coresStr+",";
 		  }
 	  }
+	  
+	  commandCores.add(coresStr);
 	  commandCores.add(containerId.toString());
 	  String[] commandArrayCores = commandCores.toArray(new String[commandCores.size()]);
 	  this.runDockerUpdateCommand(commandArrayCores);
@@ -971,7 +974,9 @@ public void run(){
 		} catch (InterruptedException e) {
 		    e.printStackTrace();
 		}
-	}	
+	}
+	
+	LOG.info("thread ended the final state is "+stateMachine.getCurrentState());
 }  
   
 
