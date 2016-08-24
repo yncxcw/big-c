@@ -935,7 +935,7 @@ public class ContainerImpl implements Container {
 
 @Override
 public void run(){
-	LOG.info("docker update thread for container "+getContainerId()+"current state is "+stateMachine.getCurrentState());
+	LOG.info("thread entered for container "+getContainerId()+" current state is "+stateMachine.getCurrentState());
 	
 	while(stateMachine.getCurrentState() == ContainerState.RUNNING){
 		
@@ -976,7 +976,7 @@ public void run(){
 		}
 	}
 	
-	LOG.info("thread ended the final state is "+stateMachine.getCurrentState());
+	LOG.info("thread ended for container "+getContainerId()+" the final state is "+stateMachine.getCurrentState());
 }  
   
 
@@ -1067,8 +1067,8 @@ public void ProcessNodeContainerUpdate(NodeContainerUpdate nodeContainerUpdate) 
 
   }
   private void ProcessResourceUpdate(NodeContainerUpdate nodeContainerUpdate){
-	  LOG.info("process resource update: container"+getContainerId()+"cores "+nodeContainerUpdate.getCores()
-			  +"memory "+nodeContainerUpdate.getMemory());
+	  LOG.info("process resource update: container  "+getContainerId()+" cores "+nodeContainerUpdate.getCores()
+			  +" memory "+nodeContainerUpdate.getMemory());
 	  dockerUpdateThread.ProcessNodeContainerUpdate(nodeContainerUpdate);;
   }
   
