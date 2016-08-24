@@ -1017,6 +1017,7 @@ public void ProcessNodeContainerUpdate(NodeContainerUpdate nodeContainerUpdate) 
 					 quotaUpdateActorList.clear();
 		          }
 				  quotaUpdateActorList.add(-1);
+	      }
 	  }
 	  
 	 
@@ -1061,7 +1062,7 @@ public void ProcessNodeContainerUpdate(NodeContainerUpdate nodeContainerUpdate) 
 
   }
   private void ProcessResourceUpdate(NodeContainerUpdate nodeContainerUpdate){
-	  LOG.info("process resource update: container"+this.getContainerId()+"cores "+nodeContainerUpdate.getCores()
+	  LOG.info("process resource update: container"+getContainerId()+"cores "+nodeContainerUpdate.getCores()
 			  +"memory "+nodeContainerUpdate.getMemory());
 	  dockerUpdateThread.ProcessNodeContainerUpdate(nodeContainerUpdate);;
   }
