@@ -210,6 +210,8 @@ public class CoresManagerImpl implements CoresManager {
 		  if(this.coresToContainer.get(core).size()==0){
 			  LOG.info("cpuset 0 warning on core"+core+"size:"+this.coresToContainer.get(core).size());
 		  }
+		  
+		  LOG.info("containers:"+this.coresToContainer.get(core));
 	  }
 	  
   }
