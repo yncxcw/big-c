@@ -201,17 +201,20 @@ public class CoresManagerImpl implements CoresManager {
 }
  
   private void LogOverlapWarning(){
+	  
 	  LOG.info("cpuset warning");
 	  for(Integer core : this.coresToContainer.keySet()){
+		  
 		  if(this.coresToContainer.get(core).size() > 1){
 			  LOG.info("cpuset overlap warning on core"+core+"size:"+this.coresToContainer.get(core).size());
+			  LOG.info("cores: "+ core + "containers:"+this.coresToContainer.get(core));
 		  }
 		  
 		  if(this.coresToContainer.get(core).size()==0){
 			  LOG.info("cpuset 0 warning on core"+core+"size:"+this.coresToContainer.get(core).size());
 		  }
 		  
-		  LOG.info("containers:"+this.coresToContainer.get(core));
+		 
 	  }
 	  
   }
