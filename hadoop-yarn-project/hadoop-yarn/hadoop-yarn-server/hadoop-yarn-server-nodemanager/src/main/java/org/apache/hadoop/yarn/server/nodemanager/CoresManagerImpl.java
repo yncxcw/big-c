@@ -47,7 +47,8 @@ public class CoresManagerImpl implements CoresManager {
 		Set<Integer> returnedResults = new HashSet<Integer>();
 		int index = 0;
 		assert(num <= totalCores.size());
-		if(unUsedCores.size() > 0){
+		
+	    if(unUsedCores.size() > 0){
 			for(Integer core : unUsedCores){
 				returnedResults.add(core);
 				index++;
@@ -55,16 +56,13 @@ public class CoresManagerImpl implements CoresManager {
 					break;
 				}
 			}
-			
-			for(Integer core : returnedResults){
-				unUsedCores.remove(core);
-			}
-			
 		}
+			
 		while(index < num){
 	       Integer value = 0;
 		   int     min = Integer.MAX_VALUE;
-		for(Map.Entry<Integer, Set<ContainerId>> entry: coresToContainer.entrySet()){
+			   
+		   for(Map.Entry<Integer, Set<ContainerId>> entry: coresToContainer.entrySet()){
 			//find min core each time
 		     if(returnedResults.contains(entry.getKey())){
 		    	 continue;
@@ -76,6 +74,7 @@ public class CoresManagerImpl implements CoresManager {
 		     }
 		  }
 		returnedResults.add(value);
+		index++;
 		}
 		
 		return returnedResults;
@@ -90,11 +89,16 @@ public class CoresManagerImpl implements CoresManager {
 		return returnedResults;
 	}
 	
-	private void allcoateCoresforContainer(Set<Integer> cores,ContainerId cntId){
-		for(Integer core : cores){
-		    coresToContainer.get(core).add(cntId);
-		}
+	private synchronized void allcoateCoresforContainer(Set<Integer> cores,ContainerId cntId){
 		
+		for(Integer core : cores){
+			 unUsedCores.remove(core);
+		 }
+		 
+		for(Integer core : cores){
+		     coresToContainer.get(core).add(cntId);
+		}
+
 		if(containerToCores.get(cntId) == null){
 		  //first allocated
 		  containerToCores.put(cntId, cores);	
@@ -113,14 +117,16 @@ public class CoresManagerImpl implements CoresManager {
 		this.releaseCoresforContainer(cntId, cores);
 	}
 	
-	private void releaseCoresforContainer(ContainerId cntId, Set<Integer> cores){
+	private synchronized void releaseCoresforContainer(ContainerId cntId, Set<Integer> cores){
 		for(Integer core : cores){
-			coresToContainer.get(core).remove(cntId);
 			if(coresToContainer.get(core).size() == 0){
 				unUsedCores.add(core);
 			}
 		}
 		
+		for(Integer core : cores){
+			coresToContainer.get(core).remove(cntId);
+		}
 		for(Integer core : cores){
 			//remove core one by one
 			containerToCores.get(cntId).remove(core);
