@@ -1127,8 +1127,7 @@ public class CapacityScheduler extends
             // resources, should consider labeled resources as well.
             new ResourceLimits(labelManager.getResourceByLabel(
                 RMNodeLabelsManager.NO_LABEL, clusterResource)));
-        //we try to assume container after resource updating
-        LOG.info("resume size "+assignment.getContainersToResume().size());
+        //we try to assume container after resource updatin
         for(RMContainer cont : assignment.getContainersToResume()){
         	this.resumeContainer(cont);
         }

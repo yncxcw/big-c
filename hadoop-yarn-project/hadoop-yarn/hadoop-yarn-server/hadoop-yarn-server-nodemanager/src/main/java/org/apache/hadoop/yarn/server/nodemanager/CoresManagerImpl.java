@@ -77,7 +77,6 @@ public class CoresManagerImpl implements CoresManager {
 		index++;
 		}
 		
-		LogOverlapWarning();
 		return returnedResults;
 	}
 	
@@ -86,7 +85,7 @@ public class CoresManagerImpl implements CoresManager {
 		
 		Set<Integer> returnedResults = this.getAvailableCores(num);
 		this.allcoateCoresforContainer(returnedResults, cntId);
-		
+		LogOverlapWarning();
 		
 		return returnedResults;
 	}
@@ -116,6 +115,7 @@ public class CoresManagerImpl implements CoresManager {
 		Set<Integer> cores= new HashSet<Integer>();
 		cores.addAll(containerToCores.get(cntId));
 		this.releaseCoresforContainer(cntId, cores);
+		LogOverlapWarning();
 		
 	}
 	
@@ -140,7 +140,6 @@ public class CoresManagerImpl implements CoresManager {
 		}
 		
 		LOG.info("release cpuset "+cores);
-		LogOverlapWarning();
 	}
 	
   @Override
