@@ -939,8 +939,8 @@ public void run(){
 	
 	while(stateMachine.getCurrentState() == ContainerState.RUNNING){
 		
-	  LOG.info("thread loop for container "+getContainerId()+" memorysize "+memoryUpdateActorList.size()
-			                                                +" cpusize "+cpuUpdateActorList.size());
+	  //LOG.info("thread loop for container "+getContainerId()+" memorysize "+memoryUpdateActorList.size()
+	  //		                                                +" cpusize "+cpuUpdateActorList.size());
 	  synchronized(quotaUpdateActorList){	
 	   //first check the quota list if it is empty
 	   if(quotaUpdateActorList.size() > 0){  

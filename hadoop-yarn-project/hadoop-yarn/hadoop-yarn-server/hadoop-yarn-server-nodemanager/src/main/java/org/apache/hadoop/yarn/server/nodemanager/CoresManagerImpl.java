@@ -82,9 +82,10 @@ public class CoresManagerImpl implements CoresManager {
 	
 	@Override
 	public Set<Integer> allocateCores(ContainerId cntId, int num){
-		LogOverlapWarning();
+		
 		Set<Integer> returnedResults = this.getAvailableCores(num);
 		this.allcoateCoresforContainer(returnedResults, cntId);
+		LogOverlapWarning();
 		
 		return returnedResults;
 	}
@@ -111,10 +112,10 @@ public class CoresManagerImpl implements CoresManager {
 
 	@Override
 	public void releaseCores(ContainerId cntId) {
-		LogOverlapWarning();
 		Set<Integer> cores= new HashSet<Integer>();
 		cores.addAll(containerToCores.get(cntId));
 		this.releaseCoresforContainer(cntId, cores);
+		LogOverlapWarning();
 	}
 	
 	private synchronized void releaseCoresforContainer(ContainerId cntId, Set<Integer> cores){
