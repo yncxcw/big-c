@@ -844,13 +844,13 @@ public class ContainerManagerImpl extends CompositeService implements
     Set<Integer> cores = this.context.getCoresManager().allocateCores(containerId,
     		                            containerTokenIdentifier.getResource().getVirtualCores());
     
-    LOG.info("allocate resource"+containerTokenIdentifier.getResource());
-    LOG.info("allocate cpuset"+cores);
-    
+   
     Container container =
         new ContainerImpl(this.context,getConfig(), this.dispatcher,
             context.getNMStateStore(), launchContext,
           credentials, metrics, containerTokenIdentifier,cores);
+    LOG.info("allocate cpuset"+cores+" for containers "+container.getContainerId());
+    
     ApplicationId applicationID =
         containerId.getApplicationAttemptId().getApplicationId();
     if (context.getContainers().putIfAbsent(containerId, container) != null) {

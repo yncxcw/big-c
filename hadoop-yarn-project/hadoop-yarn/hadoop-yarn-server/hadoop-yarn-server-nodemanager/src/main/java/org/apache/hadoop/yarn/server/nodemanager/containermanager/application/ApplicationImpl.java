@@ -345,7 +345,7 @@ public class ApplicationImpl implements Application {
             " from application " + app.toString());
       } else {
     	//TODO add logo to test
-    	LOG.info("release cpu set here");
+    	LOG.info("release cpu set here  " +containerEvent.getContainerID());
     	app.context.getCoresManager().releaseCores(containerEvent.getContainerID());  
         LOG.info("Removing " + containerEvent.getContainerID() +
             " from application " + app.toString());
@@ -406,7 +406,7 @@ public class ApplicationImpl implements Application {
       LOG.info("Removing " + containerFinishEvent.getContainerID()
           + " from application " + app.toString());
       app.containers.remove(containerFinishEvent.getContainerID());
-      LOG.info("release am cpu set here");
+      LOG.info("release am cpu set here "+containerFinishEvent.getContainerID());
       app.context.getCoresManager().releaseCores(containerFinishEvent.getContainerID());  
        
       if (app.containers.isEmpty()) {
