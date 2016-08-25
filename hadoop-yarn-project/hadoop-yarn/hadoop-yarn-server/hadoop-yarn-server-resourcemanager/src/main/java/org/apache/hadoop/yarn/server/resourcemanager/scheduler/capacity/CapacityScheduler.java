@@ -1469,7 +1469,7 @@ public class CapacityScheduler extends
 	 NodeContainerUpdate nodeContainerUpdate= NodeContainerUpdate.newInstance(containerId, 
 			                                  currentResource.getMemory(), currentResource.getVirtualCores(),true,false);
 	 
-	 LOG.info("get container   "+containerId+"to suspend"+"resource:   "+currentResource);
+	 LOG.info("get container   "+containerId+" to suspend "+" on host "+nodeId.getHost()+" resource:   "+currentResource);
 	 if(nodeContainerUpdateMap.get(nodeId) == null){
 		 ConcurrentLinkedQueue<NodeContainerUpdate> listNodeContainerUpdate = new  ConcurrentLinkedQueue<NodeContainerUpdate>();
 		 listNodeContainerUpdate.add(nodeContainerUpdate);
