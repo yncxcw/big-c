@@ -402,10 +402,13 @@ public class ApplicationImpl implements Application {
 
       ApplicationContainerFinishedEvent containerFinishEvent =
           (ApplicationContainerFinishedEvent) event;
+      
       LOG.info("Removing " + containerFinishEvent.getContainerID()
           + " from application " + app.toString());
       app.containers.remove(containerFinishEvent.getContainerID());
-
+      LOG.info("release am cpu set here");
+      app.context.getCoresManager().releaseCores(containerFinishEvent.getContainerID());  
+       
       if (app.containers.isEmpty()) {
         // All containers are cleanedup.
         app.handleAppFinishWithContainersCleanedup();
