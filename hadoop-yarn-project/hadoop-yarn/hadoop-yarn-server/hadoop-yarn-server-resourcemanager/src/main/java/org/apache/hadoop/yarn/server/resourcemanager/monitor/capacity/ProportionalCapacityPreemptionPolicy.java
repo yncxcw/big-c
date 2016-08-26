@@ -388,6 +388,10 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
        scalingFactor = Resources.divide(rc, tot_guarant,
            totalPreemptionAllowed, totPreemptionNeeded);
     }
+    
+    LOG.info("computeIdealResourceDistribution preemption allowed: "+totalPreemptionAllowed);
+    LOG.info("computeIdealResourceDistribution preemption needed : "+totPreemptionNeeded);
+    LOG.info("computeIdealResourceDistribution scalingFactor     : "+scalingFactor);
 
     // assign to each queue the amount of actual preemption based on local
     // information of ideal preemption and scaling factor
@@ -915,16 +919,18 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
               absMaxCapIdealAssignedDelta,
           Resources.min(rc, clusterResource, avail, Resources.subtract(
               Resources.add(current, pending), idealAssigned)));
-      
-      LOG.info("avaul:     "+avail);
-      LOG.info("max:       "+maxCapacity);
-      LOG.info("assgiend:  "+current);
-      LOG.info("pending:   "+pending);
-      LOG.info("offer q:   "+queueName+" acceped: "+accepted);
-      
-      
+    
       Resource remain = Resources.subtract(avail, accepted);
       Resources.addTo(idealAssigned, accepted);
+      
+      LOG.info("queueName: "+queueName);
+      LOG.info("avaul:     "+avail);
+      LOG.info("max:       "+maxCapacity);
+      LOG.info("current:   "+current);
+      LOG.info("pending:   "+pending);
+      LOG.info("acceped:   "+accepted);
+      LOG.info("ideal:     "+idealAssigned);
+      
       return remain;
       
     }
@@ -959,6 +965,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       if (Resources.greaterThan(rc, clusterResource, current, idealAssigned)) {
           toBePreempted = Resources.multiply(
               Resources.subtract(current, idealAssigned), scalingFactor);
+          LOG.info("assignPreemption queue  "+queueName+" toBePreempted  "+toBePreempted);
       } else {
         toBePreempted = Resource.newInstance(0, 0);
       }
