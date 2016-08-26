@@ -120,6 +120,7 @@ public class CoresManagerImpl implements CoresManager {
 	}
 	
 	private synchronized void releaseCoresforContainer(ContainerId cntId, Set<Integer> cores){
+		
 		for(Integer core : cores){
 			if(coresToContainer.get(core).size() == 0){
 				unUsedCores.add(core);
@@ -129,6 +130,7 @@ public class CoresManagerImpl implements CoresManager {
 		for(Integer core : cores){
 			coresToContainer.get(core).remove(cntId);
 		}
+		
 		for(Integer core : cores){
 			//remove core one by one
 			containerToCores.get(cntId).remove(core);
@@ -201,15 +203,12 @@ public class CoresManagerImpl implements CoresManager {
 }
  
   private void LogOverlapWarning(){
-	 
-	  
 	  for(Integer core : this.coresToContainer.keySet()){
 		  
 		  if(this.coresToContainer.get(core).size() > 2){
 			  LOG.info("cpuset overlap warning on core"+core+"size:"+this.coresToContainer.get(core).size());
 			  LOG.info("cores: "+ core + "containers:"+this.coresToContainer.get(core));
 		  }
-		 
 	  }
 	  
   }

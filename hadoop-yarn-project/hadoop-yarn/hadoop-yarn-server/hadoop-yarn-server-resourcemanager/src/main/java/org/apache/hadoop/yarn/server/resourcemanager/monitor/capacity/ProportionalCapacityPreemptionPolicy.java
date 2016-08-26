@@ -296,7 +296,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
    * level of the hierarchy. This ensures that leafs that are over-capacity but
    * with parents within capacity will not be preempted. Preemptions are allowed
    * within each subtree according to local over/under capacity.only return leaf nodes for this function
-   *
+   * 把所有的子queue全放在一个List里面，这里并不去区分层级关系
    * @param root the root of the cloned queue hierachy
    * @param totalPreemptionAllowed maximum amount of preemption allowed
    * @return a list of leaf queues updated with preemption targets
@@ -342,6 +342,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     // unassigned tracks how much resources are still to assign, initialized
     // with the total capacity for this set of queues
     Resource unassigned = Resources.clone(tot_guarant);
+    
+    LOG.info("computedIdealResourceDistribution: tot_guaran "+unassigned);
 
     // group queues based on whether they have non-zero guaranteed capacity
     Set<TempQueue> nonZeroGuarQueues = new HashSet<TempQueue>();
@@ -429,6 +431,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       } else {
         q.idealAssigned = Resources.clone(q.current);
       }
+      
+      LOG.info("computeFixpointAllocation q :"+q.queueName+"idealAssigned: "+q.idealAssigned);
      
       Resources.subtractFrom(unassigned, q.idealAssigned);
       // If idealAssigned < (current + pending), q needs more resources, so
@@ -437,6 +441,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       if (Resources.lessThan(rc, tot_guarant, q.idealAssigned, curPlusPend)) {
        
         orderedByNeed.add(q);
+        LOG.info("computeFixpointAllocation q: "+q.queueName+"needs more resource: "+q.pending);
       }
     }
 
@@ -460,11 +465,14 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         TempQueue sub = i.next();
         //the share of this queue based on unassigned resource
         Resource wQavail = Resources.multiplyAndNormalizeUp(rc,
-            unassigned, sub.normalizedGuarantee, Resource.newInstance(1, 1));    
+            unassigned, sub.normalizedGuarantee, Resource.newInstance(1, 1)); 
+        
+        LOG.info("computeFixpointAllocation q: "+sub.queueName+" wQavail: "+wQavail);
+        
         Resource wQidle = sub.offer(wQavail, rc, tot_guarant);
         Resource wQdone = Resources.subtract(wQavail, wQidle);
 
-        //wQdone is 0 说明 该queue已经不能继续分配资源，即使资源有剩余
+        //wQdone is 0 说明 说明wQavail已经被分配完
         if (Resources.greaterThan(rc, tot_guarant,
               wQdone, Resources.none())) {
           // The queue is still asking for more. Put it back in the priority
@@ -517,8 +525,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         Resources.addTo(activeCap, q.guaranteed);
       }
       for (TempQueue q : queues) {
-        q.normalizedGuarantee = Resources.divide(rc, clusterResource,
-            q.guaranteed, activeCap);
+        q.normalizedGuarantee = Resources.divide(rc, clusterResource, q.guaranteed, activeCap);
+        LOG.info("resetCapacity q: "+q.queueName+" normalizedGuarantee: "+q.normalizedGuarantee);
       }
     }
   }
@@ -907,9 +915,18 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
               absMaxCapIdealAssignedDelta,
           Resources.min(rc, clusterResource, avail, Resources.subtract(
               Resources.add(current, pending), idealAssigned)));
+      
+      LOG.info("avaul:     "+avail);
+      LOG.info("max:       "+maxCapacity);
+      LOG.info("assgiend:  "+current);
+      LOG.info("pending:   "+pending);
+      LOG.info("offer q:   "+queueName+" acceped: "+accepted);
+      
+      
       Resource remain = Resources.subtract(avail, accepted);
       Resources.addTo(idealAssigned, accepted);
       return remain;
+      
     }
 
     @Override

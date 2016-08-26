@@ -432,7 +432,7 @@ public class ParentQueue extends AbstractCSQueue {
             " absoluteUsedCapacity=" + getAbsoluteUsedCapacity() +
             " used=" + queueUsage.getUsed() + 
             " cluster=" + clusterResource+
-            "  resume size="+assignment.getContainersToResume().size());
+            " resume size="+assignment.getContainersToResume().size());
 
       } else {
         break;
