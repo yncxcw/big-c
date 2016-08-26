@@ -131,9 +131,9 @@ public class DockerContainerExecutor extends ContainerExecutor {
     String tokenFn = String.format(ContainerLocalizer.TOKEN_FILE_NAME_FMT, locId);
     Path tokenDst = new Path(appStorageDir, tokenFn);
     copyFile(nmPrivateContainerTokensPath, tokenDst, user);
-    LOG.info("Copying from " + nmPrivateContainerTokensPath + " to " + tokenDst);
+    //LOG.info("Copying from " + nmPrivateContainerTokensPath + " to " + tokenDst);
     lfs.setWorkingDirectory(appStorageDir);
-    LOG.info("CWD set to " + appStorageDir + " = " + lfs.getWorkingDirectory());
+    //LOG.info("CWD set to " + appStorageDir + " = " + lfs.getWorkingDirectory());
     // TODO: DO it over RPC for maintaining similarity?
     localizer.runLocalization(nmAddr);
   }
@@ -450,7 +450,7 @@ public class DockerContainerExecutor extends ContainerExecutor {
   public void deleteAsUser(String user, Path subDir, Path... baseDirs)
     throws IOException, InterruptedException {
     if (baseDirs == null || baseDirs.length == 0) {
-      LOG.info("Deleting absolute path : " + subDir);
+      //LOG.info("Deleting absolute path : " + subDir);
       if (!lfs.delete(subDir, true)) {
         //Maybe retry
         LOG.warn("delete returned false for path: [" + subDir + "]");
