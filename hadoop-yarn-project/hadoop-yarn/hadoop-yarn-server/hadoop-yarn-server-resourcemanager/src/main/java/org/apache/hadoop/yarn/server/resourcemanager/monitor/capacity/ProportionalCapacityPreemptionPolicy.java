@@ -573,9 +573,9 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         Resource resToObtain =
           Resources.multiply(qT.toBePreempted, naturalTerminationFactor);
         Resource skippedAMSize = Resource.newInstance(0, 0);
-        if(Resources.greaterThan(getResourceCalculator(), clusterResource, resToObtain, Resources.none())){
-          LOG.info("try to preempt "+resToObtain+" from"+qT.queueName);
-        }
+        LOG.info("getContainersToPreempt queue:   "+qT.queueName);
+        LOG.info("getContainersToPreempt factor:  "+naturalTerminationFactor);
+        LOG.info("getContainersToPreempt obatain: "+resToObtain);
         // lock the leafqueue while we scan applications and unreserve
         synchronized (qT.leafQueue) {
           //what is the descending order
@@ -595,17 +595,19 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
                 preemptFrom(fc, clusterResource, resToObtain,
                     skippedAMContainerlist, skippedAMSize));
           }
-          Resource maxAMCapacityForThisQueue = Resources.multiply(
-              Resources.multiply(clusterResource,
-                  qT.leafQueue.getAbsoluteCapacity()),
-              qT.leafQueue.getMaxAMResourcePerQueuePercent());
+          
+         //we will never preempt am resource 
+         // Resource maxAMCapacityForThisQueue = Resources.multiply(
+         //     Resources.multiply(clusterResource,
+         //         qT.leafQueue.getAbsoluteCapacity()),
+         //     qT.leafQueue.getMaxAMResourcePerQueuePercent());
 
           // Can try preempting AMContainers (still saving atmost
           // maxAMCapacityForThisQueue AMResource's) if more resources are
           // required to be preempted from this Queue.
-          preemptAMContainers(clusterResource, preemptMap,
-              skippedAMContainerlist, resToObtain, skippedAMSize,
-              maxAMCapacityForThisQueue);
+          //preemptAMContainers(clusterResource, preemptMap,
+          //    skippedAMContainerlist, resToObtain, skippedAMSize,
+          //    maxAMCapacityForThisQueue);
         }
       }
     }
@@ -776,10 +778,15 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       float absCap = root.getAbsoluteCapacity();
       float absMaxCap = root.getAbsoluteMaximumCapacity();
       boolean preemptionDisabled = root.getPreemptionDisabled();
+      
 
       Resource current = Resources.multiply(clusterResources, absUsed);
       Resource guaranteed = Resources.multiply(clusterResources, absCap);
       Resource maxCapacity = Resources.multiply(clusterResources, absMaxCap);
+      
+      LOG.info("cloneQueues current queue: "+queueName+" usedResource: "+root.getUsedResources());
+      LOG.info("cloneQueues current queue: "+queueName+" currentResource: "+ current);
+      
 
       Resource extra = Resource.newInstance(0, 0);
       if (Resources.greaterThan(rc, clusterResources, current, guaranteed)) {
