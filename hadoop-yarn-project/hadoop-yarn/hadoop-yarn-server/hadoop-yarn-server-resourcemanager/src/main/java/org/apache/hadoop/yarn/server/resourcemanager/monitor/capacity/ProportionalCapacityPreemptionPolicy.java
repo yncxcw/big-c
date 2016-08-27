@@ -773,6 +773,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
   private TempQueue cloneQueues(CSQueue root, Resource clusterResources) {
     TempQueue ret;
     synchronized (root) {
+      LOG.info("cloneQueues enter");
       String queueName = root.getQueueName();
       float absUsed = root.getAbsoluteUsedCapacity();
       float absCap = root.getAbsoluteCapacity();
