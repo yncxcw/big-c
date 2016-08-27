@@ -781,8 +781,9 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       boolean preemptionDisabled = root.getPreemptionDisabled();
       
 
-      Resource current = Resources.multiply(clusterResources, absUsed);
-      Resource guaranteed = Resources.multiply(clusterResources, absCap);
+      //Resource current = Resources.multiply(clusterResources, absUsed);
+      Resource current     = root.getUsedResources();
+      Resource guaranteed  = Resources.multiply(clusterResources, absCap);
       Resource maxCapacity = Resources.multiply(clusterResources, absMaxCap);
       
       LOG.info("cloneQueues current queue: "+queueName+" usedResource: "+root.getUsedResources());
