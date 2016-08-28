@@ -252,6 +252,16 @@ public class Resources {
     return resourceCalculator.compare(clusterResource, lhs, rhs) <= 0 ? lhs : rhs;
   }
 
+  
+  public static Resource mins(
+	   ResourceCalculator resourceCalculator, 
+	   Resource clusterResource,
+	   Resource lhs, Resource rhs) { 
+	  int cores  = lhs.getVirtualCores() < rhs.getVirtualCores() ? lhs.getVirtualCores():rhs.getVirtualCores();
+	  int memory = lhs.getMemory()       < rhs.getMemory()       ? lhs.getMemory():rhs.getMemory();
+	  Resource returned= Resource.newInstance(memory, cores);
+	  return returned;
+  }
   public static Resource max(
       ResourceCalculator resourceCalculator, 
       Resource clusterResource,

@@ -929,28 +929,17 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
                       Resource.newInstance(0, 0));
       
       // remain = avail - min(avail, (max - assigned), (current + pending - assigned))
-     
-      /*
-      Resource accepted = 
-          Resources.min(rc, clusterResource, 
-              absMaxCapIdealAssignedDelta,
-          Resources.min(rc, clusterResource, avail, Resources.subtract(
-              Resources.add(current, pending), idealAssigned)));
-      */
-       Resource temp = Resources.min(rc, clusterResource, absMaxCapIdealAssignedDelta, 
-    		   Resources.subtract(Resources.add(current, pending), idealAssigned));
-       
-       Resource accepted;
-       
-       if(temp.getMemory() < avail.getMemory() && 
-          temp.getVirtualCores() < avail.getVirtualCores() ){
-    	   accepted  = Resources.clone(temp);
-       }else{
-    	   accepted  = Resources.clone(avail);
-       }
       // we have bug here. in some case:
       //(current + pending - assigned).core > avail.core
       //(current + pending - assigned).memo < avail.memo
+      //so we get least cores of the three and least memory of the three
+      
+      Resource accepted = 
+          Resources.mins(rc, clusterResource, 
+              absMaxCapIdealAssignedDelta,
+          Resources.mins(rc, clusterResource, avail, Resources.subtract(
+              Resources.add(current, pending), idealAssigned)));
+     
       Resource remain = Resources.subtract(avail, accepted);
       Resources.addTo(idealAssigned, accepted);
       
