@@ -442,6 +442,9 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       // If idealAssigned < (current + pending), q needs more resources, so
       // add it to the list of underserved queues, ordered by need.
       Resource curPlusPend = Resources.add(q.current, q.pending);
+      LOG.info("omputeFixpointAllocation q :"+q.queueName+" curPusPend: "+curPlusPend);
+      
+      
       if (Resources.lessThan(rc, tot_guarant, q.idealAssigned, curPlusPend)) {
        
         orderedByNeed.add(q);
@@ -449,6 +452,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       }
     }
 
+    LOG.info("computeFixpointAllocation unused resource: "+unassigned);
     //assign all cluster resources until no more demand, or no resources are left
     while (!orderedByNeed.isEmpty()
        && Resources.greaterThan(rc,tot_guarant, unassigned,Resources.none())) {
@@ -485,6 +489,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         }
         Resources.addTo(wQassigned, wQdone);
       }
+      LOG.info("computeFixpointAllocation inloop unused resource: "+unassigned);
       Resources.subtractFrom(unassigned, wQassigned);
     }
   }
@@ -786,8 +791,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       Resource guaranteed  = Resources.multiply(clusterResources, absCap);
       Resource maxCapacity = Resources.multiply(clusterResources, absMaxCap);
       
-      LOG.info("cloneQueues current queue: "+queueName+" usedResource: "+root.getUsedResources());
-      LOG.info("cloneQueues current queue: "+queueName+" currentResource: "+ current);
+      LOG.info("cloneQueues current queue: "+queueName+" usedResource:   "+root.getUsedResources());
+      LOG.info("cloneQueues current queue: "+queueName+" ratiodResource: "+Resources.multiply(clusterResources, absUsed));
       
 
       Resource extra = Resource.newInstance(0, 0);
@@ -922,23 +927,41 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       Resource absMaxCapIdealAssignedDelta = Resources.componentwiseMax(
                       Resources.subtract(maxCapacity, idealAssigned),
                       Resource.newInstance(0, 0));
+      
       // remain = avail - min(avail, (max - assigned), (current + pending - assigned))
+     
+      /*
       Resource accepted = 
           Resources.min(rc, clusterResource, 
               absMaxCapIdealAssignedDelta,
           Resources.min(rc, clusterResource, avail, Resources.subtract(
               Resources.add(current, pending), idealAssigned)));
-    
+      */
+       Resource temp = Resources.min(rc, clusterResource, absMaxCapIdealAssignedDelta, 
+    		   Resources.subtract(Resources.add(current, pending), idealAssigned));
+       
+       Resource accepted;
+       
+       if(temp.getMemory() < avail.getMemory() && 
+          temp.getVirtualCores() < avail.getVirtualCores() ){
+    	   accepted  = Resources.clone(temp);
+       }else{
+    	   accepted  = Resources.clone(avail);
+       }
+      // we have bug here. in some case:
+      //(current + pending - assigned).core > avail.core
+      //(current + pending - assigned).memo < avail.memo
       Resource remain = Resources.subtract(avail, accepted);
       Resources.addTo(idealAssigned, accepted);
       
-      LOG.info("queueName: "+queueName);
-      LOG.info("avaul:     "+avail);
-      LOG.info("max:       "+maxCapacity);
-      LOG.info("current:   "+current);
-      LOG.info("pending:   "+pending);
-      LOG.info("acceped:   "+accepted);
-      LOG.info("ideal:     "+idealAssigned);
+      LOG.info("queueName:   "+queueName);
+      LOG.info("avaul:       "+avail);
+      LOG.info("absMaxDelta: "+absMaxCapIdealAssignedDelta);
+      LOG.info("max:         "+maxCapacity);
+      LOG.info("current:     "+current);
+      LOG.info("pending:     "+pending);
+      LOG.info("acceped:     "+accepted);
+      LOG.info("ideal:       "+idealAssigned);
       
       return remain;
       
