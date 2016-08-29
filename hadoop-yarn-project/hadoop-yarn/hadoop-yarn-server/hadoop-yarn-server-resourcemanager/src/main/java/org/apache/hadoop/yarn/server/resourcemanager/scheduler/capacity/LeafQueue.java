@@ -1559,6 +1559,7 @@ public class LeafQueue extends AbstractCSQueue {
 	    	node.resumeContainer(rmContainer.getContainer(),toResume, !suspending);
 	    	
 	        LOG.info("Resume Container" +
+	            "resum resource:"+toResume+
 	            " application attempt=" + application.getApplicationAttemptId() +
 	            " container=" + rmContainer.getContainerId() + 
 	            " queue=" + this + 
