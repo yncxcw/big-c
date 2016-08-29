@@ -1511,10 +1511,10 @@ public class LeafQueue extends AbstractCSQueue {
 	    Resource toResume;
 	    if(Resources.greaterThan(resourceCalculator, clusterResource, 
 	    		rmContainer.getPreemptedResource(), rmContainer.getSRResourceUnit())){
-	         toResume = rmContainer.getSRResourceUnit();
+	         toResume = Resources.clone(rmContainer.getSRResourceUnit());
 	    }else{
 	    	
-	         toResume = rmContainer.getPreemptedResource();
+	         toResume = Resources.clone(rmContainer.getPreemptedResource());
 	    }
 	    Resource available     = node.getAvailableResource();
 	    Resource totalResource = node.getTotalResource();
