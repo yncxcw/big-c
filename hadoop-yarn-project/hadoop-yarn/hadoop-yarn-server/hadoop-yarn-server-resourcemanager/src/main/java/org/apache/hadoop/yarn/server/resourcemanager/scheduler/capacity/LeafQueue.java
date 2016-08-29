@@ -821,6 +821,7 @@ public class LeafQueue extends AbstractCSQueue {
     			  //try to resume this container
     			  CSAssignment assignment = this.resumeContainer(clusterResource, node, app, rmContainer);
     			  Resource assigned = assignment.getResource();
+    			  LOG.info("get assigned resoruce: "+assigned);
     	          if (Resources.greaterThan(
     	              resourceCalculator, clusterResource, assigned, Resources.none())) {
     	              //update queue and user resource usage   	  
@@ -1535,7 +1536,8 @@ public class LeafQueue extends AbstractCSQueue {
 	   //Can we allocate a container on this node? we do not consider reserve container in current version
 	    int availableContainers = 
 	        resourceCalculator.computeAvailableContainers(available, toResume);
-	  
+	    
+	    LOG.info("resumeContainer availableContainers: "+availableContainers+" available resource: "+available);
 	    //LOG.info("ndoe available resource "+available+" to resume "+toResume);  
 	    if (availableContainers > 0) {
 	    	

@@ -20,6 +20,9 @@ package org.apache.hadoop.yarn.util.resource;
 import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
 import org.apache.hadoop.yarn.api.records.Resource;
+import org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A {@link ResourceCalculator} which uses the concept of  
@@ -45,6 +48,8 @@ import org.apache.hadoop.yarn.api.records.Resource;
 @Private
 @Unstable
 public class DominantResourceCalculator extends ResourceCalculator {
+	
+  private static final Log LOG = LogFactory.getLog(DominantResourceCalculator.class);
   
   @Override
   public int compare(Resource clusterResource, Resource lhs, Resource rhs) {
@@ -70,7 +75,7 @@ public class DominantResourceCalculator extends ResourceCalculator {
 
     float l = getResourceAsValue(clusterResource, lhs, true);
     float r = getResourceAsValue(clusterResource, rhs, true);
-    
+    LOG.info("left: "+l+"right: "+r);
     if (l < r) {
       return -1;
     } else if (l > r) {
