@@ -727,10 +727,12 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       Resource containerResource  = c.getContainer().getResource();
       //normalize this resource
       Resource normalizedResource = Resources.divideAndCeil(rc, containerResource, 
-    		                                        containerResource.getMemory()/containerResource.getVirtualCores());
+    		                                                       containerResource.getVirtualCores());
       //compute preempted resource this round
-      Resource preempteThisTime  = Resources.multiply(normalizedResource, PR_NUMBER);
+      Resource preempteThisTime  = Resources.mins(rc, clusterResource, 
+    		  rsrcPreempt, Resources.multiply(normalizedResource, PR_NUMBER));
       LOG.info("get preempted Resource: "+preempteThisTime);
+      
       ret.put(c,preempteThisTime);
       //substract preempted resource
       Resources.subtractFrom(rsrcPreempt, preempteThisTime);
