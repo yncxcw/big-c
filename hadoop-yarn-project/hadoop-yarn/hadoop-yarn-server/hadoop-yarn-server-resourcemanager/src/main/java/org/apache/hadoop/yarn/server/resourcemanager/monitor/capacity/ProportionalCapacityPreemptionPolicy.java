@@ -34,6 +34,7 @@ import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.util.hash.Hash;
 import org.apache.hadoop.yarn.api.records.ApplicationAttemptId;
 import org.apache.hadoop.yarn.api.records.NodeId;
 import org.apache.hadoop.yarn.api.records.Priority;
@@ -116,6 +117,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
   public static final String NATURAL_TERMINATION_FACTOR =
       "yarn.resourcemanager.monitor.capacity.preemption.natural_termination_factor";
 
+  public static final int PR_NUMBER = 2;
+  
   // the dispatcher to send preempt and kill events
   public EventHandler<ContainerPreemptEvent> dispatcher;
 
@@ -238,7 +241,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 
     // based on ideal allocation select containers to be preempted from each
     // queue and each application
-    Map<ApplicationAttemptId,Set<RMContainer>> toPreempt =
+    Map<ApplicationAttemptId,Map<RMContainer,Resource>> toPreempt =
         getContainersToPreempt(queues, clusterResources);
 
    if (LOG.isDebugEnabled()) 
@@ -252,28 +255,31 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     }
 
     // preempt (or kill) the selected containers
-    for (Map.Entry<ApplicationAttemptId,Set<RMContainer>> e
+    for (Map.Entry<ApplicationAttemptId,Map<RMContainer,Resource>> e
          : toPreempt.entrySet()) {
-      for (RMContainer container : e.getValue()) {
+      for (Map.Entry<RMContainer,Resource> cr : e.getValue().entrySet()) {
         // if we tried to preempt this for more than maxWaitTime
+    	RMContainer container = cr.getKey();
+    	Resource  resource  = cr.getValue();
         if (preempted.get(container) != null &&
             preempted.get(container) + maxWaitTime < clock.getTime()) {
           // suspend it
           LOG.info("get container "+container.getContainerId()+" to suspend resource is "
-                 +container.getContainer().getResource());
+                 +resource);
           
           if(this.isSuspended){
              dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
-                ContainerPreemptEventType.SUSPEND_CONTAINER,container.getContainer().getResource()));
+                ContainerPreemptEventType.SUSPEND_CONTAINER,resource));
           }else{
              dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
                 ContainerPreemptEventType.KILL_CONTAINER,container.getContainer().getResource())); 
           }
           preempted.remove(container);
+          
         } else {
           //otherwise just send preemption events
           dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
-                ContainerPreemptEventType.PREEMPT_CONTAINER,container.getContainer().getResource()));
+                ContainerPreemptEventType.PREEMPT_CONTAINER,resource));
           if (preempted.get(container) == null) {
             preempted.put(container, clock.getTime());
           }
@@ -550,11 +556,12 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
    * @param clusterResource total amount of cluster resources
    * @return a map of applciationID to set of containers to preempt
    */
-  private Map<ApplicationAttemptId,Set<RMContainer>> getContainersToPreempt(
+  private Map<ApplicationAttemptId,Map<RMContainer,Resource>> getContainersToPreempt(
       List<TempQueue> queues, Resource clusterResource) {
 
-    Map<ApplicationAttemptId,Set<RMContainer>> preemptMap =
-        new HashMap<ApplicationAttemptId,Set<RMContainer>>();
+    Map<ApplicationAttemptId, Map<RMContainer,Resource>> preemptMap =
+        new HashMap<ApplicationAttemptId, Map<RMContainer,Resource>>();
+    
     List<RMContainer> skippedAMContainerlist = new ArrayList<RMContainer>();
 
     for (TempQueue qT : queues) {
@@ -669,12 +676,12 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
    * @param app
    * @param clusterResource
    * @param rsrcPreempt
-   * @return Set<RMContainer> Set of RMContainers
+   * @return Map<RMContainer,Resource> mapping from container to resource
    */
-  private Set<RMContainer> preemptFrom(FiCaSchedulerApp app,
+  private Map<RMContainer,Resource> preemptFrom(FiCaSchedulerApp app,
       Resource clusterResource, Resource rsrcPreempt,
       List<RMContainer> skippedAMContainerlist, Resource skippedAMSize) {
-    Set<RMContainer> ret = new HashSet<RMContainer>();
+    Map<RMContainer,Resource> ret = new HashMap<RMContainer,Resource>();
     ApplicationAttemptId appId = app.getApplicationAttemptId();
 
     // first drop reserved containers towards rsrcPreempt
@@ -715,8 +722,18 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       if(isLabeledContainer(c)){
         continue;
       }
-      ret.add(c);
-      Resources.subtractFrom(rsrcPreempt, c.getContainer().getResource());
+      
+      //get container conumed resource
+      Resource containerResource  = c.getContainer().getResource();
+      //normalize this resource
+      Resource normalizedResource = Resources.divideAndCeil(rc, containerResource, 
+    		                                        containerResource.getMemory()/containerResource.getVirtualCores());
+      //compute preempted resource this round
+      Resource preempteThisTime  = Resources.multiply(normalizedResource, PR_NUMBER);
+      LOG.info("get preempted Resource: "+preempteThisTime);
+      ret.put(c,preempteThisTime);
+      //substract preempted resource
+      Resources.subtractFrom(rsrcPreempt, preempteThisTime);
     }
 
     return ret;
