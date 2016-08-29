@@ -112,6 +112,16 @@ public class DominantResourceCalculator extends ResourceCalculator {
   
   @Override
   public int computeAvailableContainers(Resource available, Resource required) {
+	if(required.getMemory() == 0){
+		
+		return available.getVirtualCores()/required.getVirtualCores();
+	} 
+	
+	if(required.getVirtualCores() == 0){
+		
+		return available.getMemory()/required.getMemory();
+	}
+	
     return Math.min(
         available.getMemory() / required.getMemory(), 
         available.getVirtualCores() / required.getVirtualCores());

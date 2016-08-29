@@ -1245,9 +1245,7 @@ public class LeafQueue extends AbstractCSQueue {
             " starvation=" + starvation);
       }
     }
-    LOG.info("required:"+requiredContainers);
-    LOG.info("reserved:"+reservedContainers);
-    LOG.info("starvation:"+starvation);
+
     return (((starvation + requiredContainers) - reservedContainers) > 0);
   }
 
@@ -1509,12 +1507,18 @@ public class LeafQueue extends AbstractCSQueue {
 		  RMContainer rmContainer){
 	  
 	    //we should make capability here tunable
-	    Resource toResume      = Resource.newInstance(rmContainer.getPreemptedResource().getMemory(), 
-	    		                                      rmContainer.getPreemptedResource().getVirtualCores());
-	    
+	    Resource toResume;
+	    if(Resources.greaterThan(resourceCalculator, clusterResource, 
+	    		rmContainer.getPreemptedResource(), rmContainer.getSRResourceUnit())){
+	         toResume = rmContainer.getSRResourceUnit();
+	    }else{
+	    	
+	         toResume = rmContainer.getPreemptedResource();
+	    }
 	    Resource available     = node.getAvailableResource();
 	    Resource totalResource = node.getTotalResource();
 
+	    LOG.info("resumeContainer toResume: "+toResume);
 	    //节点资源不够的情况，
 	    if (!Resources.lessThanOrEqual(resourceCalculator, clusterResource,
 	    	toResume, totalResource)) {

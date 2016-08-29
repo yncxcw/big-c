@@ -722,15 +722,10 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       if(isLabeledContainer(c)){
         continue;
       }
-      
-      //get container conumed resource
-      Resource containerResource  = c.getContainer().getResource();
-      //normalize this resource
-      Resource normalizedResource = Resources.divideAndCeil(rc, containerResource, 
-    		                                                       containerResource.getVirtualCores());
+     
       //compute preempted resource this round
       Resource preempteThisTime  = Resources.mins(rc, clusterResource, 
-    		  rsrcPreempt, Resources.multiply(normalizedResource, PR_NUMBER));
+    		  rsrcPreempt, c.getSRResourceUnit());
       LOG.info("get preempted Resource: "+preempteThisTime);
       
       ret.put(c,preempteThisTime);

@@ -183,6 +183,8 @@ public class RMContainerImpl implements RMContainer {
   private long creationTime;
   private long finishTime;
   
+  public static final int PR_NUMBER = 2;
+  
   private boolean isSuspending = false;
   
   //record suspend time(may preempt for many times)
@@ -775,7 +777,6 @@ public Resource getLastResumeResource() {
 
 @Override
 public void addResumedResource(Resource resource) {
-	
 	try{
 		readLock.lock();
 		this.lastResumed = Resources.clone(resource);
@@ -784,6 +785,16 @@ public void addResumedResource(Resource resource) {
 		readLock.unlock();
 	}	
 }
+
+@Override
+public Resource getSRResourceUnit(){
+	Resource resource = Resource.newInstance(container.getResource().getMemory()/container.getResource().getVirtualCores(), 
+			                               1);
+	
+	return Resources.multiplyTo(resource, this.PR_NUMBER);
+}
+
+
 
 
 
