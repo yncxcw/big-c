@@ -101,10 +101,12 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
   public synchronized Collection<RMContainer> getUnPreemtedContainers() {
 	    Collection<RMContainer> returnList = new ArrayList<RMContainer>();
 	    for(RMContainer rmContainer : liveContainers.values()){
-	    	//we only add contianers which is not preempted yet
-	    	if(!containersSuspended.contains(rmContainer.getContainerId())){
-	    		returnList.add(rmContainer);
+	    	//skip if all resource has been preempted
+	    	if(Resources.equals(rmContainer.getCurrentUsedResource(),Resources.none())){
+	    		continue;
 	    	}
+	    	
+	    	returnList.add(rmContainer);
 	    }
 	     
 	    return returnList;

@@ -129,7 +129,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
   private long monitoringInterval;
   private final Map<RMContainer,Long> preempted =
     new HashMap<RMContainer,Long>();
-  private ResourceCalculator rc;
+  private static ResourceCalculator rc;
   private float percentageClusterPreemptionAllowed;
   private double naturalTerminationFactor;
   private boolean observeOnly;
@@ -702,6 +702,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
             rsrcPreempt, Resources.none())) {
         return ret;
       }
+      
+      LOG.info("try to preempt "+c.getContainerId());
       // Skip AM Container from preemption for now.
       if (c.isAMContainer()) {
         skippedAMContainerlist.add(c);
@@ -716,15 +718,22 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       Resource preempteThisTime;
       if(isSuspended){
       //compute preempted resource this round
-      preempteThisTime  = Resources.mins(rc, clusterResource, 
-    		  rsrcPreempt, c.getSRResourceUnit());
+      //min(c.currentUsed,rsrcPreempt,c.SespendandResumeUnit)
+      preempteThisTime  = Resources.mins(rc, clusterResource, rsrcPreempt,
+    		              Resources.mins(rc, clusterResource, 
+    		              c.getCurrentUsedResource(), c.getSRResourceUnit()));
+      
+      //if this container has all reousce preempted, continue
+      if(Resources.equals(preempteThisTime,Resources.none())){
+    	  continue;
+      }
+      
       }else{
        
       preempteThisTime = c.getContainer().getResource();
       
       }
-      LOG.info("get preempted Resource: "+preempteThisTime);
-      
+      LOG.info("get preempted Resource: "+preempteThisTime+" and container: "+c.getContainerId()+"current resource: "+c.getCurrentUsedResource());
       ret.put(c,preempteThisTime);
       //substract preempted resource
       Resources.subtractFrom(rsrcPreempt, preempteThisTime);
@@ -761,6 +770,21 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
           return priorityComp;
         }
         return b.getContainerId().compareTo(a.getContainerId());
+      }
+    });
+  }
+  
+  @VisibleForTesting
+  static void sortContainersByResource(List<RMContainer> containers, final Resource clusterResource){
+    Collections.sort(containers, new Comparator<RMContainer>() {
+      @Override
+      public int compare(RMContainer a, RMContainer b) {
+    	if(Resources.lessThan(rc, clusterResource, a.getCurrentUsedResource(), b.getCurrentUsedResource())){
+    	   return -1;
+    	       
+    	}else{
+    	  return 1;
+       }
       }
     });
   }
