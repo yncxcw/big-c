@@ -1423,7 +1423,7 @@ public class CapacityScheduler extends
 	  NodeContainerUpdate nodeContainerUpdate= NodeContainerUpdate.newInstance(containerId, 
 				                                  currentResource.getMemory(), currentResource.getVirtualCores(),false,true);
 	  
-	  LOG.info("get container   "+containerId+"to resume "+"resource:   "+currentResource+"on host: "+cont.getAllocatedNode().getHost());
+	  LOG.info("get container   "+containerId+"to resume "+"currentresource:   "+currentResource+"on host: "+cont.getAllocatedNode().getHost());
 	  //check if the resource is right
 	  if(nodeContainerUpdateMap.get(nodeId) == null){
 		  ConcurrentLinkedQueue<NodeContainerUpdate> listNodeContainerUpdate = new  ConcurrentLinkedQueue<NodeContainerUpdate>();
@@ -1468,7 +1468,7 @@ public class CapacityScheduler extends
 	 NodeContainerUpdate nodeContainerUpdate= NodeContainerUpdate.newInstance(containerId, 
 			                                  currentResource.getMemory(), currentResource.getVirtualCores(),true,false);
 	 
-	 LOG.info("get container   "+containerId+" to suspend "+" on host "+nodeId.getHost()+" resource:   "+currentResource);
+	 LOG.info("get container   "+containerId+" to suspend "+" on host "+nodeId.getHost()+" currentresource:   "+currentResource);
 	 if(nodeContainerUpdateMap.get(nodeId) == null){
 		 ConcurrentLinkedQueue<NodeContainerUpdate> listNodeContainerUpdate = new  ConcurrentLinkedQueue<NodeContainerUpdate>();
 		 listNodeContainerUpdate.add(nodeContainerUpdate);
