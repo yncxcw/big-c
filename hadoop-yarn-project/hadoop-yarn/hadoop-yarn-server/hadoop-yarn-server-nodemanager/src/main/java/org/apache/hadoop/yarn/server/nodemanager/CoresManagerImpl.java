@@ -43,7 +43,7 @@ public class CoresManagerImpl implements CoresManager {
 	}
 
 	
-	private synchronized Set<Integer> getAvailableCores(int num) {
+	private Set<Integer> getAvailableCores(int num) {
 		Set<Integer> returnedResults = new HashSet<Integer>();
 		int index = 0;
 		assert(num <= totalCores.size());
@@ -81,7 +81,7 @@ public class CoresManagerImpl implements CoresManager {
 	}
 	
 	@Override
-	public Set<Integer> allocateCores(ContainerId cntId, int num){
+	public synchronized Set<Integer> allocateCores(ContainerId cntId, int num){
 		
 		Set<Integer> returnedResults = this.getAvailableCores(num);
 		this.allcoateCoresforContainer(returnedResults, cntId);
@@ -90,7 +90,7 @@ public class CoresManagerImpl implements CoresManager {
 		return returnedResults;
 	}
 	
-	private synchronized void allcoateCoresforContainer(Set<Integer> cores,ContainerId cntId){
+	private void allcoateCoresforContainer(Set<Integer> cores,ContainerId cntId){
 		
 		for(Integer core : cores){
 			 unUsedCores.remove(core);
@@ -111,7 +111,7 @@ public class CoresManagerImpl implements CoresManager {
 	}
 
 	@Override
-	public void releaseCores(ContainerId cntId) {
+	public synchronized void releaseCores(ContainerId cntId) {
 		Set<Integer> cores= new HashSet<Integer>();
 		cores.addAll(containerToCores.get(cntId));
 		this.releaseCoresforContainer(cntId, cores);
@@ -145,7 +145,7 @@ public class CoresManagerImpl implements CoresManager {
 	}
 	
   @Override
-  public Set<Integer> resetCores(ContainerId cntId, int num) {
+  public synchronized Set<Integer> resetCores(ContainerId cntId, int num) {
 		Set<Integer> cores = this.containerToCores.get(cntId);
 		Set<Integer> returnedCores = new HashSet<Integer>();
 		
@@ -205,7 +205,7 @@ public class CoresManagerImpl implements CoresManager {
   private void LogOverlapWarning(){
 	  for(Integer core : this.coresToContainer.keySet()){
 		  
-		  if(this.coresToContainer.get(core).size() > 2){
+		  if(this.coresToContainer.get(core).size() > 1){
 			  LOG.info("cpuset overlap warning on core"+core+"size:"+this.coresToContainer.get(core).size());
 			  LOG.info("cores: "+ core + "containers:"+this.coresToContainer.get(core));
 		  }
