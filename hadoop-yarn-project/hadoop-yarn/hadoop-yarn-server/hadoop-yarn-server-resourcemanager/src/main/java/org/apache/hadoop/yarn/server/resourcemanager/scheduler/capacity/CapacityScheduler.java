@@ -1440,11 +1440,7 @@ public class CapacityScheduler extends
 	if (LOG.isDebugEnabled()) {
 	      LOG.debug("SUSPEND_CONTAINER: container" + cont.toString());
 	}
-	//we only suspend container in running state
-	if(cont.getState() != RMContainerState.RUNNING){
-		LOG.info("we can only suspend container which is running"+cont.getContainerId());
-		return;
-	}
+	
 	if(toPreempt == null){
 	    LOG.info("preempted resource can not be null");
 	    return;
