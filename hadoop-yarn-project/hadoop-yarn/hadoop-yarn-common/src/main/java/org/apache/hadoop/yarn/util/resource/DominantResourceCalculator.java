@@ -74,7 +74,7 @@ public class DominantResourceCalculator extends ResourceCalculator {
 
     float l = getResourceAsValue(clusterResource, lhs, true);
     float r = getResourceAsValue(clusterResource, rhs, true);
-    LOG.info("left: "+l+"right: "+r);
+    
     if (l < r) {
       return -1;
     } else if (l > r) {

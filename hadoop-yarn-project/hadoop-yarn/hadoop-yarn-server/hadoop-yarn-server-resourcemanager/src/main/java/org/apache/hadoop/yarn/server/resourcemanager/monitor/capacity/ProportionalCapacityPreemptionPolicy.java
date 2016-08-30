@@ -573,6 +573,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         Resource resToObtain =
           Resources.multiply(qT.toBePreempted, naturalTerminationFactor);
         Resource skippedAMSize = Resource.newInstance(0, 0);
+        
+        LOG.info("try to preempt: "+resToObtain+" from queue: "+qT.queueName);
         // lock the leafqueue while we scan applications and unreserve
         synchronized (qT.leafQueue) {
           //what is the descending order
@@ -787,7 +789,6 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
   private TempQueue cloneQueues(CSQueue root, Resource clusterResources) {
     TempQueue ret;
     synchronized (root) {
-      LOG.info("cloneQueues enter");
       String queueName = root.getQueueName();
       float absUsed = root.getAbsoluteUsedCapacity();
       float absCap = root.getAbsoluteCapacity();
