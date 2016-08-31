@@ -417,9 +417,15 @@ public class ParentQueue extends AbstractCSQueue {
       if (Resources.greaterThan(
               resourceCalculator, clusterResource, 
               assignedToChild.getResource(), Resources.none())) {
+    	  
         // Track resource utilization for the parent-queue
+    	if(assignedToChild.getContainersToResume().size() > 0){
         super.allocateResource(clusterResource, assignedToChild.getResource(),
-            nodeLabels);
+            nodeLabels,true);
+    	}else{
+    	super.allocateResource(clusterResource, assignedToChild.getResource(),
+    	    nodeLabels,false);	
+    	}
         
         // Track resource utilization in this pass of the scheduler
         //Resources.addTo(assignment.getResource(), assignedToChild.getResource());
@@ -578,12 +584,14 @@ public class ParentQueue extends AbstractCSQueue {
     	if(event == RMContainerEventType.SUSPEND){
     		toRelease = rmContainer.getLastPreemptedResource();
     		LOG.info("parent queue suspend resource "+toRelease);
+    		super.releaseResource(clusterResource, toRelease ,node.getLabels(),true);
     	}else{
     		toRelease = rmContainer.getCurrentUsedResource(); 
     		LOG.info("parent queue release resource "+toRelease);
+    		super.releaseResource(clusterResource, toRelease ,node.getLabels(),false);
     	}
     	
-        super.releaseResource(clusterResource, toRelease ,node.getLabels());
+       
 
         LOG.info("completedContainer/suspend" +
             " queue=" + getQueueName() + 
@@ -652,7 +660,7 @@ public class ParentQueue extends AbstractCSQueue {
       FiCaSchedulerNode node =
           scheduler.getNode(rmContainer.getContainer().getNodeId());
       super.allocateResource(clusterResource, rmContainer.getContainer()
-          .getResource(), node.getLabels());
+          .getResource(), node.getLabels(),false);
     }
     if (parent != null) {
       parent.recoverContainer(clusterResource, attempt, rmContainer);
@@ -680,7 +688,7 @@ public class ParentQueue extends AbstractCSQueue {
       FiCaSchedulerNode node =
           scheduler.getNode(rmContainer.getContainer().getNodeId());
       super.allocateResource(clusterResource, rmContainer.getContainer()
-          .getResource(), node.getLabels());
+          .getResource(), node.getLabels(),false);
       LOG.info("movedContainer" + " queueMoveIn=" + getQueueName()
           + " usedCapacity=" + getUsedCapacity() + " absoluteUsedCapacity="
           + getAbsoluteUsedCapacity() + " used=" + queueUsage.getUsed() + " cluster="
@@ -700,7 +708,7 @@ public class ParentQueue extends AbstractCSQueue {
           scheduler.getNode(rmContainer.getContainer().getNodeId());
       super.releaseResource(clusterResource,
           rmContainer.getContainer().getResource(),
-          node.getLabels());
+          node.getLabels(),false);
       LOG.info("movedContainer" + " queueMoveOut=" + getQueueName()
           + " usedCapacity=" + getUsedCapacity() + " absoluteUsedCapacity="
           + getAbsoluteUsedCapacity() + " used=" + queueUsage.getUsed() + " cluster="
