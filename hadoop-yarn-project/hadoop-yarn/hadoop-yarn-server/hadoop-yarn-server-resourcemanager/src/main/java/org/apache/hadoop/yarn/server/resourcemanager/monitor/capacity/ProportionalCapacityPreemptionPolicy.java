@@ -695,7 +695,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     List<RMContainer> containers =
       new ArrayList<RMContainer>(((FiCaSchedulerApp)app).getUnPreemtedContainers());
 
-     sortContainersByResource(containers, clusterResource);
+    sortContainersByResource(containers, clusterResource);
 
     for (RMContainer c : containers) {
       if (Resources.lessThanOrEqual(rc, clusterResource,

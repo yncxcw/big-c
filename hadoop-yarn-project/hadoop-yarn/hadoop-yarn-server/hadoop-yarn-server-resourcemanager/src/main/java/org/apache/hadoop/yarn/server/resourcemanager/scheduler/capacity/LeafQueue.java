@@ -825,7 +825,7 @@ public class LeafQueue extends AbstractCSQueue {
     	          if (Resources.greaterThan(
     	              resourceCalculator, clusterResource, assigned, Resources.none())) {
     	              //update queue and user resource usage   	  
-    	         	  this.allocateResource(clusterResource, assigned,node.getLabels());
+    	         	  allocateResource(clusterResource, assigned,node.getLabels(),true);
     	        	  return assignment;
     	          }else{
     	          //this case only happens when the node resource is insufficient, we give up the chance to continue allocation
@@ -930,7 +930,7 @@ public class LeafQueue extends AbstractCSQueue {
             // Book-keeping 
             // Note: Update headroom to account for current allocation too...
             allocateResource(clusterResource, application, assigned,
-                node.getLabels());
+                node.getLabels(),false);
             
             // Don't reset scheduling opportunities for non-local assignments
             // otherwise the app will be delayed for each non-local assignment.
@@ -1533,11 +1533,12 @@ public class LeafQueue extends AbstractCSQueue {
 	    assert Resources.greaterThan(
 	        resourceCalculator, clusterResource, available, Resources.none());
 	    
+	    LOG.info("resumeContainer toresume: "+toResume+" available resource: "+available); 
 	   //Can we allocate a container on this node? we do not consider reserve container in current version
 	    int availableContainers = 
 	        resourceCalculator.computeAvailableContainers(available, toResume);
 	    
-	    LOG.info("resumeContainer availableContainers: "+availableContainers+" available resource: "+available);
+	   
 	    //LOG.info("ndoe available resource "+available+" to resume "+toResume);  
 	    if (availableContainers > 0) {
 	    	
@@ -1798,8 +1799,13 @@ public class LeafQueue extends AbstractCSQueue {
         // Book-keeping
         if (removed) {
            //更新资源试用情况
+          if(event == RMContainerEventType.SUSPEND){
           releaseResource(clusterResource, application,
-        		  toRelease, node.getLabels());
+        		  toRelease, node.getLabels(),true);
+          }else{
+          releaseResource(clusterResource, application,
+            		  toRelease, node.getLabels(),false);  
+          }
           LOG.info("completedContainer" +
               " container=" + container +
               " queue=" + this +
@@ -1817,8 +1823,8 @@ public class LeafQueue extends AbstractCSQueue {
 
   synchronized void allocateResource(Resource clusterResource,
       SchedulerApplicationAttempt application, Resource resource,
-      Set<String> nodeLabels) {
-    super.allocateResource(clusterResource, resource, nodeLabels);
+      Set<String> nodeLabels,boolean isResume) {
+    super.allocateResource(clusterResource, resource, nodeLabels,isResume);
     
     // Update user metrics
     String userName = application.getUser();
@@ -1841,8 +1847,8 @@ public class LeafQueue extends AbstractCSQueue {
   }
 
   synchronized void releaseResource(Resource clusterResource, 
-      FiCaSchedulerApp application, Resource resource, Set<String> nodeLabels) {
-    super.releaseResource(clusterResource, resource, nodeLabels);
+      FiCaSchedulerApp application, Resource resource, Set<String> nodeLabels,boolean isSuspend) {
+    super.releaseResource(clusterResource, resource, nodeLabels,isSuspend);
     
     // Update user metrics
     String userName = application.getUser();
@@ -2009,7 +2015,7 @@ public class LeafQueue extends AbstractCSQueue {
       FiCaSchedulerNode node =
           scheduler.getNode(rmContainer.getContainer().getNodeId());
       allocateResource(clusterResource, attempt, rmContainer.getContainer()
-          .getResource(), node.getLabels());
+          .getResource(), node.getLabels(),false);
     }
     getParent().recoverContainer(clusterResource, attempt, rmContainer);
   }
@@ -2049,7 +2055,7 @@ public class LeafQueue extends AbstractCSQueue {
       FiCaSchedulerNode node =
           scheduler.getNode(rmContainer.getContainer().getNodeId());
       allocateResource(clusterResource, application, rmContainer.getContainer()
-          .getResource(), node.getLabels());
+          .getResource(), node.getLabels(),false);
       LOG.info("movedContainer" + " container=" + rmContainer.getContainer()
           + " resource=" + rmContainer.getContainer().getResource()
           + " queueMoveIn=" + this + " usedCapacity=" + getUsedCapacity()
@@ -2067,7 +2073,7 @@ public class LeafQueue extends AbstractCSQueue {
       FiCaSchedulerNode node =
           scheduler.getNode(rmContainer.getContainer().getNodeId());
       releaseResource(clusterResource, application, rmContainer.getContainer()
-          .getResource(), node.getLabels());
+          .getResource(), node.getLabels(),false);
       LOG.info("movedContainer" + " container=" + rmContainer.getContainer()
           + " resource=" + rmContainer.getContainer().getResource()
           + " queueMoveOut=" + this + " usedCapacity=" + getUsedCapacity()

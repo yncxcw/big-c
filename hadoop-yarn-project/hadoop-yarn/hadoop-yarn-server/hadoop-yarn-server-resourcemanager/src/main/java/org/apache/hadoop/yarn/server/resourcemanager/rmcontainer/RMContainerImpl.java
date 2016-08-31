@@ -123,7 +123,7 @@ public class RMContainerImpl implements RMContainer {
     
      //Transition from DEHYDRATED state
      .addTransition(RMContainerState.DEHYDRATED, EnumSet.of(RMContainerState.RUNNING, 
-    		 RMContainerState.COMPLETED), 
+    		 RMContainerState.DEHYDRATED), 
     		 RMContainerEventType.RESUME,new ContainerResumeTransition())
       .addTransition(RMContainerState.DEHYDRATED, RMContainerState.DEHYDRATED,
     		RMContainerEventType.SUSPEND,new ContainerSuspendTransition())

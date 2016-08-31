@@ -316,7 +316,7 @@ public abstract class AbstractCSQueue implements CSQueue {
   }
   
   synchronized void allocateResource(Resource clusterResource, 
-      Resource resource, Set<String> nodeLabels) {
+      Resource resource, Set<String> nodeLabels,boolean isResume) {
     
     // Update usedResources by labels
     if (nodeLabels == null || nodeLabels.isEmpty()) {
@@ -327,13 +327,15 @@ public abstract class AbstractCSQueue implements CSQueue {
       }
     }
 
+    if(!isResume){
     ++numContainers;
+    }
     CSQueueUtils.updateQueueStatistics(resourceCalculator, this, getParent(),
         clusterResource, minimumAllocation);
   }
   
   protected synchronized void releaseResource(Resource clusterResource,
-      Resource resource, Set<String> nodeLabels) {
+      Resource resource, Set<String> nodeLabels,boolean isSuspend) {
     // Update usedResources by labels
     if (null == nodeLabels || nodeLabels.isEmpty()) {
       queueUsage.decUsed(resource);
@@ -345,7 +347,9 @@ public abstract class AbstractCSQueue implements CSQueue {
 
     CSQueueUtils.updateQueueStatistics(resourceCalculator, this, getParent(),
         clusterResource, minimumAllocation);
+    if(!isSuspend){
     --numContainers;
+    }
   }
   
   @Private
