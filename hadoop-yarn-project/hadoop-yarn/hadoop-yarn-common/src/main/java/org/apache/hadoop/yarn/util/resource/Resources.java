@@ -153,6 +153,8 @@ public class Resources {
 	}else{
 	  lhs.setVirtualCores(0);	
 	}
+	
+	return lhs;
   }
   
   public static Resource subtract(Resource lhs, Resource rhs) {
