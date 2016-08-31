@@ -825,7 +825,7 @@ public class LeafQueue extends AbstractCSQueue {
     	          if (Resources.greaterThan(
     	              resourceCalculator, clusterResource, assigned, Resources.none())) {
     	              //update queue and user resource usage   	  
-    	         	  allocateResource(clusterResource, assigned,node.getLabels(),true);
+    	         	  allocateResource(clusterResource, app,assigned,node.getLabels(),true);
     	        	  return assignment;
     	          }else{
     	          //this case only happens when the node resource is insufficient, we give up the chance to continue allocation
@@ -1509,13 +1509,13 @@ public class LeafQueue extends AbstractCSQueue {
 	  
 	    //we should make capability here tunable
 	    Resource toResume;
-	    if(Resources.greaterThan(resourceCalculator, clusterResource, 
-	    		rmContainer.getPreemptedResource(), rmContainer.getSRResourceUnit())){
-	         toResume = Resources.clone(rmContainer.getSRResourceUnit());
-	    }else{
-	    	
-	         toResume = Resources.clone(rmContainer.getPreemptedResource());
-	    }
+	    LOG.info("resumeContainer preempted:"+rmContainer.getPreemptedResource());
+	    LOG.info("resumeContainer SR:"+rmContainer.getSRResourceUnit());
+	   
+	    toResume = Resources.clone(Resources.mins(resourceCalculator, clusterResource, 
+	    		                       rmContainer.getSRResourceUnit(),
+	    		                       rmContainer.getPreemptedResource()));
+	    
 	    Resource available     = node.getAvailableResource();
 	    Resource totalResource = node.getTotalResource();
 
