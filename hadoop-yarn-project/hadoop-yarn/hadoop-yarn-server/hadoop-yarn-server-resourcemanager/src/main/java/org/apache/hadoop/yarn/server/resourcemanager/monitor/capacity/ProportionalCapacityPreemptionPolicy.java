@@ -436,6 +436,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         q.idealAssigned = Resources.clone(q.current);
       }
       
+      LOG.info("queue : "+q.queueName+" idealAssigned: "+q.idealAssigned);
+      
       Resources.subtractFrom(unassigned, q.idealAssigned);
       // If idealAssigned < (current + pending), q needs more resources, so
       // add it to the list of underserved queues, ordered by need.
@@ -982,6 +984,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
           Resources.mins(rc, clusterResource, avail, Resources.subtract(
               Resources.add(current, pending), idealAssigned)));
       LOG.info("queueName:   "+queueName);
+      LOG.info("beforeideal: "+idealAssigned);                                                                                                                                                                                                             
       Resource remain = Resources.subtract(avail, accepted);
       Resources.addTo(idealAssigned, accepted);
       
