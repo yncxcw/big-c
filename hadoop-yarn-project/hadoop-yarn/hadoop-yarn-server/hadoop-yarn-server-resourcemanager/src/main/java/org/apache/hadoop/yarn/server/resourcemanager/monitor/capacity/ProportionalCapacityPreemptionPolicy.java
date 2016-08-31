@@ -981,11 +981,11 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
               absMaxCapIdealAssignedDelta,
           Resources.mins(rc, clusterResource, avail, Resources.subtract(
               Resources.add(current, pending), idealAssigned)));
-     
+      LOG.info("queueName:   "+queueName);
       Resource remain = Resources.subtract(avail, accepted);
       Resources.addTo(idealAssigned, accepted);
       
-      LOG.info("queueName:   "+queueName);
+     
       LOG.info("avaul:       "+avail);
       LOG.info("absMaxDelta: "+absMaxCapIdealAssignedDelta);
       LOG.info("max:         "+maxCapacity);
@@ -1026,8 +1026,10 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     public void assignPreemption(float scalingFactor,
         ResourceCalculator rc, Resource clusterResource) {
       if (Resources.greaterThan(rc, clusterResource, current, idealAssigned)) {
+    	  //to avoid negative memory or cores
+    	  //we only prempte current.cores > idealAssigned.cores || current.memory > idealAssigned.memory
           toBePreempted = Resources.multiply(
-              Resources.subtract(current, idealAssigned), scalingFactor);
+              Resources.subtracts(current, idealAssigned), scalingFactor);
           LOG.info("assignPreemption queue  "+queueName+" toBePreempted  "+toBePreempted);
       } else {
         toBePreempted = Resource.newInstance(0, 0);

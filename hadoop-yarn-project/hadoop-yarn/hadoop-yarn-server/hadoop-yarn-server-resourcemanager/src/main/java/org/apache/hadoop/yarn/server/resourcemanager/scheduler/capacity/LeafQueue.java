@@ -1509,7 +1509,7 @@ public class LeafQueue extends AbstractCSQueue {
 	  
 	    //we should make capability here tunable
 	    Resource toResume;
-	    LOG.info("resumeContainer preempted:"+rmContainer.getPreemptedResource());
+	    LOG.info("app: "+application.getApplicationId()+"container: "+rmContainer.getContainerId()+"resumeContainer preempted:"+rmContainer.getPreemptedResource());
 	    LOG.info("resumeContainer SR:"+rmContainer.getSRResourceUnit());
 	   
 	    toResume = Resources.clone(Resources.mins(resourceCalculator, clusterResource, 
@@ -1832,9 +1832,10 @@ public class LeafQueue extends AbstractCSQueue {
     user.assignContainer(resource, nodeLabels);
     // Note this is a bit unconventional since it gets the object and modifies
     // it here, rather then using set routine
+    if(!isResume){
     Resources.subtractFrom(application.getHeadroom(), resource); // headroom
     metrics.setAvailableResourcesToUser(userName, application.getHeadroom());
-    
+    }
     //if (LOG.isDebugEnabled()) {
       LOG.info(getQueueName() + 
           " user=" + userName + 
@@ -1854,8 +1855,9 @@ public class LeafQueue extends AbstractCSQueue {
     String userName = application.getUser();
     User user = getUser(userName);
     user.releaseContainer(resource, nodeLabels);
-    metrics.setAvailableResourcesToUser(userName, application.getHeadroom());
-      
+    if(!isSuspend){
+      metrics.setAvailableResourcesToUser(userName, application.getHeadroom());
+    }
     LOG.info(
     	getQueueName() +
         " used=" + queueUsage.getUsed() + 

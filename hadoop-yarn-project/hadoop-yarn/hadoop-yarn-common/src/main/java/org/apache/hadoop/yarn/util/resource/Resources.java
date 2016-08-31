@@ -141,9 +141,27 @@ public class Resources {
     return lhs;
   }
 
+  public static Resource subtractFroms(Resource lhs, Resource rhs){
+	if(lhs.getMemory() > rhs.getMemory()){  
+	  lhs.setMemory(lhs.getMemory() - rhs.getMemory());
+	}else{
+	  lhs.setMemory(0);	
+	}
+	
+	if(lhs.getVirtualCores() > rhs.getVirtualCores()){
+	  lhs.setVirtualCores(lhs.getVirtualCores() - rhs.getVirtualCores()); 
+	}else{
+	  lhs.setVirtualCores(0);	
+	}
+  }
+  
   public static Resource subtract(Resource lhs, Resource rhs) {
     return subtractFrom(clone(lhs), rhs);
   }
+  
+  public static Resource subtracts(Resource lhs, Resource rhs) {
+	    return subtractFroms(clone(lhs), rhs);
+	  }
 
   public static Resource negate(Resource resource) {
     return subtract(NONE, resource);
