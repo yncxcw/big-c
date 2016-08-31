@@ -133,17 +133,17 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
 		  return false;
 	  }
 	  
-	  if(this.containersSuspended.contains(rmContainer.getContainerId())){
-		  LOG.info("app container "+rmContainer.getContainerId()+" is already suspended"); 
-		  return false;
-	  }
-	  
 	  isSuspending = true;
 
 	  Container container = rmContainer.getContainer();
 	  ContainerId containerId = container.getId();
 	  
-
+	  
+	  if(!this.containersSuspended.contains(rmContainer.getContainerId())){
+		 //add to suspended set if this container is first suspended
+		 containersSuspended.add(containerId);
+	  }
+	
 	  // Inform the container
 	  
 	  rmContainer.handle(
@@ -152,8 +152,7 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
 	            containerStatus, 
 	            event)
 	  );
-	  //add to suspended set
-	  containersSuspended.add(containerId);
+	 
 	  // Update usage metrics,we release resource here,to support increamental suspension  
 	  Resource toPreempted = rmContainer.getLastPreemptedResource();
 	  queue.getMetrics().releaseResources(getUser(), 1, toPreempted);

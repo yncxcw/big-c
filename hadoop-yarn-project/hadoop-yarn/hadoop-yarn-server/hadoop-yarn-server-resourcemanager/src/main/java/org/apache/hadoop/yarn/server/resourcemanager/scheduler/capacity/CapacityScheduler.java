@@ -1441,6 +1441,8 @@ public class CapacityScheduler extends
 	      LOG.debug("SUSPEND_CONTAINER: container" + cont.toString());
 	}
 	
+	LOG.info("capacity scheduler try to preempt "+cont.getContainerId()+" resource: "+toPreempt);
+	
 	if(toPreempt == null){
 	    LOG.info("preempted resource can not be null");
 	    return;

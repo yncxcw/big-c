@@ -168,7 +168,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     maxIgnoredOverCapacity = config.getDouble(MAX_IGNORED_OVER_CAPACITY, 0.1);
     naturalTerminationFactor =
       config.getDouble(NATURAL_TERMINATION_FACTOR, 0.2);
-    maxWaitTime = config.getLong(WAIT_TIME_BEFORE_KILL, 15000);
+    maxWaitTime = config.getLong(WAIT_TIME_BEFORE_KILL, 0);
     monitoringInterval = config.getLong(MONITORING_INTERVAL, 3000);
     percentageClusterPreemptionAllowed =
       config.getFloat(TOTAL_PREEMPTION_PER_ROUND, (float) 0.1);
@@ -733,8 +733,9 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       preempteThisTime = c.getContainer().getResource();
       
       }
-      LOG.info("get preempted Resource: "+preempteThisTime+" and container: "+c.getContainerId()+"current resource: "+c.getCurrentUsedResource());
+      
       ret.put(c,preempteThisTime);
+      LOG.info("get preempted Resource: "+preempteThisTime+" and container: "+c.getContainerId()+"current resource: "+c.getCurrentUsedResource());
       //substract preempted resource
       Resources.subtractFrom(rsrcPreempt, preempteThisTime);
     }

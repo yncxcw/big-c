@@ -788,11 +788,7 @@ public void addResumedResource(Resource resource) {
 
 @Override
 public Resource getSRResourceUnit(){
-	if(getCurrentUsedResource().getMemory() == 0 ||
-	   getCurrentUsedResource().getVirtualCores() == 0){
-	   LOG.info("all of "+getContainerId()+ " resource has beed preempted");	
-	   return Resource.newInstance(0, 0);
-	}
+	
 	Resource resource = Resource.newInstance(container.getResource().getMemory()/container.getResource().getVirtualCores(), 
 			                               1);
 	
