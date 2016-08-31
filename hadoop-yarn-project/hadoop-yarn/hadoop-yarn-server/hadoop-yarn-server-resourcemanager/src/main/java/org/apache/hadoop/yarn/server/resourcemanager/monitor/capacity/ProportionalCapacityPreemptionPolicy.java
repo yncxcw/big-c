@@ -983,6 +983,33 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
               absMaxCapIdealAssignedDelta,
           Resources.mins(rc, clusterResource, avail, Resources.subtract(
               Resources.add(current, pending), idealAssigned)));
+      //in extrame case where avail cores are more less than the available memory, it may preempt mroe memory
+      //Max:      1310720   320
+      //avail:    542634    26
+      //Delta:    734280    60  
+      //Pending:  525312    120
+      //current:  576512    260
+      //ideal:    576512    260
+      //then the accepted will be (525312,26) in which the memory is far more beyond the reqirement
+      double acceptedRatio = 0;
+      double pendingRatio  = 0;
+      if(accepted.getVirtualCores() > 0){
+    	  acceptedRatio = accepted.getMemory()*1.0/accepted.getVirtualCores();
+      }
+      
+      if(pending.getVirtualCores() > 0 ){
+    	  pendingRatio = pending.getMemory()*1.0/pending.getVirtualCores();
+      }
+      
+      if(acceptedRatio > 2*pendingRatio){
+    	  LOG.info("acceptedRatio: "+acceptedRatio);
+    	  LOG.info("pendingRatio:  "+pendingRatio);
+    	  int memory = (int)(pendingRatio*accepted.getVirtualCores()) < accepted.getMemory()?
+    			                               (int)(pendingRatio*accepted.getVirtualCores()):accepted.getMemory()
+    	  accepted.setMemory(memory);
+      }
+      
+      
       LOG.info("queueName:   "+queueName);
       LOG.info("beforeideal: "+idealAssigned);                                                                                                                                                                                                             
       Resource remain = Resources.subtract(avail, accepted);
