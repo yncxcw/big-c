@@ -332,6 +332,7 @@ public abstract class AbstractCSQueue implements CSQueue {
     }
     CSQueueUtils.updateQueueStatistics(resourceCalculator, this, getParent(),
         clusterResource, minimumAllocation);
+    LOG.info("abstractCSQueue:used allcoate "+resource);
   }
   
   protected synchronized void releaseResource(Resource clusterResource,
@@ -345,11 +346,13 @@ public abstract class AbstractCSQueue implements CSQueue {
       }
     }
 
+    if(!isSuspend){
+        --numContainers;
+     }
     CSQueueUtils.updateQueueStatistics(resourceCalculator, this, getParent(),
         clusterResource, minimumAllocation);
-    if(!isSuspend){
-    --numContainers;
-    }
+    
+    LOG.info("abstractCSQueue:used release "+resource);
   }
   
   @Private

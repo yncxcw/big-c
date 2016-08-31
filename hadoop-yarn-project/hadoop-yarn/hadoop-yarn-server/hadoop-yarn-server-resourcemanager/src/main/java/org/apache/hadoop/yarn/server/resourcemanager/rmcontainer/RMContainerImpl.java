@@ -791,6 +791,7 @@ public Resource getSRResourceUnit(){
 	
 	Resource resource = Resource.newInstance(container.getResource().getMemory()/container.getResource().getVirtualCores(), 
 			                               1);
+	LOG.info("RMContainer SR: "+resource);
 	
 	return Resources.multiplyTo(resource, this.PR_NUMBER);
 }

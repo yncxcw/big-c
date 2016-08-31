@@ -1983,6 +1983,8 @@ public class LeafQueue extends AbstractCSQueue {
           userResourceUsage.incUsed(label, resource);
         }
       }
+      
+      LOG.info("LeafQueue:user assignContainer: "+resource);
     }
 
     public void releaseContainer(Resource resource, Set<String> nodeLabels) {
@@ -1993,6 +1995,8 @@ public class LeafQueue extends AbstractCSQueue {
           userResourceUsage.decUsed(label, resource);
         }
       }
+      
+      LOG.info("LeafQueue:user releaseContainer: "+resource);
     }
 
     public Resource getUserResourceLimit() {
