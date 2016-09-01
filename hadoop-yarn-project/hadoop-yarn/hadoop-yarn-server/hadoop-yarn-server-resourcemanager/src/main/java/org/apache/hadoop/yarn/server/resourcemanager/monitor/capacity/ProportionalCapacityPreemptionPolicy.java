@@ -533,6 +533,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       }
       for (TempQueue q : queues) {
         q.normalizedGuarantee = Resources.divide(rc, clusterResource, q.guaranteed, activeCap);
+        LOG.info("q: "+q.queueName+" guaranteed: "+q.guaranteed+" activeCap: "+activeCap+" normalized: "+q.normalizedGuarantee);
       }
     }
   }
@@ -836,6 +837,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       Resource guaranteed  = Resources.multiply(clusterResources, absCap);
       Resource maxCapacity = Resources.multiply(clusterResources, absMaxCap);
       
+      LOG.info("cloneQueues current queue: "+queueName+" guarnateed: "+guaranteed);
       LOG.info("cloneQueues current queue: "+queueName+" usedResource:   "+root.getUsedResources());
       LOG.info("cloneQueues current queue: "+queueName+" ratiodResource: "+Resources.multiply(clusterResources, absUsed));
       
