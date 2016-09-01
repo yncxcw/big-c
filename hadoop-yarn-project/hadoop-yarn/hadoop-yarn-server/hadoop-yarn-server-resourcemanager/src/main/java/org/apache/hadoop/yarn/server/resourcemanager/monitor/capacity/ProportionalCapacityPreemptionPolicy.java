@@ -445,13 +445,17 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       
       
       if (Resources.lessThan(rc, tot_guarant, q.idealAssigned, curPlusPend)) {
-       
         orderedByNeed.add(q);
-      
       }
     }
+    
+    //set DRF resource for each queue;
+    for (Iterator<TempQueue> i = qAlloc.iterator(); i.hasNext();) {
+        TempQueue q = i.next();
+        q.dominantResource = Resources.ComputeDominantResurce(unassigned,q.pending);
+        LOG.info("queue: "+q.queueName+" dominant resource: "+q.dominantResource);
+    }
 
-   
     //assign all cluster resources until no more demand, or no resources are left
     while (!orderedByNeed.isEmpty()
        && Resources.greaterThan(rc,tot_guarant, unassigned,Resources.none())) {
@@ -918,6 +922,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     float guaranteedRatio;
 
     double normalizedGuarantee;
+    int dominantResource;
 
     final ArrayList<TempQueue> children;
     LeafQueue leafQueue;
@@ -972,7 +977,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     // the unused ones
     Resource offer(Resource avail, ResourceCalculator rc,
         Resource clusterResource) {
-    	
+ 	
       Resource absMaxCapIdealAssignedDelta = Resources.componentwiseMax(
                       Resources.subtract(maxCapacity, idealAssigned),
                       Resource.newInstance(0, 0));
@@ -982,13 +987,14 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       //(current + pending - assigned).core > avail.core
       //(current + pending - assigned).memo < avail.memo
       //so we get least cores of the three and least memory of the three
-      
-      Resource accepted = 
+      Resource possibleAccepted = 
           Resources.mins(rc, clusterResource, 
               absMaxCapIdealAssignedDelta,
           Resources.mins(rc, clusterResource, avail, Resources.subtract(
               Resources.add(current, pending), idealAssigned)));
       
+      //final allocation resource
+      Resource finalAccepted = Resources.clone(possibleAccepted);
       //in extrame case where avail cores are more less than the available memory, it may preempt mroe memory
       //Max:      1310720   320
       //avail:    542634    26
@@ -996,40 +1002,42 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       //Pending:  525312    120
       //current:  576512    260
       //ideal:    576512    260
-      //then the accepted will be (525312,26) in which the memory is far more beyond the reqirement
-      double acceptedRatio = 0;
-      double pendingRatio  = 0;
-      if(accepted.getVirtualCores() > 0){
-    	  acceptedRatio = accepted.getMemory()*1.0/accepted.getVirtualCores();
+      //then the accepted will be (525312,26) in which the memory is far more beyond the requirement
+      if(dominantResource == Resources.CPU && !Resources.equals(pending,Resources.none())){
+    	  //pending must be either none() or resource(int ,int)
+    	  if(avail.getVirtualCores() == 0){
+    	  //if the dominant resource is cpu, we will stop allocation even we have memory
+    		  finalAccepted.setMemory(0);
+    	  }else{
+    	  double memoryRatio   = pending.getMemory()*1.0/pending.getVirtualCores();
+    	  int    ratioedMemory = (int)(memoryRatio*possibleAccepted.getVirtualCores());
+    	  finalAccepted.setMemory(ratioedMemory < possibleAccepted.getMemory() ? 
+    			                   ratioedMemory:possibleAccepted.getMemory());
+    	  }
+    	  LOG.info("queue: "+queueName+" cpu dominant ");
+      }else if(dominantResource == Resources.MEMORY && !Resources.equals(pending, Resources.none())){
+    	  if(avail.getMemory() == 0){
+    		  finalAccepted.setVirtualCores(0);
+    	  }else{
+    	  double cpuRatio   = pending.getVirtualCores()*1.0/pending.getMemory();
+    	  int    ratioedcpu = (int)(cpuRatio*possibleAccepted.getMemory());
+    	  finalAccepted.setVirtualCores(ratioedcpu < possibleAccepted.getMemory() ? 
+    			                 ratioedcpu:possibleAccepted.getMemory());
+    	  }
+    	  LOG.info("queue: "+queueName+" memory dominant ");
       }
       
-      if(pending.getVirtualCores() > 0 ){
-    	  pendingRatio = pending.getMemory()*1.0/pending.getVirtualCores();
-      }
-      
-      if(acceptedRatio != 0 && pendingRatio != 0 && acceptedRatio > 2*pendingRatio){
-    	  LOG.info("acceptedRatio: "+acceptedRatio);
-    	  LOG.info("pendingRatio:  "+pendingRatio );
-    	  
-    	  int memory = (int)(pendingRatio*accepted.getVirtualCores()) < accepted.getMemory()?
-    			                               (int)(pendingRatio*accepted.getVirtualCores()):accepted.getMemory();
-    	  accepted.setMemory(memory);
-    	  LOG.info("set memory "+memory);
-      }
-      
-      
+ 
       LOG.info("queueName:   "+queueName);
-      LOG.info("beforeideal: "+idealAssigned);                                                                                                                                                                                                             
-      Resource remain = Resources.subtract(avail, accepted);
-      Resources.addTo(idealAssigned, accepted);
-      
-     
+      LOG.info("beforeideal: "+idealAssigned);  
+      Resource remain = Resources.subtract(avail, finalAccepted);
+      Resources.addTo(idealAssigned, finalAccepted);
       LOG.info("avaul:       "+avail);
       LOG.info("absMaxDelta: "+absMaxCapIdealAssignedDelta);
       LOG.info("max:         "+maxCapacity);
       LOG.info("current:     "+current);
       LOG.info("pending:     "+pending);
-      LOG.info("acceped:     "+accepted);
+      LOG.info("acceped:     "+finalAccepted);
       LOG.info("ideal:       "+idealAssigned);
       
       return remain;

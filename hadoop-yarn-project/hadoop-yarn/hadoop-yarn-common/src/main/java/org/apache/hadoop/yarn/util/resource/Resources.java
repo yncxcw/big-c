@@ -35,6 +35,10 @@ public class Resources {
 	
   private static final Log LOG = LogFactory.getLog(Resources.class);
   
+  public static final int CPU    = 1;
+  public static final int MEMORY = 2;
+  public static final int EMPTY  = 3;
+  
   // Java doesn't have const :(
   private static final Resource NONE = new Resource() {
 
@@ -106,6 +110,7 @@ public class Resources {
     return createResource(memory, (memory > 0) ? 1 : 0);
   }
 
+  
   public static Resource createResource(int memory, int cores) {
     Resource resource = Records.newRecord(Resource.class);
     resource.setMemory(memory);
@@ -119,6 +124,12 @@ public class Resources {
   
   public static Resource unbounded() {
     return UNBOUNDED;
+  }
+  
+  public static int ComputeDominantResurce(Resource available, Resource resource){
+	  
+	  
+	  
   }
 
   public static Resource clone(Resource res) {
