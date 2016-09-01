@@ -128,8 +128,22 @@ public class Resources {
   
   public static int ComputeDominantResurce(Resource available, Resource resource){
 	  
+	  if(Resources.equals(available, Resources.none())||
+		   Resources.equals(resource, Resources.none())){
+		  return EMPTY;
+	  }
 	  
+	  if(available.getMemory() == 0){
+		  return CPU;
+	  }else if(available.getVirtualCores() == 0){
+		  return MEMORY;
+	  }else{
+		  return (resource.getMemory()/available.getMemory() 
+				   >resource.getVirtualCores()/available.getVirtualCores() ?
+						   MEMORY:CPU);
+	  }
 	  
+	  return EMPTY;
   }
 
   public static Resource clone(Resource res) {
