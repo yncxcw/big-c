@@ -582,6 +582,9 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         Resource skippedAMSize = Resource.newInstance(0, 0);
         
         LOG.info("try to preempt: "+resToObtain+" from queue: "+qT.queueName);
+        if(resToObtain.getMemory() > 0){
+        	LOG.info("resToObtain memory: "+resToObtain.getMemory());
+        }
         // lock the leafqueue while we scan applications and unreserve
         synchronized (qT.leafQueue) {
           //what is the descending order
@@ -710,7 +713,6 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         return ret;
       }
       
-      LOG.info("try to preempt "+c.getContainerId());
       // Skip AM Container from preemption for now.
       if (c.isAMContainer()) {
         skippedAMContainerlist.add(c);
@@ -1015,6 +1017,12 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     			                   ratioedMemory:possibleAccepted.getMemory());
     	  }
     	  LOG.info("queue: "+queueName+" cpu dominant ");
+    	  
+    	  if(finalAccepted.getMemory() < possibleAccepted.getMemory()){
+    		  LOG.info("previous memory: "+possibleAccepted.getMemory()+"  final memory: "+finalAccepted.getMemory());
+    	  }
+    	  
+    	  
       }else if(dominantResource == Resources.MEMORY && !Resources.equals(pending, Resources.none())){
     	  if(avail.getMemory() == 0){
     		  finalAccepted.setVirtualCores(0);
@@ -1025,6 +1033,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     			                 ratioedcpu:possibleAccepted.getMemory());
     	  }
     	  LOG.info("queue: "+queueName+" memory dominant ");
+      }else{
+    	  LOG.info("queue: "+queueName+" empty ");
       }
       
  
@@ -1129,7 +1139,6 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
           rc, clusterRes, q.guaranteed, Resources.none())) {
         pctOver =
             Resources.divide(rc, clusterRes, q.idealAssigned, q.guaranteed);
-        LOG.info("ideal pctof guard q: "+q.queueName + "value: "+ pctOver);
       }
       return (pctOver);
     }
