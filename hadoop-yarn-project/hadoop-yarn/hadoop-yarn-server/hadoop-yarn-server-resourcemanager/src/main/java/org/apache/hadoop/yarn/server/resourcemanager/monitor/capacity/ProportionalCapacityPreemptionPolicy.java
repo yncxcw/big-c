@@ -521,7 +521,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
    */
   private void resetCapacity(ResourceCalculator rc, Resource clusterResource,
       Collection<TempQueue> queues, boolean ignoreGuar) {
-    Resource activeCap = Resource.newInstance(0, 0);
+    float activeCap = 0;
     
     if (ignoreGuar) {
       for (TempQueue q : queues) {
@@ -529,10 +529,10 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       }
     } else {
       for (TempQueue q : queues) {
-        Resources.addTo(activeCap, q.guaranteed);
+        activeCap = activeCap + q.guaranteedRatio;
       }
       for (TempQueue q : queues) {
-        q.normalizedGuarantee = Resources.divide(rc, clusterResource, q.guaranteed, activeCap);
+        q.normalizedGuarantee = q.guaranteedRatio/activeCap;
         LOG.info("q: "+q.queueName+" guaranteed: "+q.guaranteed+" activeCap: "+activeCap+" normalized: "+q.normalizedGuarantee);
       }
     }
@@ -833,9 +833,9 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     	  current = Resources.multiply(clusterResources, absUsed);
       }
       
-      
-      Resource guaranteed  = Resources.multiply(clusterResources, absCap);
-      Resource maxCapacity = Resources.multiply(clusterResources, absMaxCap);
+      float guaranteedRatio = absCap;
+      Resource guaranteed   = Resources.multiply(clusterResources, absCap);
+      Resource maxCapacity  = Resources.multiply(clusterResources, absMaxCap);
       
       LOG.info("cloneQueues current queue: "+queueName+" guarnateed: "+guaranteed);
       LOG.info("cloneQueues current queue: "+queueName+" usedResource:   "+root.getUsedResources());
@@ -850,7 +850,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         LeafQueue l = (LeafQueue) root;
         Resource pending = l.getTotalResourcePending();
         ret = new TempQueue(queueName, current, pending, guaranteed,
-            maxCapacity, preemptionDisabled);
+            maxCapacity, guaranteedRatio,preemptionDisabled);
         if (preemptionDisabled) {
           ret.untouchableExtra = extra;
         } else {
@@ -860,7 +860,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       } else {
         Resource pending = Resource.newInstance(0, 0);
         ret = new TempQueue(root.getQueueName(), current, pending, guaranteed,
-            maxCapacity, false);
+            maxCapacity, guaranteedRatio,false);
         Resource childrensPreemptable = Resource.newInstance(0, 0);
         for (CSQueue c : root.getChildQueues()) {
           TempQueue subq = cloneQueues(c, clusterResources);
@@ -915,6 +915,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     Resource actuallyPreempted;
     Resource untouchableExtra;
     Resource preemptableExtra;
+    
+    float guaranteedRatio;
 
     double normalizedGuarantee;
 
@@ -923,7 +925,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     boolean preemptionDisabled;
 
     TempQueue(String queueName, Resource current, Resource pending,
-        Resource guaranteed, Resource maxCapacity, boolean preemptionDisabled) {
+        Resource guaranteed, Resource maxCapacity, float guaranteedRatio,boolean preemptionDisabled) {
       this.queueName = queueName;
       this.current = current;
       this.pending = pending;
@@ -938,6 +940,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       this.untouchableExtra = Resource.newInstance(0, 0);
       //only leaf node has preemptable extra
       this.preemptableExtra = Resource.newInstance(0, 0);
+      this.guaranteedRatio  = guaranteedRatio;
       this.preemptionDisabled = preemptionDisabled;
     }
 
