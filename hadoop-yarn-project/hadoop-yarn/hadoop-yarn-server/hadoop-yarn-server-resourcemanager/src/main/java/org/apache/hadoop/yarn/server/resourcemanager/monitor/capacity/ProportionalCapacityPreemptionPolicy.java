@@ -533,7 +533,6 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       }
       for (TempQueue q : queues) {
         q.normalizedGuarantee = q.guaranteedRatio/activeCap;
-        LOG.info("q: "+q.queueName+" guaranteed: "+q.guaranteed+" activeCap: "+activeCap+" normalized: "+q.normalizedGuarantee);
       }
     }
   }
@@ -1122,6 +1121,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
           rc, clusterRes, q.guaranteed, Resources.none())) {
         pctOver =
             Resources.divide(rc, clusterRes, q.idealAssigned, q.guaranteed);
+        LOG.info("ideal pctof guard q: "+q.queueName + "value: "+ pctOver);
       }
       return (pctOver);
     }
