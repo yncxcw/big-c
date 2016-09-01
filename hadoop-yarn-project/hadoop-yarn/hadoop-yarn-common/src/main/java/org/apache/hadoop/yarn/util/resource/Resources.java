@@ -131,9 +131,7 @@ public class Resources {
 	  if(Resources.equals(available, Resources.none())||
 		   Resources.equals(resource, Resources.none())){
 		  return EMPTY;
-	  }
-	  
-	  if(available.getMemory() == 0){
+	  }else if(available.getMemory() == 0){
 		  return CPU;
 	  }else if(available.getVirtualCores() == 0){
 		  return MEMORY;
@@ -142,8 +140,6 @@ public class Resources {
 				   >resource.getVirtualCores()/available.getVirtualCores() ?
 						   MEMORY:CPU);
 	  }
-	  
-	  return EMPTY;
   }
 
   public static Resource clone(Resource res) {
