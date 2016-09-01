@@ -134,6 +134,9 @@ public class DominantResourceCalculator extends ResourceCalculator {
   @Override
   public float divide(Resource clusterResource, 
       Resource numerator, Resource denominator) {
+	  
+	LOG.info("numerator:    "+numerator);
+	LOG.info("denominator:  "+denominator);
     return 
         getResourceAsValue(clusterResource, numerator, true) / 
         getResourceAsValue(clusterResource, denominator, true);
