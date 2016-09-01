@@ -1001,7 +1001,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     	  pendingRatio = pending.getMemory()*1.0/pending.getVirtualCores();
       }
       
-      if(acceptedRatio > 2*pendingRatio){
+      if(acceptedRatio != 0 && pendingRatio != 0 && acceptedRatio > 2*pendingRatio){
     	  LOG.info("acceptedRatio: "+acceptedRatio);
     	  LOG.info("pendingRatio:  "+pendingRatio);
     	  int memory = (int)(pendingRatio*accepted.getVirtualCores()) < accepted.getMemory()?

@@ -92,6 +92,8 @@ public class CoresManagerImpl implements CoresManager {
 	
 	private void allcoateCoresforContainer(Set<Integer> cores,ContainerId cntId){
 		
+		LOG.info("allocate cores: "+cores+" on container "+cntId);
+		
 		for(Integer core : cores){
 			 unUsedCores.remove(core);
 		 }
@@ -113,6 +115,10 @@ public class CoresManagerImpl implements CoresManager {
 	@Override
 	public synchronized void releaseCores(ContainerId cntId) {
 		Set<Integer> cores= new HashSet<Integer>();
+		
+		if(containerToCores.get(cntId) == null){
+			return;
+		}
 		cores.addAll(containerToCores.get(cntId));
 		this.releaseCoresforContainer(cntId, cores);
 		LogOverlapWarning();
@@ -120,6 +126,8 @@ public class CoresManagerImpl implements CoresManager {
 	}
 	
 	private synchronized void releaseCoresforContainer(ContainerId cntId, Set<Integer> cores){
+		
+		LOG.info("release cores: "+cores+" on container "+cntId);
 		
 		for(Integer core : cores){
 			if(coresToContainer.get(core).size() == 0){
