@@ -471,9 +471,10 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       for (Iterator<TempQueue> i = underserved.iterator(); i.hasNext();) {
         TempQueue sub = i.next();
         //the share of this queue based on unassigned resource
+        LOG.info("computeFixpointAllocation inloop unused resource: "+unassigned);
         Resource wQavail = Resources.multiplyAndNormalizeUp(rc,
             unassigned, sub.normalizedGuarantee, Resource.newInstance(1, 1)); 
-          
+        LOG.info("computeFixpointAllocation inloop wQavail resource: "+wQavail+" normaliazedGuarantee: "+ sub.normalizedGuarantee); 
         Resource wQidle = sub.offer(wQavail, rc, tot_guarant);
         Resource wQdone = Resources.subtract(wQavail, wQidle);
 
@@ -486,7 +487,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         }
         Resources.addTo(wQassigned, wQdone);
       }
-      LOG.info("computeFixpointAllocation inloop unused resource: "+unassigned);
+     
       Resources.subtractFrom(unassigned, wQassigned);
     }
   }
