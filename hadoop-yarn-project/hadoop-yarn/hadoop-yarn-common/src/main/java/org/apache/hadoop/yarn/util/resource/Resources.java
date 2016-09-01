@@ -139,6 +139,7 @@ public class Resources {
 		  return (resource.getMemory()/available.getMemory() 
 				   >resource.getVirtualCores()/available.getVirtualCores() ?
 						   MEMORY:CPU);
+		  
 	  }
   }
 

@@ -590,7 +590,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
           //what is the descending order
           NavigableSet<FiCaSchedulerApp> ns = 
               (NavigableSet<FiCaSchedulerApp>) qT.leafQueue.getApplications();
-          Iterator<FiCaSchedulerApp> desc = ns.descendingIterator();
+n          Iterator<FiCaSchedulerApp> desc = ns.descendingIterator();
           qT.actuallyPreempted = Resources.clone(resToObtain);
           while (desc.hasNext()) {
             FiCaSchedulerApp fc = desc.next();
@@ -1008,8 +1008,16 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       if(dominantResource == Resources.CPU && !Resources.equals(pending,Resources.none())){
     	  //pending must be either none() or resource(int ,int)
     	  if(avail.getVirtualCores() == 0){
-    	  //if the dominant resource is cpu, we will stop allocation even we have memory
+    	      //if the dominant resource is cpu, we will stop allocation even we have memory
     		  finalAccepted.setMemory(0);
+    		  //but if we still have more available memory, we can allocate, to avoid preemption
+    		  //we set memory to current usage
+    		  int gapMemory = current.getMemory() - idealAssigned.getMemory();
+    		  if(gapMemory > 0 && possibleAccepted.getMemory() > gapMemory){
+    			  finalAccepted.setMemory(gapMemory);
+    			  LOG.info("gap memory: "+gapMemory);
+    		  }
+    		  
     	  }else{
     	  double memoryRatio   = pending.getMemory()*1.0/pending.getVirtualCores();
     	  int    ratioedMemory = (int)(memoryRatio*possibleAccepted.getVirtualCores());
@@ -1026,6 +1034,12 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       }else if(dominantResource == Resources.MEMORY && !Resources.equals(pending, Resources.none())){
     	  if(avail.getMemory() == 0){
     		  finalAccepted.setVirtualCores(0);
+    		  int gapCores = current.getVirtualCores() - idealAssigned.getVirtualCores();
+    		  if(gapCores > 0 && possibleAccepted.getVirtualCores() > gapCores){
+    			  finalAccepted.setVirtualCores(gapCores);
+    			  LOG.info("gap cores: "+gapCores);
+    		  }
+    		  
     	  }else{
     	  double cpuRatio   = pending.getVirtualCores()*1.0/pending.getMemory();
     	  int    ratioedcpu = (int)(cpuRatio*possibleAccepted.getMemory());
