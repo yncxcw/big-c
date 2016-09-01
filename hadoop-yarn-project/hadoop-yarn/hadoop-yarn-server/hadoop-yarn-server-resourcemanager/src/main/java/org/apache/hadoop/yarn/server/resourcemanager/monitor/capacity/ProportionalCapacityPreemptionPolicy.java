@@ -590,7 +590,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
           //what is the descending order
           NavigableSet<FiCaSchedulerApp> ns = 
               (NavigableSet<FiCaSchedulerApp>) qT.leafQueue.getApplications();
-n          Iterator<FiCaSchedulerApp> desc = ns.descendingIterator();
+         Iterator<FiCaSchedulerApp> desc = ns.descendingIterator();
           qT.actuallyPreempted = Resources.clone(resToObtain);
           while (desc.hasNext()) {
             FiCaSchedulerApp fc = desc.next();
