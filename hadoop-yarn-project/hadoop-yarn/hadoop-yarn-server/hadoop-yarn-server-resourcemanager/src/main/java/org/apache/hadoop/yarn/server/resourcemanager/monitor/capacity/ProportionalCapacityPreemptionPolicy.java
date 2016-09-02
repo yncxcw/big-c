@@ -135,7 +135,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
   private double naturalTerminationFactor;
   private boolean observeOnly;
   private Map<NodeId, Set<String>> labels;
-  private boolean isSuspended;
+  private static boolean isSuspended;
 
   public ProportionalCapacityPreemptionPolicy() {
     clock = new SystemClock();
@@ -1008,6 +1008,9 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       //current:  576512    260
       //ideal:    576512    260
       //then the accepted will be (525312,26) in which the memory is far more beyond the requirement
+      
+      if(isSuspended){
+    	  
       if(dominantResource == Resources.CPU && !Resources.equals(pending,Resources.none())){
     	  //pending must be either none() or resource(int ,int)
     	  if(avail.getVirtualCores() == 0){
@@ -1054,6 +1057,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     	  LOG.info("queue: "+queueName+" empty ");
       }
       
+      }
  
       LOG.info("queueName:   "+queueName);
       LOG.info("beforeideal: "+idealAssigned);  
