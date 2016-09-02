@@ -368,7 +368,6 @@ private final RMNode rmNode;
    * @return number of active containers on the node
    */
   public int getNumContainers() {
-    LOG.info("scheduleNode size: "+launchedContainers.size());
     return launchedContainers.size();
   }
 

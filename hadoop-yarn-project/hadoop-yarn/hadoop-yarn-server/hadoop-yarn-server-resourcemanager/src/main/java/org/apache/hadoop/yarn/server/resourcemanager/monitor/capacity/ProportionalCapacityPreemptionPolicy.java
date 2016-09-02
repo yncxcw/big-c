@@ -116,9 +116,10 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
    * #WAIT_TIME_BEFORE_KILL}, even absent natural termination. */
   public static final String NATURAL_TERMINATION_FACTOR =
       "yarn.resourcemanager.monitor.capacity.preemption.natural_termination_factor";
-
-  public static final int PR_NUMBER = 2;
   
+  public static final String IS_SUPEND_ENABLED = 
+	  "yarn.resourcemanager.monitor.capacity.preemption.suspend";
+
   // the dispatcher to send preempt and kill events
   public EventHandler<ContainerPreemptEvent> dispatcher;
 
@@ -134,7 +135,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
   private double naturalTerminationFactor;
   private boolean observeOnly;
   private Map<NodeId, Set<String>> labels;
-  private boolean isSuspended = true;
+  private boolean isSuspended;
 
   public ProportionalCapacityPreemptionPolicy() {
     clock = new SystemClock();
@@ -173,6 +174,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     percentageClusterPreemptionAllowed =
       config.getFloat(TOTAL_PREEMPTION_PER_ROUND, (float) 0.1);
     observeOnly = config.getBoolean(OBSERVE_ONLY, false);
+    isSuspended = config.getBoolean(IS_SUPEND_ENABLED, true);
     rc = scheduler.getResourceCalculator();
     labels = null;
   }
