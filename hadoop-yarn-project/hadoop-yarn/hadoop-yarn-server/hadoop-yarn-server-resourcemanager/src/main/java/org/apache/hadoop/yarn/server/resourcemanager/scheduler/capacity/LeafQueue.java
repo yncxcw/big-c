@@ -1651,8 +1651,10 @@ public class LeafQueue extends AbstractCSQueue {
           // could be zero. If the limit was hit then use the amount we need to unreserve to be
           // under the limit.
           Resource amountToUnreserve = capability;
+          LOG.info("need to unreserve 1: "+ amountToUnreserve);
           if (needToUnreserve) {
             amountToUnreserve = currentResoureLimits.getAmountNeededUnreserve();
+            LOG.info("need to unreserve 2: "+ amountToUnreserve);
           }
           boolean containerUnreserved =
               findNodeToUnreserve(clusterResource, node, application, priority,
