@@ -609,7 +609,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
           }
           
           //we allow preempt AM for kill based approach
-          if(!isSuspended){
+          if(false){
          //we will never preempt am resource 
           Resource maxAMCapacityForThisQueue = Resources.multiply(
              Resources.multiply(clusterResource,
