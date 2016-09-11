@@ -663,6 +663,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         contToPrempt = new HashMap<RMContainer,Resource>();
         preemptMap.put(c.getApplicationAttemptId(), contToPrempt);
       }
+      
+      LOG.info("preempt am container "+c.getContainerId());
       contToPrempt.put(c,c.getContainer().getResource());
       
       Resources.subtractFrom(resToObtain, c.getContainer().getResource());
