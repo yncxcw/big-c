@@ -119,6 +119,10 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
   
   public static final String IS_SUPEND_ENABLED = 
 	  "yarn.resourcemanager.monitor.capacity.preemption.suspend";
+  
+  public static final String IS_NAIVE_EENABLED =
+	  "yarn.resourcemanager.monitor.capacity.preemption.naive";
+  
 
   // the dispatcher to send preempt and kill events
   public EventHandler<ContainerPreemptEvent> dispatcher;
@@ -136,6 +140,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
   private boolean observeOnly;
   private Map<NodeId, Set<String>> labels;
   private static boolean isSuspended;
+  private static boolean isNaive;
 
   public ProportionalCapacityPreemptionPolicy() {
     clock = new SystemClock();
@@ -175,6 +180,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       config.getFloat(TOTAL_PREEMPTION_PER_ROUND, (float) 0.1);
     observeOnly = config.getBoolean(OBSERVE_ONLY, false);
     isSuspended = config.getBoolean(IS_SUPEND_ENABLED, true);
+    isNaive     = config.getBoolean(IS_NAIVE_EENABLED, false);
     LOG.info("isSuspenpded init: "+isSuspended);
     rc = scheduler.getResourceCalculator();
     labels = null;
@@ -267,15 +273,25 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         if (preempted.get(container) != null &&
             preempted.get(container) + maxWaitTime < clock.getTime()) {
           // suspend it
-          LOG.info("get container "+container.getContainerId()+" to suspend resource is "
-                 +resource);
-          
-          if(this.isSuspended){
+            
+          if(isSuspended){
              dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
                 ContainerPreemptEventType.SUSPEND_CONTAINER,resource));
+                LOG.info("get container "+container.getContainerId()+" to suspend resource is "
+                     +resource);
           }else{
+        	  if(isNaive){
+        	dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
+        	                ContainerPreemptEventType.SUSPEND_CONTAINER,container.getContainer().getResource()));
+        	    LOG.info("get container "+container.getContainerId()+" to suspend resource is "
+        	                     +resource); 
+        		  
+        	  }else{
              dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
                 ContainerPreemptEventType.KILL_CONTAINER,container.getContainer().getResource())); 
+               LOG.info("get container "+container.getContainerId()+" to kill resource is "
+                     +resource);
+        	  }
           }
           preempted.remove(container);
           
