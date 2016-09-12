@@ -121,6 +121,8 @@ public class LeafQueue extends AbstractCSQueue {
   // cache last cluster resource to compute actual capacity
   private Resource lastClusterResource = Resources.none();
   
+  private boolean isNaive = true;
+  
   // absolute capacity as a resource (based on cluster resource)
   private Resource absoluteCapacityResource = Resources.none();
   
@@ -795,22 +797,31 @@ public class LeafQueue extends AbstractCSQueue {
     	for(ContainerId cntId : app.getContainersSuspended()){
     		//if we find one container suspended on this node, we try to resume this container
     		//we get its resource to try if we can resume this container
-    		RMContainer rmContainer=app.getLiveContainersMap().get(cntId);
-    		Container container    =  rmContainer.getContainer();
-    		Resource required      =  rmContainer.getPreemptedResource();
+    		RMContainer rmContainer  =  app.getLiveContainersMap().get(cntId);
+    		Container   container    =  rmContainer.getContainer();
+    		Resource   toResume;
+    		if(isNaive){
+    		 toResume     =  Resources.clone(rmContainer.getPreemptedResource());	
+    		}else{
+    		 toResume     =  Resources.clone(Resources.mins(resourceCalculator, clusterResource, 
+                     rmContainer.getSRResourceUnit(),
+                     rmContainer.getPreemptedResource()));
+    		}
+    		
+    		
     		if(node.getSuspendedContainers().contains(cntId)){
     		//if we can not allocate container due to insufficiency of resource ,we just give up continuing 
     		//allocating resource 
     			LOG.info("try to resume container: "+cntId+ " on node"+node.getNodeName());
     			if (!super.canAssignToThisQueue(clusterResource, node.getLabels(),
-    		              currentResourceLimits, required, app.getCurrentReservation())) {
+    		              currentResourceLimits, toResume, app.getCurrentReservation())) {
     				LOG.info("resume containers:insufficienct resource for queue"+this.getQueueName()+", return here");
     		            return NULL_ASSIGNMENT;
     		       }
     			  //compute user limit nnn
     			  Resource userLimit = 
     		              computeUserLimitAndSetHeadroom(app, clusterResource, 
-    		                  required, null); 
+    		            		  toResume, null); 
     			 //check we can allocate resource for this user, TODO drop this judge because we do not care about user 
     			 //resource consumption for resource resume
     			 if (!assignToUser(clusterResource, app.getUser(), userLimit,
@@ -819,7 +830,7 @@ public class LeafQueue extends AbstractCSQueue {
     				 return NULL_ASSIGNMENT;
     			  }
     			  //try to resume this container
-    			  CSAssignment assignment = this.resumeContainer(clusterResource, node, app, rmContainer);
+    			  CSAssignment assignment = this.resumeContainer(clusterResource, node, app, toResume,rmContainer);
     			  Resource assigned = assignment.getResource();
     			  LOG.info("get assigned resoruce: "+assigned);
     	          if (Resources.greaterThan(
@@ -1505,21 +1516,19 @@ public class LeafQueue extends AbstractCSQueue {
   }
 
   private CSAssignment resumeContainer(Resource clusterResource, FiCaSchedulerNode node, FiCaSchedulerApp application,
-		  RMContainer rmContainer){
+		  Resource toResume,RMContainer rmContainer){
 	  
 	    //we should make capability here tunable
-	    Resource toResume;
+	   
 	    LOG.info("app: "+application.getApplicationId()+"container: "+rmContainer.getContainerId()+"resumeContainer preempted:"+rmContainer.getPreemptedResource());
 	    LOG.info("resumeContainer SR:"+rmContainer.getSRResourceUnit());
+	    LOG.info("resumeContainer toResume: "+toResume);
 	   
-	    toResume = Resources.clone(Resources.mins(resourceCalculator, clusterResource, 
-	    		                       rmContainer.getSRResourceUnit(),
-	    		                       rmContainer.getPreemptedResource()));
 	    
 	    Resource available     = node.getAvailableResource();
 	    Resource totalResource = node.getTotalResource();
 
-	    LOG.info("resumeContainer toResume: "+toResume);
+	   
 	    //节点资源不够的情况，
 	    if (!Resources.lessThanOrEqual(resourceCalculator, clusterResource,
 	    	toResume, totalResource)) {
