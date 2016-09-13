@@ -121,7 +121,7 @@ public class LeafQueue extends AbstractCSQueue {
   // cache last cluster resource to compute actual capacity
   private Resource lastClusterResource = Resources.none();
   
-  private boolean isNaive = true;
+  private boolean isNaive = false;
   
   // absolute capacity as a resource (based on cluster resource)
   private Resource absoluteCapacityResource = Resources.none();
