@@ -1849,7 +1849,6 @@ public class LeafQueue extends AbstractCSQueue {
     }
     //if (LOG.isDebugEnabled()) {
       LOG.info(getQueueName() + 
-          " user=" + userName + 
           " used=" + queueUsage.getUsed() + " numContainers=" + numContainers +
           " headroom = " + application.getHeadroom() +
           " user-resources=" + user.getUsed()+"allocate resource:"+resource+
@@ -1869,15 +1868,13 @@ public class LeafQueue extends AbstractCSQueue {
     if(!isSuspend){
       metrics.setAvailableResourcesToUser(userName, application.getHeadroom());
     }
-    LOG.info(
-    	getQueueName() +
-        " used=" + queueUsage.getUsed() + 
-        " numContainers=" + numContainers +
-        " user=" + userName + 
-        " user-resources=" + user.getUsed()+
-        " released resource "+resource+
-        " absUsed= "+getAbsoluteUsedCapacity()
-        );
+    
+    LOG.info(getQueueName() + 
+            " used=" + queueUsage.getUsed() + " numContainers=" + numContainers +
+            " headroom = " + application.getHeadroom() +
+            " user-resources=" + user.getUsed()+"allocate resource:"+resource+
+            " absUsed= "+getAbsoluteUsedCapacity()
+            );
   }
   
   private void updateAbsoluteCapacityResource(Resource clusterResource) {
