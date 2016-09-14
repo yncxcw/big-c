@@ -292,6 +292,18 @@ public class CapacitySchedulerConfiguration extends ReservationSchedulerConfigur
     return maxApplications;
   }
   
+  public int getMaxContainerOpportunityResumeption(String queue){
+	 int maxOpportunity=
+	  getInt(getQueuePrefix(queue)+"maxresumeptopportunity",5);
+	 return maxOpportunity;
+  }
+  
+  public boolean getNaive(String queue){
+	 boolean naive=
+	   getBoolean(getQueuePrefix(queue)+"naive",false);
+	 return naive;
+  }
+  
   public float getMaximumApplicationMasterResourcePercent() {
     return getFloat(MAXIMUM_APPLICATION_MASTERS_RESOURCE_PERCENT, 
         DEFAULT_MAXIMUM_APPLICATIONMASTERS_RESOURCE_PERCENT);

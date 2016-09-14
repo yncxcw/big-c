@@ -723,4 +723,16 @@ public class ParentQueue extends AbstractCSQueue {
   public synchronized int getNumApplications() {
     return numApplications;
   }
+
+@Override
+public Resource getPreemptedResource() {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public void setFastResumption(boolean set) {
+	// TODO Auto-generated method stub
+	
+}
 }

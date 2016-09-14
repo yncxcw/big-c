@@ -180,7 +180,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       config.getFloat(TOTAL_PREEMPTION_PER_ROUND, (float) 0.1);
     observeOnly = config.getBoolean(OBSERVE_ONLY, false);
     isSuspended = config.getBoolean(IS_SUPEND_ENABLED, true);
-    isNaive     = config.getBoolean(IS_NAIVE_EENABLED, false);
+    isNaive     = scheduler.getConfiguration().getNaive("root");
     LOG.info("isSuspenpded init: "+isSuspended);
     rc = scheduler.getResourceCalculator();
     labels = null;
