@@ -818,12 +818,7 @@ public class LeafQueue extends AbstractCSQueue {
     		if(!node.getSuspendedContainers().contains(cntId)){
     		      continue;
     		}
-    		
-    		if(!isFastResumption && rmContainer.getResumeOpportunity() < maxContainerOpportunity){
-    			LOG.info("resume containers "+ rmContainer.getContainerId()+"not oppoortunity");
-    			rmContainer.incResumeOpportunity();
-    			continue;
-    		}
+    	    
     		//if we can not allocate container due to insufficiency of resource ,we just give up continuing 
     		//allocating resource 
     		LOG.info("try to resume container: "+cntId+ " on node"+node.getNodeName());
@@ -1562,6 +1557,12 @@ public class LeafQueue extends AbstractCSQueue {
 	   
 	    //LOG.info("ndoe available resource "+available+" to resume "+toResume);  
 	    if (availableContainers > 0) {
+	    	
+	    	if(!isFastResumption && rmContainer.getResumeOpportunity() < maxContainerOpportunity){
+    			LOG.info("resume containers "+ rmContainer.getContainerId()+" not opportunity");
+    			rmContainer.incResumeOpportunity();
+    			return NULL_ASSIGNMENT;
+    		}
 	    	
 	    	 boolean resumeContainer = 
 	    	          application.containerResume(rmContainer,toResume);
