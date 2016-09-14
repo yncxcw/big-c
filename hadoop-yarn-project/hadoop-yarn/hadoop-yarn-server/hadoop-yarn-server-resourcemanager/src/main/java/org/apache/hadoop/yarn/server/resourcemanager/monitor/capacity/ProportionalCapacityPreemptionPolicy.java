@@ -398,7 +398,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     	for (TempQueue t:queues) {
     	   Resource currentPrempted =  scheduler.getQueue(t.queueName).getPreemptedResource();
     	   if(Resources.greaterThan(rc,tot_guarant, currentPrempted,Resources.none())){
-    		    LOG.info("set "+t.queueName+" fast preempted resource: "+currentPrempted);
+    		    LOG.info("set "+t.queueName+" fast preempted resource: "+currentPrempted+" avail: "+unassigned);
     	        scheduler.getQueue(t.queueName).setFastResumption(true);
     	   }
         }
@@ -408,9 +408,11 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     Resource totPreemptionNeeded = Resource.newInstance(0, 0);
     for (TempQueue t:queues) {
       if (Resources.greaterThan(rc, tot_guarant, t.current, t.idealAssigned)) {
+    	   Resource currentPrempted =  scheduler.getQueue(t.queueName).getPreemptedResource();
     	   scheduler.getQueue(t.queueName).setFastResumption(false); 
+    	   LOG.info("set "+t.queueName+" slow preempted resource: "+currentPrempted);
            Resources.addTo(totPreemptionNeeded,
-            Resources.subtract(t.current, t.idealAssigned));
+           Resources.subtract(t.current, t.idealAssigned));
       }
     }
 

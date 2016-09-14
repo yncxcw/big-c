@@ -187,9 +187,13 @@ class CSQueueUtils {
         calculator, clusterResource, clusterResource, Resources.none())) {
       queueLimit = 
           Resources.multiply(clusterResource, childQueue.getAbsoluteCapacity());
-      absoluteUsedCapacity = 
-          Resources.divide(calculator, clusterResource, 
-              usedResources, clusterResource);
+      
+      //absoluteUsedCapacity = 
+      //    Resources.divide(calculator, clusterResource, 
+      //        usedResources, clusterResource);
+      
+      absoluteUsedCapacity = (float) ((usedResources.getVirtualCores()*1.0)/(clusterResource.getVirtualCores()*1.0));
+    
       usedCapacity = 
           Resources.equals(queueLimit, Resources.none()) ? 0 :
           Resources.divide(calculator, clusterResource, 
