@@ -95,7 +95,7 @@ public class LeafQueue extends AbstractCSQueue {
   
   private float maxAMResourcePerQueuePercent;
   
-  private int   maxContainerOpportunity = 5;
+  private int   maxContainerOpportunity;
   
   private int nodeLocalityDelay;
 
@@ -123,7 +123,7 @@ public class LeafQueue extends AbstractCSQueue {
   // cache last cluster resource to compute actual capacity
   private Resource lastClusterResource = Resources.none();
   
-  private boolean isNaive = false;
+  private boolean isNaive;
   
   private boolean isFastResumption = false;
   
@@ -175,6 +175,8 @@ public class LeafQueue extends AbstractCSQueue {
     CapacitySchedulerConfiguration conf = csContext.getConfiguration();
     userLimit = conf.getUserLimit(getQueuePath());
     userLimitFactor = conf.getUserLimitFactor(getQueuePath());
+    isNaive = conf.getNaive("root");
+    maxContainerOpportunity = conf.getMaxContainerOpportunityResumeption(getQueuePath());
 
     maxApplications = conf.getMaximumApplicationsPerQueue(getQueuePath());
     if (maxApplications < 0) {
