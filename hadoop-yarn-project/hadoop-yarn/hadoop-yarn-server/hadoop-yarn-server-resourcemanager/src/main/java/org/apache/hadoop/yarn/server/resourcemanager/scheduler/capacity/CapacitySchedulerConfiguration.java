@@ -294,7 +294,7 @@ public class CapacitySchedulerConfiguration extends ReservationSchedulerConfigur
   
   public int getMaxContainerOpportunityResumeption(String queue){
 	 int maxOpportunity=
-	  getInt(getQueuePrefix(queue)+"maxresumeptopportunity",5);
+	  getInt(getQueuePrefix(queue)+"maxresumptopportunity",5);
 	 return maxOpportunity;
   }
   

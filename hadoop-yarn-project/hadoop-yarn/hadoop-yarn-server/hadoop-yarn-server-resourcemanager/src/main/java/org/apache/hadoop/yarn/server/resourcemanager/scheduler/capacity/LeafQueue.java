@@ -1559,7 +1559,7 @@ public class LeafQueue extends AbstractCSQueue {
 	    if (availableContainers > 0) {
 	    	
 	    	if(!isFastResumption && rmContainer.getResumeOpportunity() < maxContainerOpportunity){
-    			LOG.info("resume containers "+ rmContainer.getContainerId()+" not opportunity");
+    			LOG.info("resume containers "+ rmContainer.getContainerId()+" not opportunity"+"currentOpp: "+rmContainer.getResumeOpportunity());
     			rmContainer.incResumeOpportunity();
     			return NULL_ASSIGNMENT;
     		}
