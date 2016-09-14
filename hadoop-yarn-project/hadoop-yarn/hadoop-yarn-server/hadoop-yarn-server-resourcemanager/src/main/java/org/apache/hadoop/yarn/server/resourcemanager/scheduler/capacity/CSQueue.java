@@ -284,4 +284,18 @@ extends org.apache.hadoop.yarn.server.resourcemanager.scheduler.Queue {
    * @return resourceUsage
    */
   public ResourceUsage getQueueResourceUsage();
+  
+  /**
+   * Get Preempted Resource
+   * @return resource
+   */
+  
+  public Resource getPreemptedResource();
+  
+  /**
+   * Set if fast resume this container
+   * @param set
+   */
+  
+  public void setFastResumption(boolean set);
 }

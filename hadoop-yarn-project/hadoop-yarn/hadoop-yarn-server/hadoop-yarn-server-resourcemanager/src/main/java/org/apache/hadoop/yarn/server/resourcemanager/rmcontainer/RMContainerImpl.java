@@ -182,6 +182,7 @@ public class RMContainerImpl implements RMContainer {
   private Priority reservedPriority;
   private long creationTime;
   private long finishTime;
+  private int resumeOpportunity;
   
   public static final int PR_NUMBER = 2;
   
@@ -219,7 +220,8 @@ public class RMContainerImpl implements RMContainer {
     this.eventHandler = rmContext.getDispatcher().getEventHandler();
     this.containerAllocationExpirer = rmContext.getContainerAllocationExpirer();
     this.isAMContainer = false;
-    this.resourceRequests = null;
+    this.resourceRequests  = null;
+    this.resumeOpportunity = 0;
     
     this.utilization = 1;
     this.suspendTime = new LinkedList<Long>();
@@ -794,8 +796,19 @@ public Resource getSRResourceUnit(){
 	return Resources.multiplyTo(resource, this.PR_NUMBER);
 }
 
+@Override
+public int getResumeOpportunity() {
+	return this.resumeOpportunity;
+}
 
+@Override
+public void incResumeOpportunity() {
+    this.resumeOpportunity++;	
+}
 
-
+@Override
+public void resetResumeOpportunity() {
+	this.resumeOpportunity = 0;
+}
 
 }

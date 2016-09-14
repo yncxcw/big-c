@@ -392,13 +392,24 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       computeFixpointAllocation(rc, tot_guarant, zeroGuarQueues, unassigned,
           true);
     }
-    
+    //we still have resource left, we set fast resumtion option
+    if(unassigned.getMemory() > 0 && unassigned.getVirtualCores() > 0){
+     
+    	for (TempQueue t:queues) {
+    	   Resource currentPrempted =  scheduler.getQueue(t.queueName).getPreemptedResource();
+    	   if(Resources.greaterThan(rc,tot_guarant, currentPrempted,Resources.none())){
+    		    LOG.info("set "+t.queueName+" fast preempted resource: "+currentPrempted);
+    	        scheduler.getQueue(t.queueName).setFastResumption(true);
+    	   }
+        }
+    }
     // based on ideal assignment computed above and current assignment we derive
     // how much preemption is required overall,this is resource that are preemptable
     Resource totPreemptionNeeded = Resource.newInstance(0, 0);
     for (TempQueue t:queues) {
       if (Resources.greaterThan(rc, tot_guarant, t.current, t.idealAssigned)) {
-        Resources.addTo(totPreemptionNeeded,
+    	   scheduler.getQueue(t.queueName).setFastResumption(false); 
+           Resources.addTo(totPreemptionNeeded,
             Resources.subtract(t.current, t.idealAssigned));
       }
     }
@@ -461,8 +472,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       // If idealAssigned < (current + pending), q needs more resources, so
       // add it to the list of underserved queues, ordered by need.
       Resource curPlusPend = Resources.add(q.current, q.pending);
-      
-      
+     
       if (Resources.lessThan(rc, tot_guarant, q.idealAssigned, curPlusPend)) {
         orderedByNeed.add(q);
       }
@@ -513,6 +523,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
      
       Resources.subtractFrom(unassigned, wQassigned);
     }
+    
+   
   }
 
   // Take the most underserved TempQueue (the one on the head). Collect and
@@ -1126,6 +1138,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     	  //we only prempte current.cores > idealAssigned.cores || current.memory > idealAssigned.memory
           toBePreempted = Resources.multiply(
               Resources.subtracts(current, idealAssigned), scalingFactor);
+          //we still have resource left
           LOG.info("assignPreemption queue  "+queueName+" toBePreempted  "+toBePreempted);
       } else {
         toBePreempted = Resource.newInstance(0, 0);

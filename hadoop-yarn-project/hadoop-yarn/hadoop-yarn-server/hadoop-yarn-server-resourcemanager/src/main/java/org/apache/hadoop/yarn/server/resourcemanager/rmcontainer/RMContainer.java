@@ -96,4 +96,10 @@ public interface RMContainer extends EventHandler<RMContainerEvent> {
   Resource getSRResourceUnit();
   
   boolean isSuspending();
+  
+  int getResumeOpportunity();
+  
+  void incResumeOpportunity();
+  
+  void resetResumeOpportunity();
 }

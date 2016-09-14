@@ -95,6 +95,8 @@ public class LeafQueue extends AbstractCSQueue {
   
   private float maxAMResourcePerQueuePercent;
   
+  private int   maxContainerOpportunity = 5;
+  
   private int nodeLocalityDelay;
 
   Set<FiCaSchedulerApp> activeApplications;
@@ -122,6 +124,8 @@ public class LeafQueue extends AbstractCSQueue {
   private Resource lastClusterResource = Resources.none();
   
   private boolean isNaive = false;
+  
+  private boolean isFastResumption = false;
   
   // absolute capacity as a resource (based on cluster resource)
   private Resource absoluteCapacityResource = Resources.none();
@@ -800,35 +804,43 @@ public class LeafQueue extends AbstractCSQueue {
     		RMContainer rmContainer  =  app.getLiveContainersMap().get(cntId);
     		Container   container    =  rmContainer.getContainer();
     		Resource   toResume;
+    		
     		if(isNaive){
-    		 toResume     =  Resources.clone(rmContainer.getPreemptedResource());	
+    		 toResume =  Resources.clone(rmContainer.getPreemptedResource());	
     		}else{
-    		 toResume     =  Resources.clone(Resources.mins(resourceCalculator, clusterResource, 
+    		 toResume =  Resources.clone(Resources.mins(resourceCalculator, clusterResource, 
                      rmContainer.getSRResourceUnit(),
                      rmContainer.getPreemptedResource()));
     		}
     		
+    		if(!node.getSuspendedContainers().contains(cntId)){
+    		      continue;
+    		}
     		
-    		if(node.getSuspendedContainers().contains(cntId)){
+    		if(!isFastResumption && rmContainer.getResumeOpportunity() < maxContainerOpportunity){
+    			LOG.info("resume containers "+ rmContainer.getContainerId()+"not oppoortunity");
+    			rmContainer.incResumeOpportunity();
+    			continue;
+    		}
     		//if we can not allocate container due to insufficiency of resource ,we just give up continuing 
     		//allocating resource 
-    			LOG.info("try to resume container: "+cntId+ " on node"+node.getNodeName());
-    			if (!super.canAssignToThisQueue(clusterResource, node.getLabels(),
-    		              currentResourceLimits, toResume, app.getCurrentReservation())) {
-    				LOG.info("resume containers:insufficienct resource for queue"+this.getQueueName()+", return here");
-    		            return NULL_ASSIGNMENT;
-    		       }
+    		LOG.info("try to resume container: "+cntId+ " on node"+node.getNodeName());
+    		if (!super.canAssignToThisQueue(clusterResource, node.getLabels(),
+    		         currentResourceLimits, toResume, app.getCurrentReservation())) {
+    			LOG.info("resume containers:insufficienct resource for queue"+this.getQueueName()+", return here");
+    		    return NULL_ASSIGNMENT;
+    		 }
     			  //compute user limit nnn
-    			  Resource userLimit = 
+    		  Resource userLimit = 
     		              computeUserLimitAndSetHeadroom(app, clusterResource, 
     		            		  toResume, null); 
-    			 //check we can allocate resource for this user, TODO drop this judge because we do not care about user 
-    			 //resource consumption for resource resume
-    			 if (!assignToUser(clusterResource, app.getUser(), userLimit,
+    		//check we can allocate resource for this user, TODO drop this judge because we do not care about user 
+    		//resource consumption for resource resume
+    		 if (!assignToUser(clusterResource, app.getUser(), userLimit,
     			              app, null, currentResourceLimits)) {
-    				LOG.info("resume contiaers:insufficienct resource for user"+app.getUser()+", return here");
-    				 return NULL_ASSIGNMENT;
-    			  }
+    			 LOG.info("resume contiaers:insufficienct resource for user"+app.getUser()+", return here");
+    			 return NULL_ASSIGNMENT;
+    		  }
     			  //try to resume this container
     			  CSAssignment assignment = this.resumeContainer(clusterResource, node, app, toResume,rmContainer);
     			  Resource assigned = assignment.getResource();
@@ -837,8 +849,9 @@ public class LeafQueue extends AbstractCSQueue {
     	              resourceCalculator, clusterResource, assigned, Resources.none())) {
     	              //update queue and user resource usage   	  
     	         	  allocateResource(clusterResource, app,assigned,node.getLabels(),true);
+    	         	 rmContainer.resetResumeOpportunity();
     	        	  return assignment;
-    	          }else{
+    	       }else{
     	          //this case only happens when the node resource is insufficient, we give up the chance to continue allocation
     	          //resource to new requests
     	        	  LOG.info("resume containers:node "+ node.getNodeName()+" resource is not sufficient");
@@ -846,10 +859,7 @@ public class LeafQueue extends AbstractCSQueue {
     	          }
     			  
     		}
-    		//we come here because node does not have cntId
-    	}
-    	//we come here means app doesn't have any contId on node
-    	
+    		//we come here because node does not have cntId	
        }
     }
     //we come here means all apps do not have contId on node
@@ -2079,7 +2089,31 @@ public class LeafQueue extends AbstractCSQueue {
       getParent().attachContainer(clusterResource, application, rmContainer);
     }
   }
+  
+  @Override
+  public Resource getPreemptedResource(){
+	  Resource preemptedResource = Resource.newInstance(0, 0);
+	  //try to resume containers which are suspended in fifo order
+	  for(ApplicationAttemptId appId: this.suspendedApps){
+	    FiCaSchedulerApp app = this.applicationAttemptMap.get(appId);
+	    	synchronized(app){
+	    	for(ContainerId cntId : app.getContainersSuspended()){
+	    		RMContainer rmContainer  =  app.getLiveContainersMap().get(cntId);
+	    		Resources.addTo(preemptedResource, rmContainer.getPreemptedResource());
+	    	   }
+	        }
+	    }
+	  
+	  return preemptedResource;
+  }
 
+  @Override
+  public void setFastResumption(boolean set){
+	  
+	  this.isFastResumption = set;
+  }
+  
+  
   @Override
   public void detachContainer(Resource clusterResource,
       FiCaSchedulerApp application, RMContainer rmContainer) {
