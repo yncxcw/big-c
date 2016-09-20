@@ -184,7 +184,7 @@ public class RMContainerImpl implements RMContainer {
   private long finishTime;
   private int resumeOpportunity;
   
-  public static final int PR_NUMBER = 2;
+  public int PR_NUMBER = 2;
   
   private boolean isSuspending = false;
   
@@ -230,6 +230,10 @@ public class RMContainerImpl implements RMContainer {
     ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     this.readLock = lock.readLock();
     this.writeLock = lock.writeLock();
+    
+    this.PR_NUMBER=rmContext.getYarnConfiguration().getInt(
+    		"yarn.resourcemanager.monitor.capacity.preemption.pr_number", 2);
+    		
 
     rmContext.getRMApplicationHistoryWriter().containerStarted(this);
     rmContext.getSystemMetricsPublisher().containerCreated(
