@@ -614,12 +614,13 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 	             List<RMContainer> containers =
 	            	      new ArrayList<RMContainer>(((FiCaSchedulerApp)fc).getUnPreemtedContainers());
 	             Map<RMContainer,Resource> containerToResource = new HashMap<RMContainer,Resource>();
-	             RMContainer amContainer;
+	             RMContainer amContainer=null;
 	             //find am container
 	             for(RMContainer rm:containers){
 	            	 if(rm.isAMContainer()){
 	            		 amContainer = rm;
-	            	 }
+	            		 break;
+	            	 } 
 	             }
 	             long currentTime = System.currentTimeMillis();
 	             //if we reach the point, we the perform preemption
@@ -628,7 +629,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 	            	  for(RMContainer rm:containers){
 	            			if(rm.isAMContainer()){
 	            				continue;
-	            		} 
+	            		    } 
 	            		Resource prResource = rm.getSRResourceUnit();
 	            		if(this.isTestOnlyCpu){
 	            			 prResource.setMemory(0);
