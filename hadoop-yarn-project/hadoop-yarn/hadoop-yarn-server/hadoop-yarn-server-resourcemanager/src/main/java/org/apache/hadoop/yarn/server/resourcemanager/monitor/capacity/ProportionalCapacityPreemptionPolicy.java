@@ -186,10 +186,15 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     observeOnly = config.getBoolean(OBSERVE_ONLY, false);
     isSuspended = config.getBoolean(IS_SUPEND_ENABLED, true);
     isNaive      = scheduler.getConfiguration().getNaive("root");
+    LOG.info("isNaive:"+isNaive);
     isTest       = scheduler.getConfiguration().getTest("root");
+    LOG.info("isTest: "+isTest);
     isTestOnlyCpu= scheduler.getConfiguration().getTestOnlyCpu("root");
+    LOG.info("isTestOnlyCpu:  "+isTestOnlyCpu);
     testNumber   = scheduler.getConfiguration().getTestNumber("root");
+    LOG.info("testNumber:"+testNumber);
     testTime     = scheduler.getConfiguration().getTestTime("root");
+    LOG.info("testTime:  "+testTime);
     
     LOG.info("isSuspenpded init: "+isSuspended);
     rc = scheduler.getResourceCalculator();
@@ -624,6 +629,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 	             }
 	             long currentTime = System.currentTimeMillis();
 	             //if we reach the point, we the perform preemption
+	             LOG.info("test current time gap: "+(currentTime - amContainer.getCreationTime())/1000);
 	             if((currentTime - amContainer.getCreationTime())/1000 > testTime){
 	            	 //only preempt cpu
 	            	  for(RMContainer rm:containers){
@@ -640,6 +646,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 	           	   }
 	              if(containerToResource.size() > 0){
 	            	  fc.setTestDone();
+	            	  LOG.info("test put preempt map "+fc.getApplicationAttemptId()+"size:  "+containerToResource.size());
 	            	  preemptMap.put(fc.getApplicationAttemptId(), containerToResource);  
 	              }
 	            }//end wile    
