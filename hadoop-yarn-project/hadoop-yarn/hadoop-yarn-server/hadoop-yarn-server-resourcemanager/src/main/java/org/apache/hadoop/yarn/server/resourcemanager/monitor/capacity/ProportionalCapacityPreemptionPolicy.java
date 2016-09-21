@@ -629,23 +629,25 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 	             }
 	             long currentTime = System.currentTimeMillis();
 	             //if we reach the point, we the perform preemption
-	             LOG.info("test current time gap: "+(currentTime - amContainer.getCreationTime())/1000);
+	             LOG.info("test current time gap: "+(currentTime - amContainer.getCreationTime())/1000+" app: "+fc.getApplicationAttemptId());
 	             if((currentTime - amContainer.getCreationTime())/1000 > testTime){
 	            	 //only preempt cpu
+	            	  LOG.info("try to preempt: "+fc.getApplicationAttemptId());
 	            	  for(RMContainer rm:containers){
 	            			if(rm.isAMContainer()){
 	            				continue;
 	            		    } 
 	            		Resource prResource = rm.getSRResourceUnit();
-	            		if(this.isTestOnlyCpu){
+	            		if(isTestOnlyCpu){
 	            			 prResource.setMemory(0);
 	            		}
-	            		Resources.multiplyTo(prResource, this.testNumber);
+	            		Resources.multiplyTo(prResource, testNumber);
 	            		containerToResource.put(rm, prResource);
 	            	  }
 	           	   }
 	              if(containerToResource.size() > 0){
 	            	  fc.setTestDone();
+	            	  LOG.info(fc.getApplicationAttemptId()+" is done");
 	            	  LOG.info("test put preempt map "+fc.getApplicationAttemptId()+"size:  "+containerToResource.size());
 	            	  preemptMap.put(fc.getApplicationAttemptId(), containerToResource);  
 	              }
