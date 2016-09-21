@@ -612,6 +612,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 	         Iterator<FiCaSchedulerApp> desc = ns.descendingIterator();
 	         while (desc.hasNext()) {
 	             FiCaSchedulerApp fc = desc.next();
+	             LOG.info("test enter: "+fc.getApplicationAttemptId());
 	             //this app has finish the test
 	             if(fc.getTestDone()){
 	            	 continue;
@@ -632,7 +633,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 	             LOG.info("test current time gap: "+(currentTime - amContainer.getCreationTime())/1000+" app: "+fc.getApplicationAttemptId());
 	             if((currentTime - amContainer.getCreationTime())/1000 > testTime){
 	            	 //only preempt cpu
-	            	  LOG.info("try to preempt: "+fc.getApplicationAttemptId());
+	            	  LOG.info("test try to preempt: "+fc.getApplicationAttemptId());
 	            	  for(RMContainer rm:containers){
 	            			if(rm.isAMContainer()){
 	            				continue;
@@ -647,7 +648,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 	           	   }
 	              if(containerToResource.size() > 0){
 	            	  fc.setTestDone();
-	            	  LOG.info(fc.getApplicationAttemptId()+" is done");
+	            	  LOG.info(fc.getApplicationAttemptId()+" test is done");
 	            	  LOG.info("test put preempt map "+fc.getApplicationAttemptId()+"size:  "+containerToResource.size());
 	            	  preemptMap.put(fc.getApplicationAttemptId(), containerToResource);  
 	              }
@@ -677,7 +678,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     List<RMContainer> skippedAMContainerlist = new ArrayList<RMContainer>();
     
     //for test only
-    if(this.isTest){
+    if(isTest){
     	getContainersToPreemptForTest(preemptMap, queues, clusterResource);
     }
     
