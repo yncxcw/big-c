@@ -141,6 +141,11 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
   private Map<NodeId, Set<String>> labels;
   private static boolean isSuspended;
   private static boolean isNaive;
+  private static boolean isTestOnlyCpu;
+  private static boolean isTest;
+  private static int testNumber;
+  //at when the container should be preempted in seconds
+  private static int testTime;
 
   public ProportionalCapacityPreemptionPolicy() {
     clock = new SystemClock();
@@ -180,7 +185,12 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       config.getFloat(TOTAL_PREEMPTION_PER_ROUND, (float) 0.1);
     observeOnly = config.getBoolean(OBSERVE_ONLY, false);
     isSuspended = config.getBoolean(IS_SUPEND_ENABLED, true);
-    isNaive     = scheduler.getConfiguration().getNaive("root");
+    isNaive      = scheduler.getConfiguration().getNaive("root");
+    isTest       = scheduler.getConfiguration().getTest("root");
+    isTestOnlyCpu= scheduler.getConfiguration().getTestOnlyCpu("root");
+    testNumber   = scheduler.getConfiguration().getTestNumber("root");
+    testTime     = scheduler.getConfiguration().getTestTime("root");
+    
     LOG.info("isSuspenpded init: "+isSuspended);
     rc = scheduler.getResourceCalculator();
     labels = null;
@@ -573,7 +583,71 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       }
     }
   }
+  
+  /**
+   * Randomly preempt container
+   * 
+   * @param queues set of leaf queues to preempt from
+   * @param clusterResource total amount of cluster resources
+   * @return a map of applciationID to set of containers to preempt
+   */
 
+  private void getContainersToPreemptForTest(Map<ApplicationAttemptId,Map<RMContainer,Resource>> preemptMap,
+		  List<TempQueue> queues, Resource clusterResource){
+	 
+	  
+	  for (TempQueue qT : queues) {
+		  if (qT.preemptionDisabled && qT.leafQueue != null) {
+			  continue;
+		  }
+		  synchronized (qT.leafQueue) {
+			  //what is the descending order
+	          NavigableSet<FiCaSchedulerApp> ns = 
+	              (NavigableSet<FiCaSchedulerApp>) qT.leafQueue.getApplications();
+	         Iterator<FiCaSchedulerApp> desc = ns.descendingIterator();
+	         while (desc.hasNext()) {
+	             FiCaSchedulerApp fc = desc.next();
+	             //this app has finish the test
+	             if(fc.getTestDone()){
+	            	 continue;
+	             }
+	             List<RMContainer> containers =
+	            	      new ArrayList<RMContainer>(((FiCaSchedulerApp)fc).getUnPreemtedContainers());
+	             Map<RMContainer,Resource> containerToResource = new HashMap<RMContainer,Resource>();
+	             RMContainer amContainer;
+	             //find am container
+	             for(RMContainer rm:containers){
+	            	 if(rm.isAMContainer()){
+	            		 amContainer = rm;
+	            	 }
+	             }
+	             long currentTime = System.currentTimeMillis();
+	             //if we reach the point, we the perform preemption
+	             if((currentTime - amContainer.getCreationTime())/1000 > testTime){
+	            	 //only preempt cpu
+	            	  for(RMContainer rm:containers){
+	            			if(rm.isAMContainer()){
+	            				continue;
+	            		} 
+	            		Resource prResource = rm.getSRResourceUnit();
+	            		if(this.isTestOnlyCpu){
+	            			 prResource.setMemory(0);
+	            		}
+	            		Resources.multiplyTo(prResource, this.testNumber);
+	            		containerToResource.put(rm, prResource);
+	            	  }
+	           	   }
+	              if(containerToResource.size() > 0){
+	            	  fc.setTestDone();
+	            	  preemptMap.put(fc.getApplicationAttemptId(), containerToResource);  
+	              }
+	            }//end wile    
+	         }//end synchronized  
+		  }//end for
+	  
+	}
+  
+  
   /**
    * Based a resource preemption target drop reservations of containers and
    * if necessary select containers for preemption from applications in each
@@ -591,6 +665,12 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         new HashMap<ApplicationAttemptId, Map<RMContainer,Resource>>();
     
     List<RMContainer> skippedAMContainerlist = new ArrayList<RMContainer>();
+    
+    //for test only
+    if(this.isTest){
+    	getContainersToPreemptForTest(preemptMap, queues, clusterResource);
+    }
+    
 
     for (TempQueue qT : queues) {
       if (qT.preemptionDisabled && qT.leafQueue != null) {

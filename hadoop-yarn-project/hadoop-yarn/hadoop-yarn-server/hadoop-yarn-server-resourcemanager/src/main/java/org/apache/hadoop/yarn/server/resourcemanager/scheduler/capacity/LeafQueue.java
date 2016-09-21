@@ -125,6 +125,10 @@ public class LeafQueue extends AbstractCSQueue {
   
   private boolean isNaive;
   
+  private boolean isTest;
+  
+  private long testSuspendTime;
+  
   private boolean isFastResumption = false;
   
   // absolute capacity as a resource (based on cluster resource)
@@ -176,6 +180,9 @@ public class LeafQueue extends AbstractCSQueue {
     userLimit = conf.getUserLimit(getQueuePath());
     userLimitFactor = conf.getUserLimitFactor(getQueuePath());
     isNaive = conf.getNaive("root");
+    isTest  = conf.getTest("root");
+    testSuspendTime = conf.getTestSuspendTime("root");
+    
     maxContainerOpportunity = conf.getMaxContainerOpportunityResumeption(getQueuePath());
 
     maxApplications = conf.getMaximumApplicationsPerQueue(getQueuePath());
@@ -807,17 +814,26 @@ public class LeafQueue extends AbstractCSQueue {
     		Container   container    =  rmContainer.getContainer();
     		Resource   toResume;
     		
-    		if(isNaive){
-    		 toResume =  Resources.clone(rmContainer.getPreemptedResource());	
-    		}else{
-    		 toResume =  Resources.clone(Resources.mins(resourceCalculator, clusterResource, 
-                     rmContainer.getSRResourceUnit(),
-                     rmContainer.getPreemptedResource()));
-    		}
-    		
     		if(!node.getSuspendedContainers().contains(cntId)){
     		      continue;
     		}
+    		
+    		if(isTest){
+    		 
+    		long lastSuspendTime =rmContainer.getSuspendTime().get(rmContainer.getSuspendTime().size()-1);	
+    		 
+    		 if((System.currentTimeMillis() - lastSuspendTime)/1000 < testSuspendTime){
+    			 continue;
+    		 }
+    		 toResume =  Resources.clone(rmContainer.getPreemptedResource());	
+    			
+    		}else if(isNaive){
+       		 toResume =  Resources.clone(rmContainer.getPreemptedResource());	
+       		}else{
+       		 toResume =  Resources.clone(Resources.mins(resourceCalculator, clusterResource, 
+                        rmContainer.getSRResourceUnit(),
+                        rmContainer.getPreemptedResource()));
+       		}
     	    
     		//if we can not allocate container due to insufficiency of resource ,we just give up continuing 
     		//allocating resource 

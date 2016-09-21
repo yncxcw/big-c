@@ -102,4 +102,9 @@ public interface RMContainer extends EventHandler<RMContainerEvent> {
   void incResumeOpportunity();
   
   void resetResumeOpportunity();
+  
+  public List<Long> getSuspendTime();
+  
+  public List<Long> getResumeTime();
+   
 }

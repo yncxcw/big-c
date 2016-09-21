@@ -72,9 +72,11 @@ public class FiCaSchedulerApp extends SchedulerApplicationAttempt {
   private final Set<ContainerId> containersSuspended =
     new HashSet<ContainerId>();
     
-private CapacityHeadroomProvider headroomProvider;
+  private CapacityHeadroomProvider headroomProvider;
   
   private boolean isSuspending;
+  
+  private boolean isTestDone;
   
  
 public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId, 
@@ -95,6 +97,8 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
     }
     
     setAMResource(amResource);
+    
+    isTestDone=false;
   }
  
   @Override
@@ -452,6 +456,14 @@ public FiCaSchedulerApp(ApplicationAttemptId applicationAttemptId,
 
   public synchronized CapacityHeadroomProvider getHeadroomProvider() {
     return headroomProvider;
+  }
+  
+  public boolean getTestDone(){
+	  return isTestDone;
+  }
+  
+  public void setTestDone(){
+	  isTestDone = true;	  
   }
   
   @Override

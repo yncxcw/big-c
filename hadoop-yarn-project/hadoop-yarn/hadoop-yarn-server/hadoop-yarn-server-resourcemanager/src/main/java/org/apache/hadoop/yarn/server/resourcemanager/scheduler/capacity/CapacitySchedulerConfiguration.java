@@ -298,6 +298,36 @@ public class CapacitySchedulerConfiguration extends ReservationSchedulerConfigur
 	 return maxOpportunity;
   }
   
+  public boolean getTest(String queue){
+	  boolean test=
+		getBoolean(getQueuePrefix(queue)+"test",false);
+		return test;
+  }
+  
+  public boolean getTestOnlyCpu(String queue){
+	  boolean cpu=
+		getBoolean(getQueuePrefix(queue)+"testonlycpu",false);
+		return cpu;
+  }
+  
+  public long getTestSuspendTime(String queue){
+	  int time=getInt(getQueuePrefix(queue)+"testsuspendtime",120);
+	  return time;
+  }
+  
+  
+  public int getTestNumber(String queue){
+	  int  number=
+		getInt(getQueuePrefix(queue)+"testnumber",2);
+		return number;
+  }
+  
+  public int getTestTime(String queue){
+	  int  time=
+		getInt(getQueuePrefix(queue)+"testtime",300);
+		return time;
+  }
+  
   public boolean getNaive(String queue){
 	 boolean naive=
 	   getBoolean(getQueuePrefix(queue)+"naive",false);

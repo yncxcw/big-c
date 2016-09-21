@@ -254,11 +254,13 @@ public class RMContainerImpl implements RMContainer {
 	  return this.isSuspending;
   }
   
+  @Override
   public List<Long> getSuspendTime(){
 	  
 	  return suspendTime;
   }
   
+  @Override
   public List<Long> getResumeTime(){
 	  
 	  return resumeTime;
