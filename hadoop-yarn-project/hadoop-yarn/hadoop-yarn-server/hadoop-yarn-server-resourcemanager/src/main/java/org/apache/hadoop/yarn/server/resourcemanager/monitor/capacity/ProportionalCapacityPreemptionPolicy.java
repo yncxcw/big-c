@@ -605,6 +605,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 		  if (qT.preemptionDisabled && qT.leafQueue != null) {
 			  continue;
 		  }
+		  LOG.info("test queue: "+qT.queueName);
 		  synchronized (qT.leafQueue) {
 			  //what is the descending order
 	          NavigableSet<FiCaSchedulerApp> ns = 
@@ -672,6 +673,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
   private Map<ApplicationAttemptId,Map<RMContainer,Resource>> getContainersToPreempt(
       List<TempQueue> queues, Resource clusterResource) {
 
+	LOG.info("getContainersToPreempt enter");
     Map<ApplicationAttemptId, Map<RMContainer,Resource>> preemptMap =
         new HashMap<ApplicationAttemptId, Map<RMContainer,Resource>>();
     
@@ -679,6 +681,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     
     //for test only
     if(isTest){
+    	LOG.info("isTest enter");
     	getContainersToPreemptForTest(preemptMap, queues, clusterResource);
     }
     
