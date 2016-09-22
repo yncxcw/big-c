@@ -629,6 +629,10 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 	            		 break;
 	            	 } 
 	             }
+	             
+	             if(amContainer == null){
+	            	 continue;
+	             }
 	             long currentTime = System.currentTimeMillis();
 	             //if we reach the point, we the perform preemption
 	             LOG.info("test current time gap: "+(currentTime - amContainer.getCreationTime())/1000+" app: "+fc.getApplicationAttemptId());
