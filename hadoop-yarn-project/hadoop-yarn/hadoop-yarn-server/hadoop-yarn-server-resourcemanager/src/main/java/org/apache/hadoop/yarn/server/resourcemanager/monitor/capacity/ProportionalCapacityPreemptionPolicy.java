@@ -313,6 +313,12 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
           preempted.remove(container);
           
         } else {
+           if(isTest){
+        	   dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
+   	                ContainerPreemptEventType.SUSPEND_CONTAINER,container.getContainer().getResource()));
+   	           LOG.info("get container "+container.getContainerId()+" to suspend resource is "
+   	                     +resource);  
+           }
           //otherwise just send preemption events
           dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
                 ContainerPreemptEventType.PREEMPT_CONTAINER,resource));
