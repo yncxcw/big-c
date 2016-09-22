@@ -315,7 +315,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         } else {
            if(isTest){
         	   dispatcher.handle(new ContainerPreemptEvent(e.getKey(), container,
-   	                ContainerPreemptEventType.SUSPEND_CONTAINER,container.getContainer().getResource()));
+                       ContainerPreemptEventType.SUSPEND_CONTAINER,resource));
    	           LOG.info("get container "+container.getContainerId()+" to suspend resource is "
    	                     +resource);  
            }
