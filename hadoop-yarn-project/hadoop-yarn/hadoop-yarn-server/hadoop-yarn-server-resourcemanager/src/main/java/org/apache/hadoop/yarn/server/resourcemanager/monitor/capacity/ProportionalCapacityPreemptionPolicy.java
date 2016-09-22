@@ -267,6 +267,8 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     // queue and each application
     Map<ApplicationAttemptId,Map<RMContainer,Resource>> toPreempt =
         getContainersToPreempt(queues, clusterResources);
+    
+    LOG.info("toPreempt size: "+toPreempt.size());
 
    if (LOG.isDebugEnabled()) 
     {  
@@ -605,7 +607,6 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 		  if (qT.preemptionDisabled && qT.leafQueue != null) {
 			  continue;
 		  }
-		  LOG.info("test queue: "+qT.queueName);
 		  synchronized (qT.leafQueue) {
 			  //what is the descending order
 	          NavigableSet<FiCaSchedulerApp> ns = 
@@ -613,7 +614,6 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 	         Iterator<FiCaSchedulerApp> desc = ns.descendingIterator();
 	         while (desc.hasNext()) {
 	             FiCaSchedulerApp fc = desc.next();
-	             LOG.info("test enter: "+fc.getApplicationAttemptId());
 	             //this app has finish the test
 	             if(fc.getTestDone()){
 	            	 continue;
@@ -648,6 +648,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 	            			 prResource.setMemory(0);
 	            		}
 	            		Resources.multiplyTo(prResource, testNumber);
+	            		LOG.info("test preempt "+rm.getContainerId()+" resource"+prResource);
 	            		containerToResource.put(rm, prResource);
 	            	  }
 	           	   }
@@ -677,7 +678,6 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
   private Map<ApplicationAttemptId,Map<RMContainer,Resource>> getContainersToPreempt(
       List<TempQueue> queues, Resource clusterResource) {
 
-	LOG.info("getContainersToPreempt enter");
     Map<ApplicationAttemptId, Map<RMContainer,Resource>> preemptMap =
         new HashMap<ApplicationAttemptId, Map<RMContainer,Resource>>();
     
@@ -754,6 +754,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         }
       }
     }
+    LOG.info("getContainersToPreempt size:  "+preemptMap.size());
     return preemptMap;
   }
 
