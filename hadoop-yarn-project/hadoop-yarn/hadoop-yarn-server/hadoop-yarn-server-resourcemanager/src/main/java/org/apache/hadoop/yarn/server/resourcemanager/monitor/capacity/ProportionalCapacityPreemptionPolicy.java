@@ -641,10 +641,10 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
 	             }
 	             long currentTime = System.currentTimeMillis();
 	             //if we reach the point, we the perform preemption
-	             LOG.info("test current time gap: "+(currentTime - amContainer.getCreationTime())/1000+" app: "+fc.getApplicationAttemptId());
+	            
 	             if((currentTime - amContainer.getCreationTime())/1000 > testTime){
 	            	 //only preempt cpu
-	            	  LOG.info("test try to preempt: "+fc.getApplicationAttemptId());
+	            	
 	            	  for(RMContainer rm:containers){
 	            			if(rm.isAMContainer()){
 	            				continue;
@@ -691,7 +691,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
     
     //for test only
     if(isTest){
-    	LOG.info("isTest enter");
+    	
     	getContainersToPreemptForTest(preemptMap, queues, clusterResource);
     }
     
@@ -760,7 +760,6 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
         }
       }
     }
-    LOG.info("getContainersToPreempt size:  "+preemptMap.size());
     return preemptMap;
   }
 

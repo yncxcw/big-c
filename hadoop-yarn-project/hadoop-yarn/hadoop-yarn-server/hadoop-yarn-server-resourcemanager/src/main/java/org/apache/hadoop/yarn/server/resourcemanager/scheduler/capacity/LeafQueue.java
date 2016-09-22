@@ -823,10 +823,14 @@ public class LeafQueue extends AbstractCSQueue {
     		long lastSuspendTime =rmContainer.getSuspendTime().get(rmContainer.getSuspendTime().size()-1);	
     		 
     		 if((System.currentTimeMillis() - lastSuspendTime)/1000 < testSuspendTime){
+    			
     			 continue;
     		 }
+ 
     		 toResume =  Resources.clone(rmContainer.getPreemptedResource());	
-    			
+    		 LOG.info("test resume container: "+rmContainer.getContainerId()+"resource "+toResume+""
+    		 		+ "time: "+(System.currentTimeMillis() - lastSuspendTime)/1000);	
+    		
     		}else if(isNaive){
        		 toResume =  Resources.clone(rmContainer.getPreemptedResource());	
        		}else{
