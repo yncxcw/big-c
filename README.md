@@ -28,7 +28,7 @@ In Capacity-site.xml
 ```
 <property>
     <name>yarn.scheduler.capacity.root.default.maxresumptopportunity</name>
-    <value>True</value>
+    <value>3</value>
 </property>
 ```
 This parameter configure the SR_D(refer paper for detail) for queue root.default
@@ -37,7 +37,7 @@ In Capacity-site.xml
 ```
 <property>
     <name>yarn.scheduler.capacity.root.default.pr_number</name>
-    <value>True</value>
+    <value>2</value>
 </property>
 ```
 This parameter configure the SR_NUM(refer paper for detail) for queue root.default
