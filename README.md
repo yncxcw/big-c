@@ -42,7 +42,7 @@ In Capacity-site.xml
 ```
 This parameter configure the SR_NUM(refer paper for detail) for queue root.default
 
-This project is still under active development, if you have any questions, feel free to contact ynjassion@gmail.com
+This project is still under active development, if you have any questions, feel free to contact ynjassionchen@gmail.com
 
 
 
