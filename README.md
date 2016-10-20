@@ -3,7 +3,7 @@
 This project enables YARN performing fast and low-cost preemption by leveraging Docker.
 
 ##Install and compile
-For compile, plesse refer BUILD.txt for detail. Since my codebase is built on Hadoop-2.7.1, it depends on libprotoc-2.5.0.
+For compile, plesse refer BUILDING.txt for detail. Since my codebase is built on Hadoop-2.7.1, it depends on libprotoc-2.5.0(higher version may report error).
 
 ##Docker image
 Please use /sequenceiq/hadoop-docker as the docker image for running task. We have tested /sequenceiq/hadoop-docker:2.4.0 can
