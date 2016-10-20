@@ -16,24 +16,30 @@ org.apache.hadoop.yarn.server.nodemanager.DockerContainerExecutor, all the conta
 
 ##Configuration for preemption
 In yarn-site.xml
+```
 <property>
     <name>yarn.resourcemanager.monitor.capacity.preemption.suspend</name>
     <value>True</value>
 </property>
+```
 This will enable docker-based preemption, other wise kill-based will be applied, you also need to configure yarn.resourcemanager.scheduler.monitor.enable to be true to enable default preemption mechanism in YARN.
 
 In Capacity-site.xml
+```
 <property>
     <name>yarn.scheduler.capacity.root.default.maxresumptopportunity</name>
     <value>True</value>
 </property>
+```
 This parameter configure the SR_D(refer paper for detail) for queue root.default
 
 In Capacity-site.xml
+```
 <property>
     <name>yarn.scheduler.capacity.root.default.pr_number</name>
     <value>True</value>
 </property>
+```
 This parameter configure the SR_NUM(refer paper for detail) for queue root.default
 
 This project is still under active development, if you have any questions, feel free to contact ynjassion@gmail.com
