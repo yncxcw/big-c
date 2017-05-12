@@ -2,7 +2,7 @@
 <classpath>
   <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
   <classpathentry kind="output" path="target/classes"/>
-  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
   <classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-plugin-api/3.0/maven-plugin-api-3.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/apache/maven/maven-model/3.0/maven-model-3.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/codehaus/plexus/plexus-utils/2.0.5/plexus-utils-2.0.5.jar"/>

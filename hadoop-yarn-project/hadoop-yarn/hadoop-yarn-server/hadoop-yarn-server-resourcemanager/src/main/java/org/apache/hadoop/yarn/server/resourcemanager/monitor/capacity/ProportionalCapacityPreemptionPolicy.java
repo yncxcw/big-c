@@ -930,7 +930,7 @@ public class ProportionalCapacityPreemptionPolicy implements SchedulingEditPolic
       public int compare(RMContainer a, RMContainer b) {
     	if(Resources.lessThan(rc, clusterResource, a.getCurrentUsedResource(), b.getCurrentUsedResource())){
     	   return 1;
-    	       
+    	      
     	}else{
     	  return -1;
        }

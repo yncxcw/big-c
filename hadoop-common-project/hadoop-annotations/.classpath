@@ -2,7 +2,7 @@
 <classpath>
   <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
   <classpathentry kind="output" path="target/classes"/>
-  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
   <classpathentry kind="var" path="M2_REPO/jdiff/jdiff/1.0.9/jdiff-1.0.9.jar"/>
-  <classpathentry kind="lib" path="/opt/jdk1.7.0_71/lib/tools.jar"/>
+  <classpathentry kind="lib" path="/home/cwei/tool/jdk1.8.0_101/lib/tools.jar"/>
 </classpath>
