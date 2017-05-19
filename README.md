@@ -18,7 +18,7 @@ in yarn-site.xml
 ```
 <property>
     <name>yarn.nodemanager.container-executor.class</name>
-    <value>org.apache.hadoop.yarn.server.nodemanager.dockercontainerexecutor</value>
+    <value>org.apache.hadoop.yarn.server.nodemanager.DockerContainerExecutor</value>
 </property>
 ````
 ````
