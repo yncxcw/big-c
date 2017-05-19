@@ -8,11 +8,27 @@ For compile, plesse refer BUILDING.txt for detail. Since my codebase is built on
 ## Docker image
 Please use /sequenceiq/hadoop-docker as the docker image for running task. We have tested /sequenceiq/hadoop-docker:2.4.0, and it can
 both support Hadoop Mapreduce and Spark applications. For configuring YARN with docker support, please refer this:
+
 https://hadoop.apache.org/docs/r2.7.2/hadoop-yarn/hadoop-yarn-site/DockerContainerExecutor.html
 
-I have hacked NodeManager, so you do not need to configure mapreduce.map.env, mapreduce.reduce.env, yarn.app.mapreduce.am.env
-to indicate docker images when you launch applications. Once you set your default yarn.nodemanager.container-executor.class as 
-org.apache.hadoop.yarn.server.nodemanager.DockerContainerExecutor, all the containers will be launched with this executor.
+I have hacked NodeManager, following configurations below will have all your applications (both MapReduce and Spark) running
+in Docker containers: 
+
+in yarn-site.xml
+```
+<property>
+    <name>yarn.nodemanager.container-executor.class</name>
+    <value>org.apache.hadoop.yarn.server.nodemanager.dockercontainerexecutor</value>
+</property>
+````
+````
+<property>
+    <name>yarn.nodemanager.docker-container-executor.exec-name</name>
+    <value>/usr/bin/docker(path to your docker)</value>
+</property>
+````
+
+
 
 ## Configuration for preemption
 In yarn-site.xml
@@ -42,7 +58,7 @@ In Capacity-site.xml
 ```
 This parameter configure the SR_NUM(refer paper for detail) for queue root.default
 
-This project is still under active development, if you have any questions, feel free to contact ynjassionchen@gmail.com
+For more information, please refer our paper or contact ynjassionchen@gmail.com.
 
 
 
