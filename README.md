@@ -47,7 +47,7 @@ Enable resource monitor for Capacity Scheduler.
     <value>True</value>
 </property>
 ```
-Enable suspension based preemption for Capacity Scheduler. If this option is False, then only killed based preemption will be
+Enable suspension based preemption for Capacity Scheduler. If this option is False, then only killing based preemption will be
 applied. 
 
 In Capacity-site.xml
