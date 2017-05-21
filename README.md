@@ -50,7 +50,7 @@ Enable resource monitor for Capacity Scheduler.
 Enable suspension based preemption for Capacity Scheduler. If this option is False, then only killing based preemption will be
 applied. 
 
-In Capacity-site.xml
+In capacity-site.xml
 ```
 <property>
     <name>yarn.scheduler.capacity.root.default.maxresumptopportunity</name>
@@ -59,7 +59,7 @@ In Capacity-site.xml
 ```
 This parameter sets the SR_D(refer paper for detail) for queue root.default
 
-In Capacity-site.xml
+In capacity-site.xml
 ```
 <property>
     <name>yarn.scheduler.capacity.root.default.pr_number</name>
