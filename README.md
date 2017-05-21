@@ -1,4 +1,4 @@
-# PreemptYARN-2.7.1
+# BIG-C
 
 This project enables YARN performing fast and low-cost preemption by leveraging Docker.
 
