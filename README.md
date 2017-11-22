@@ -16,6 +16,13 @@ We have hacked NodeManager. Following configurations below will have all your ap
 in Docker containers: 
 
 in yarn-site.xml
+
+```
+ <property>
+        <name>yarn.nodemanager.docker-container-executor.image-name</name>
+        <value>sequenceiq/hadoop-docker:2.4.0</value>
+  </property>
+```  
 ```
 <property>
     <name>yarn.nodemanager.container-executor.class</name>
